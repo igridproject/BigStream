@@ -1,5 +1,11 @@
 # Bigstream-console
 
+if error
+
+- install nvm at https://github.com/creationix/nvm
+- nvm install v6.1.0
+- nvm use v6.1.0
+
 ## Running Application
 
 Prerequisite
