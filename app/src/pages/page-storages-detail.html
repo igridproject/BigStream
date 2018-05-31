@@ -1,0 +1,741 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="/bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="/bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="/bower_components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="/bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="/bower_components/iron-icons/editor-icons.html">
+<link rel="import" href="/bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="/bower_components/neon-animation/web-animations.html">
+<link rel="import" href="/bower_components/vaadin-grid/all-imports.html">
+<link rel="import" href="/bower_components/vaadin-date-picker/vaadin-date-picker.html">
+
+<link rel="import" href="../common/jsonviewer.html">
+
+<link rel="import" href="../bootstrap.html">
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="page-storages-detail">
+    <template>
+        <style include="bootstrap"></style>
+        <style include="app-grid-style"></style>
+        <style include="shared-styles">
+             :host {
+                box-sizing: border-box;
+                display: block;
+                --app-grid-columns: 2;
+                --app-grid-gutter: 15px;
+                --app-grid-expandible-item-columns: 2;
+                --app-primary-color: #2f323a;
+                --app-secondary-color: #5093e1;
+                overflow: hidden!important;
+                padding-bottom: 15px!important;
+            }
+
+            div[main-title] {
+                color: #448ee2;
+            }
+
+            vaadin-grid.material {
+                height: 100%;
+                padding-bottom: 130px;
+                border-top: 0;
+                --vaadin-grid-header-cell: {
+                    font-size: 14px!important;
+                    padding-left: 20px;
+                    height: initial;
+                    background: #fbfbfb;
+                }
+                ;
+                --vaadin-grid-body-cell: {
+                    padding: 8px;
+                    padding-left: 8px;
+                    display: block;
+                    cursor: pointer;
+                    color: rgba(0, 0, 0, var(--dark-primary-opacity));
+                    font-size: 11px;
+                }
+                ;
+                --vaadin-grid-body-row-hover-cell: {
+                    cursor: pointer;
+                    background-color: var(--paper-grey-200);
+                }
+                ;
+            }
+
+
+            ul {
+                padding: 0;
+                list-style: none;
+            }
+
+            .item {
+                background-color: white;
+            }
+
+            paper-input {
+                width: 100%;
+            }
+
+
+            vaadin-grid {
+                border-right: 0;
+                border-left: 0;
+            }
+
+
+
+            paper-fab.createJobFab {
+                --paper-fab-background: var(--paper-light-blue-700);
+                position: fixed;
+                right: 20px;
+                bottom: 70px;
+                z-index: 100;
+            }
+
+            #pages {
+                display: flex;
+                flex-wrap: wrap;
+                margin: 20px;
+                font-size: 12px;
+            }
+
+            #pages>button {
+                user-select: none;
+                padding: 5px;
+                margin: 0 5px;
+                border-radius: 10%;
+                border: 0;
+                background: transparent;
+                font: inherit;
+                outline: none;
+                cursor: pointer;
+            }
+
+            #pages>button:hover,
+            #pages>button:focus {
+                color: var(--default-primary-color);
+                background-color: #eee;
+            }
+
+            #pages>button[selected] {
+                font-weight: bold;
+                color: white;
+                background-color: var(--default-primary-color);
+            }
+
+            span.mini-icon {
+                font-size: 10px;
+                padding: 5px;
+                background: #f2f2f2;
+                border-radius: 5px;
+                margin-right: 6px;
+            }
+
+            .details {
+                overflow: auto;
+                height: 100%;
+                background: #fdfdfd;
+                -webkit-box-shadow: inset 0 6px 10px -4px rgba(0, 0, 0, 0.11);
+                box-shadow: inset 0 6px 10px -4px rgba(0, 0, 0, 0.11);
+                padding-top: 100px;
+                padding-bottom: 130px;
+            }
+
+
+            .datalist {
+                margin: 0;
+                @apply --app-grid-expandible-item;
+            }
+
+            .app-grid.stats .item {
+                background: none;
+                margin-bottom: 0;
+                @apply --app-grid-expandible-item;
+            }
+
+            .app-grid.stats span {
+                font-size: 12px;
+                padding: 7px;
+                background: #fff;
+                margin-right: 2px;
+                --iron-icon-width: 12px;
+                border-right: 2px solid #e7e7e7;
+            }
+
+            .datalist .filter {
+                background: #edeff5;
+                --paper-tabs-selection-bar-color: #5194e1;
+                --paper-tabs: {
+                    font-weight: normal;
+                    display: inline-flex;
+                }
+                ;
+                --paper-tab: {
+                    margin: 0;
+                    padding: 0;
+                    -webkit-box-shadow: 15px 0 15px -10px #A6A6A6;
+                    box-shadow: 15px 0 15px -10px #A6A6A6;
+                }
+                ;
+                --paper-tab-content: {
+                    background: #fff;
+                    padding: 0 20px;
+                }
+                ;
+                --paper-tab-content-unselected: {
+                    background: #edeff5;
+                }
+                ;
+                --paper-input-container-underline-focus: {
+                    display: none;
+                }
+                ;
+            }
+
+            paper-tabs {
+                background: #edeff5;
+            }
+
+            .datalist .filter iron-pages {
+                background: #fff;
+                padding: 10px;
+            }
+
+            .submitfilter {
+                border: 1px solid #c5c5c5;
+                margin-left: 25px;
+                font-size: 13px;
+                --iron-icon-height: 21px;
+                padding-right: 14px;
+            }
+
+            .main-page {
+                height: 100%;
+                padding-top: 60px;
+                overflow: hidden;
+            }
+
+            div.split {
+                height: 100%;
+                background: #fff;
+                display: flex;
+                overflow: hidden;
+                border-top: 1px solid #e0e0e0;
+            }
+
+            div#objLists {
+                width: 100%;
+            }
+
+            div#objDetail {
+                width: 0px;
+                border-left: 1px solid #e0e0e0;
+                transition: all 0.4s ease;
+                visibility: hidden;
+                opacity: 0;
+                color: #414e5d;
+                position: relative;
+            }
+
+            div#objDetail[opened] {
+                width: 450px;
+                max-width: 450px;
+                visibility: visible;
+                opacity: 1;
+                box-sizing: border-box;
+                height: 100%;
+                position: relative;
+            }
+
+            .obj-title {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                padding: 45px 20px 5px;
+                background: #f6f7fa;
+                border-bottom: 1px solid var(--google-grey-300);
+                position: absolute;
+                z-index: 1;
+                width: 100%;
+                top: 0;
+            }
+
+            .obj-title h6 span {
+                color: #458ee2;
+                margin-right: 5px;
+            }
+
+            #imgview img {
+                margin: 0;
+                padding: 0;
+            }
+
+            #imgview {
+                padding: 0;
+                border-radius: 10px;
+                overflow: hidden;
+            }
+
+            #imgview iron-icon {
+                position: fixed;
+                --iron-icon-width: 130px;
+                color: var(--google-grey-100);
+                --iron-icon-height: 130px;
+                top: 40%;
+                left: 0;
+                cursor: pointer;
+            }
+
+            #imgview iron-icon:hover {
+                color: var(--google-grey-300);
+            }
+
+            #imgview iron-icon:active {
+                color: var(--google-grey-500);
+            }
+
+            #imgview::after {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: var(--iron-overlay-backdrop-background-color, #000);
+                opacity: 0;
+                transition: opacity 0.2s;
+                pointer-events: none;
+                opacity: var(--iron-overlay-backdrop-opacity, 0.6);
+                content: "";
+                z-index: -1;
+            }
+
+            vaadin-date-picker {
+                width: 100%;
+            }
+        </style>
+        <!-- Fetch an array of users to be shown in the grid -->
+        <app-route route="[[route]]" pattern="/:storageid" data="{{routeData}}"></app-route>
+        <iron-ajax auto loading="{{loading}}" url="[[urlquery]]" handle-as="json" on-response="_loadStorageComplete" last-response="{{items}}"
+            id="updateStorageLists"></iron-ajax>
+
+        <app-toolbar>
+            <div main-title>
+                [[titlePage]] <span style="color:#414e5d;">| [[routeData.storageid]]</span></div>
+        </app-toolbar>
+
+        <div class="app-grid stats" style="position: absolute;width: 100%;">
+            <div class="item">
+                <span><iron-icon icon="editor:insert-drive-file"></iron-icon> file name : [[stats.filename]]</span>
+                <span><iron-icon icon="editor:attach-file"></iron-icon> file size : [[stats.filesize]]</span>
+                <span>[[stats.count]] rows</span>
+            </div>
+        </div>
+
+        <x-array-data-provider items="{{items}}"></x-array-data-provider>
+        <div class="app-grid main-page">
+            <paper-card class="item datalist">
+                <div class="filter">
+                    <paper-tabs selected="{{filterselected}}">
+                        <paper-tab>Last filter</paper-tab>
+                        <paper-tab>From - limit filter</paper-tab>
+                        <paper-tab>by ID</paper-tab>
+                        <paper-tab>Date</paper-tab>
+                    </paper-tabs>
+                    <iron-pages selected="{{filterselected}}">
+                        <div class="d-flex">
+                            <div style="width: 100%;">
+                                <paper-input always-float-label label="Number of last index" value="{{lastfilter::input}}"></paper-input>
+                            </div>
+                            <div class="align-self-center">
+                                <paper-button class="submitfilter" on-click="_lastfilterSubmit">
+                                    <iron-icon icon="icons:search"></iron-icon>search</paper-button>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div style="width: 100%;">
+                                <paper-input always-float-label label="From" value="{{fromfilter::input}}"></paper-input>
+                            </div>
+                            <div style="width: 100%;margin-left: 25px;">
+                                <paper-input always-float-label label="Limit" value="{{limitfilter::input}}"></paper-input>
+                            </div>
+                            <div class="align-self-center">
+                                <paper-button class="submitfilter" on-click="_fromlimitSubmit">
+                                    <iron-icon icon="icons:search"></iron-icon>search</paper-button>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div style="width: 100%;">
+                                <paper-input always-float-label label="Object ID" value="{{objidfilter::input}}"></paper-input>
+                            </div>
+                            <div class="align-self-center">
+                                <paper-button class="submitfilter" on-click="_objidfilterSubmit">
+                                    <iron-icon icon="icons:search"></iron-icon>search</paper-button>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div style="width: 100%;padding-bottom: 8px;">
+                                <vaadin-date-picker id="start" label="From">
+                                </vaadin-date-picker>
+                            </div>
+                            <div style="width: 100%;margin-left: 25px; padding-bottom: 8px;">
+                                <vaadin-date-picker id="end" label="To">
+                                </vaadin-date-picker>
+                            </div>
+                            <div class="align-self-center">
+                                <paper-button class="submitfilter" on-click="_fromlimitSubmit">
+                                    <iron-icon icon="icons:search"></iron-icon>search</paper-button>
+                            </div>
+                        </div>
+                    </iron-pages>
+                </div>
+
+                <div class="split">
+
+                    <!-- START OBJECT LISTS -->
+                    <div id="objLists">
+                        <template is="dom-if" if="[[loading]]">
+                            <paper-progress value="10" indeterminate="true" style="width:100%;position: absolute;z-index: 1;"></paper-progress>
+                        </template>
+                        <vaadin-grid class="material" items="{{items}}" on-active-item-changed="_onActiveItemChanged" id="grid" page-size="[[pageSize]]"
+                            active-item="{{activeItem}}">
+
+                            <vaadin-grid-column width="50px" flex-grow="0">
+                                <template class="header">#</template>
+                                <template><span style="text-align: center;display: block;">[[index]]</span></template>
+                            </vaadin-grid-column>
+
+                            <vaadin-grid-column>
+                                <template class="header">
+                                    <vaadin-grid-sorter path="_id">List</vaadin-grid-sorter>
+                                </template>
+                                <template><span class="mini-icon">{ }</span> id : [[item._id]]</template>
+                            </vaadin-grid-column>
+
+                            <vaadin-grid-column>
+                                <template class="header">
+                                    <vaadin-grid-sorter path="meta._ts">Create at</vaadin-grid-sorter>
+                                </template>
+                                <template>[[_timestampDate(item.meta._ts)]]</template>
+                            </vaadin-grid-column>
+
+                        </vaadin-grid>
+                    </div>
+                    <!-- END OBJECT LISTS -->
+
+                    <!-- START OBJECT DETAIL -->
+                    <div id="objDetail">
+                        <paper-button style="border-radius: 30px;min-width: 50px;position: absolute;right: 0 ;top: 0;z-index: 2;" on-click="_closeObjDetail">
+                            <iron-icon icon="icons:close" style="color: var(--google-grey-500);    "></iron-icon>
+                        </paper-button>
+                        <div class="obj-title">
+                            <small>[[objectType]] [[dataType]]</small>
+                            <h6><span>ID</span>[[activeItem._id]]</h6>
+                        </div>
+                        <div class="details">
+
+                            <paper-button on-click="_saveFile" style="border: none;border-bottom: 1px solid var(--google-grey-300);border-radius: 0;margin: 0;width: 100%;background: var(--google-grey-100);text-transform: none;">Download this object</paper-button>
+                            <template is="dom-if" if="[[_isBinary(dataType)]]">
+                                <paper-button on-click="_viewImg" style="border: none;border-bottom: 1px solid var(--google-grey-300);border-radius: 0;margin: 0;width: 100%;background: var(--google-grey-100);text-transform: none;border-top: 1px solid #fff;">view</paper-button>
+                            </template>
+                            <jsonviewer-element id="jsonviewer"></jsonviewer-element>
+                        </div>
+                        <template is="dom-if" if="[[detailLoading]]">
+                            <paper-progress value="10" indeterminate="true" style="width:100%;position: absolute;z-index: 1;    top: 0;"></paper-progress>
+                        </template>
+                    </div>
+                    <!-- END OBJECT DETAIL -->
+
+                </div>
+            </paper-card>
+        </div>
+
+        <paper-toast autoFitOnAttach id="toast"></paper-toast>
+        <paper-dialog id="imgview" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+            <h6 style="padding: 10px;background: #3e3e3e;margin: 0;color: azure;">ID : [[activeItem._id]]</h6>
+            <img src="[[storagesobjapi]]/[[routeData.storageid]].[[activeItem._id]]/data?datatype=jpg" alt="[[activeItem._id]]">
+            <iron-icon icon="icons:chevron-left" on-click="_preView"></iron-icon>
+            <iron-icon icon="icons:chevron-right" style="right: 0;left: initial;" on-click="_nextView"></iron-icon>
+        </paper-dialog>
+    </template>
+    <script>
+        class PageStoragesDetail extends Polymer.Element {
+            static get is() {
+                return 'page-storages-detail';
+            }
+
+            static get properties() {
+                return {
+                    titlePage: {
+                        type: String,
+                        value: 'Storages'
+                    },
+                    storageDetail: Object,
+                    items: Array,
+                    page: Number,
+                    from: {
+                        type: Number
+                    },
+                    pageSize: {
+                        type: Number,
+                        value: 200
+                    },
+                    loading: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
+                    },
+                    detailLoading: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
+                    },
+
+                    jsoneditor: Object,
+                    stats: Object,
+                    filterselected: {
+                        type: Number,
+                        value: 0
+                    },
+                    mainurl: String,
+                    urlquery: String,
+                    activeItem: {
+                        observer: '_activeItemChanged'
+                    },
+                    objectType: String,
+                    dataType: String
+
+                };
+            }
+            static get observers() {
+                return [
+                    '_pageChanged(routeData.storageid)'
+                ];
+            }
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this.$.imgview.addEventListener('keydown', (ev) => {
+                        if (ev.code === 'ArrowRight')
+                            this._nextView();
+                        if (ev.code === 'ArrowLeft')
+                            this._preView()
+                    });
+
+                    var start = this.$.start
+                    var end = this.$.end
+                    start.addEventListener('value-changed', function () {
+                        if (start.value) {
+                            // Open the end date picker with a delay to
+                            // make it less confusing.
+                            window.setTimeout(function () {
+                                end.value = start.value;
+                                end.min = start.value;
+                                start.close();
+                                end.open();
+                            }, 500);
+                        }
+                    });
+                });
+
+
+            }
+            _loadStorageComplete(ev) { }
+
+            _onActiveItemChanged(e) {
+                // if (e.detail.value) {
+                //     $.getJSON(this.storagesobjapi + '/' + this.routeData.storageid + '.' + e.detail.value._id,
+                //         function (res) {
+                //             var data = e.detail.value;
+                //             data.data = res.data;
+                //             this.$.grid.expandedItems = [data];
+                //         }.bind(this));
+                // }
+            }
+
+            _pageChanged(storageid) {
+                this.items = [];
+                this.mainurl = this.storagesapi + '/' + this.routeData.storageid + '/objects?';
+                this.urlquery = this.mainurl + 'field=meta&last=100';
+                this.$.updateStorageLists.generateRequest();
+                this.$.grid.clearCache();
+
+                // fetch stats of storageid
+                $.getJSON(this.storagesapi + '/' + this.routeData.storageid + '/stats', function (data) {
+                    this.stats = data;
+                    // console.log(data);
+                }.bind(this))
+                this._closeObjDetail();
+                this.lastfilter = this.fromfilter = this.objidfilter = this.limitfilter = "";
+
+            }
+
+            _activeItemChanged(item) {
+                this.$.grid.selectedItems = item ? [item] : [];
+
+                this.detailLoading = true;
+                if (item) {
+                    this.$.jsonviewer.json = {};
+                    $.getJSON(this.storagesobjapi + '/' + this.routeData.storageid + '.' + item._id,
+                        (res) => {
+                            this.objectType = res.data.object_type;
+                            this.dataType = res.data.data_type;
+                            this.detailLoading = false;
+                            item.data = res.data;
+                            this.$.jsonviewer.json = item;
+                            $(this.$.objDetail).attr('opened', '');
+                        });
+                }
+                else
+                    this._closeObjDetail();
+            }
+
+            _isSelected(page, item) {
+                return page === item - 1;
+            }
+
+            _select(e) {
+                this.page = e.model.item - 1;
+            }
+
+            _next() {
+                this.page = Math.min(this.pages.length - 1, this.page + 1);
+            }
+
+            _prev() {
+                this.page = Math.max(0, this.page - 1);
+            }
+
+            _timestampDate(timestamp) {
+                function addZero(i) {
+                    if (i < 10) {
+                        i = "0" + i;
+                    }
+                    return i;
+                }
+                var pubDate = new Date(timestamp * 1000); //expects milliseconds
+                var weekday = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+                var monthname = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+                    "Nov", "Dec");
+                var formattedDate = weekday[pubDate.getDay()] + ' ' +
+                    monthname[pubDate.getMonth()] + ' ' + pubDate.getDate() + ', ' + pubDate.getFullYear() +
+                    ', ' + addZero(pubDate.getHours()) + ':' + addZero(pubDate.getMinutes()) + ':' +
+                    addZero(pubDate.getSeconds())
+                return formattedDate;
+            }
+
+            _lastfilterSubmit() {
+                this.loading = true;
+                $.getJSON(this.mainurl + 'field=meta&last=' + this.lastfilter, (data) => {
+                    this.items = data;
+                    this.loading = false;
+                })
+            }
+
+            _fromlimitSubmit() {
+                this.loading = true;
+                $.getJSON(this.mainurl + 'field=meta&from=' + this.fromfilter + '&limit=' + this.limitfilter, (data) => {
+                    this.items = data;
+                    this.loading = false;
+                })
+            }
+
+            _objidfilterSubmit() {
+                this.loading = true;
+                $.getJSON(this.storagesobjapi + '/' + this.routeData.storageid + '.' + this.objidfilter, (data) => {
+                    this.items = [data];
+                    this.loading = false;
+                })
+            }
+
+            _isBinary(item) {
+                return (item === 'binary')
+            }
+            // Object Detail panel
+            _closeObjDetail(ev) {
+                $(this.$.objDetail).removeAttr('opened');
+            }
+
+            _saveFile() {
+                let options = {
+                    title: 'Save a Data',
+                    defaultPath: `${this.activeItem._id}.bin`
+                }
+
+                var fs = require('fs');
+                // let content = new Buffer(this.activeItem.data.data, 'base64');
+                ipc.send('save-dialog', options);
+
+                ipc.on('saved-file', (event, path) => {
+
+                    $.ajax({
+                        type: 'GET',
+                        url: this.storagesobjapi + '/' + this.routeData.storageid + '.' + this.activeItem._id + '/data',
+                        success: (data, textStatus, request) => {
+                            var wstream = fs.createWriteStream(path);
+                            if (request.getResponseHeader('Content-Type') === 'application/octet-stream') {
+                                let content = new Buffer(this.activeItem.data.data, 'base64');
+                                wstream.write(content, 'base64');
+                            }
+                            else
+                                wstream.write(JSON.stringify(data), 'utf8');
+                            wstream.end();
+                        },
+                        error: function (request, textStatus, errorThrown) {
+                            // alert(request.getResponseHeader('some_header'));
+                        }
+                    });
+
+
+                    // fs.writeFile(path, wstream, 'utf16le', (err) => {
+
+                    //     if (err) {
+                    //         console.log("An error ocurred creating the file " + err.message)
+                    //     }
+
+                    //     console.log("The file has been succesfully saved");
+                    // });
+                })
+            }
+
+            _viewImg() {
+                $(this.$.imgview).children('img').css('height', window.innerHeight - 100 + 'px');
+                this.$.imgview.open();
+            }
+            _findIdToIndex(idObj) {
+                var i = 0;
+                this.items.forEach(function (element, index) {
+                    if (idObj === element._id)
+                        i = index;
+                }, this);
+                return i;
+            }
+            _nextView() {
+                var nextimg = this._findIdToIndex(this.activeItem._id) + 1
+                if (nextimg < this.items.length) {
+                    this.activeItem = this.items[nextimg]
+                    $(this.$.imgview).children('img').attr('src', `${this.storagesobjapi}/${this.routeData.storageid}.${this.items[nextimg]._id}/data?datatype=jpg`);
+                }
+            }
+            _preView() {
+                var preimg = this._findIdToIndex(this.activeItem._id) - 1
+                if (preimg >= 0) {
+                    this.activeItem = this.items[preimg]
+                    $(this.$.imgview).children('img').attr('src', `${this.storagesobjapi}/${this.routeData.storageid}.${this.items[preimg]._id}/data?datatype=jpg`);
+                }
+            }
+        }
+
+        window.customElements.define(PageStoragesDetail.is, PageStoragesDetail);
+    </script>
+</dom-module>

@@ -1,0 +1,35 @@
+{
+  "name": "BigstreamConsole",
+  "dependencies": {
+    "electron": "^1.7.4",
+    "electron-store": "^1.2.0",
+    "electron-window-manager": "^1.0.6",
+    "express": "^4.15.3",
+    "get-port": "^3.1.0",
+    "jsoneditor": "^5.15.0",
+    "simple-node-logger": "^0.93.28",
+    "util": "^0.10.3"
+  },
+  "scripts": {
+    "start": "electron .",
+    "package-win32": "electron-packager . --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --prune=true --out=release-builds bigstream-console  --version-string.ProductName='Bigstream Console'",
+    "package-win64": "electron-packager . --overwrite --asar=true --platform=win32 --arch=x64 --icon=assets/icons/win/icon.ico --prune=true --out=release-builds bigstream-console  --version-string.ProductName='Bigstream Console'",
+    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
+    "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --icon=assets/icons/png/1080x1080.png --prune=true --out=release-builds",
+    "create-installer-mac": "electron-installer-dmg ./release-builds/BigstreamConsole-darwin-x64/BigstreamConsole.app BigstreamConsole-app --out=./release-built-installers/ --overwrite --icon=assets/icons/mac/icon.icns",
+    "create-installer-win": "node build-win"
+  },
+  "main": "main.js",
+  "version": "0.0.1",
+  "license": "MIT",
+  "description": "Bigstream management app",
+  "author": "gangnobi",
+  "devDependencies": {
+    "electron": "^2.0.1",
+    "electron-inspector": "^0.1.4",
+    "electron-installer-dmg": "^0.2.1",
+    "electron-packager": "^8.7.2",
+    "electron-rebuild": "^1.5.11",
+    "electron-winstaller": "^2.6.3"
+  }
+}

@@ -1,0 +1,959 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/vaadin-split-layout/vaadin-split-layout.html">
+<link rel="import" href="/bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="/bower_components/iron-a11y-keys/iron-a11y-keys.html">
+
+<link rel="import" href="../common/plugin-select.html">
+<link rel="import" href="../common/jobeditor/joblist.html">
+<link rel="import" href="../common/jobeditor/job-tree.html">
+<!--
+`<Name>` is Description
+
+@element Name
+-->
+<dom-module id="page-jobs-editor">
+    <template>
+        <link href="../../asset/jsoneditor/jsoneditor.css" rel="stylesheet" type="text/css">
+        <style include="bootstrap"></style>
+        <style include="shared-styles">
+            :host {
+                display: block;
+                box-sizing: border-box;
+                padding-bottom: 0 !important;
+            }
+
+            .main-page {
+                padding: 0;
+                overflow: hidden;
+            }
+
+            .main-page,
+            .main-page>div,
+            vaadin-split-layout {
+                height: 100%;
+                width: 100%;
+            }
+
+            .split {
+                background: #fff;
+                --vaadin-split-layout-splitter: {
+                    background: var(--paper-grey-200);
+                }
+                ;
+            }
+
+            .code>div {
+                height: 100%;
+            }
+
+            .code div.jsoneditor-menu {
+                background-color: var(--paper-blue-500);
+            }
+
+            .editor {
+                position: absolute;
+                top: 0;
+                max-width: 400px;
+                width: 400px;
+                right: -400px;
+                overflow: scroll;
+                border-left: #e0e0e0 solid 1px;
+                transition: all 0.3s ease;
+            }
+
+            .editor #data_out {
+                margin-bottom: 30px;
+            }
+
+            .editor[opened] {
+                right: 0;
+                box-shadow: 0 0 33px 0px rgba(0, 0, 0, 0.1)
+            }
+
+            .editor #jsoneditor {
+                height: 500px;
+                border: none;
+            }
+
+            .jsoneditor {
+                border: none !important;
+            }
+
+            .editor div.jsoneditor-menu,
+            #code div.jsoneditor-menu {
+                background-color: #edeff5 !important;
+                border-bottom: 1px solid var(--google-grey-100) !important;
+                color: #444 !important
+            }
+
+            .editor div.jsoneditor-menu>button,
+            .editor div.jsoneditor-menu>div.jsoneditor-modes>button,
+            #code div.jsoneditor-menu>button,
+            #code div.jsoneditor-menu>div.jsoneditor-modes>button {
+                background-color: #5093e1 !important;
+                cursor: pointer;
+            }
+
+            #code .ace-jsoneditor .ace_gutter {
+                background: #fbfbfb;
+                color: #6f6f6f;
+            }
+
+            #code .ace-jsoneditor.ace_editor {
+                font-size: 14px !important;
+            }
+
+            .editor div.jsoneditor-menu {
+                display: none;
+            }
+
+            .editor div.jsoneditor-outer {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            div.editor>div {
+                padding: 10px 20px;
+                position: relative;
+            }
+
+            div.editor .jsonlabel {
+                color: #616161;
+                padding: 0 20px;
+                border: 1px solid var(--google-grey-300);
+                border-width: 1px 0 0 0px;
+                display: flex;
+            }
+
+            div.editor .jsonlabel:first-child {
+                border-top: 0;
+            }
+
+            div.jsoneditor-tree {
+                overflow: visible !important;
+            }
+
+            div.editor .jsonlabel h7 {
+                padding-top: 17px;
+                font-size: 14px;
+            }
+
+            div.editor {
+                background: #fff;
+            }
+
+            #code div.jsoneditor-menu a.jsoneditor-poweredBy {
+                display: none;
+            }
+
+            table.jsoneditor-tree>tbody>tr:first-child {
+                display: none;
+            }
+
+            .toggleEditor {
+                min-width: initial;
+                --iron-icon-width: 19px;
+            }
+
+            #joblist[file-opening],
+            #code[file-opening] {
+                transition: all 0.3s ease;
+            }
+
+            #code,
+            #joblist {
+                position: relative;
+            }
+
+            #code::before {
+                background: rgba(239, 239, 239, 0.79);
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                content: " ";
+                top: 0;
+                z-index: 111;
+            }
+
+            #code::after {
+                content: "There is no job open";
+                margin: 0;
+                position: absolute;
+                top: 45%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 111;
+                text-align: center;
+                color: #c5c5c5;
+            }
+
+            #code[file-opened]::after,
+            #code[file-opened]::before {
+                display: none;
+            }
+
+            div[main-title] {
+                color: #448ee2;
+            }
+
+            paper-dialog {
+                border-radius: 5px;
+            }
+
+            #addJobDialog .buttons,
+            .form-group {
+                padding: 15px;
+            }
+
+            #addJobDialog h6 {
+                margin-bottom: 10px;
+            }
+
+            #addJobFromFileDialog .buttons,
+            .form-group {
+                padding: 15px;
+            }
+
+            #addJobFromFileDialog h6 {
+                margin-bottom: 10px;
+            }
+
+            #jobTreeDialog {
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                left: 0;
+                right: 0;
+                overflow: auto;
+            }
+
+            #jobTreeDialog>paper-fab {
+                position: fixed;
+                top: 70px;
+                right: 23px;
+                margin: 0;
+            }
+
+            .btn-import {
+                /* background: #dddddd !important; */
+            }
+        </style>
+
+        <iron-a11y-keys id="a11y" keys="ctrl+n" target="[[shortcutKeytarget]]" on-keys-pressed="_shortcutKeyHandler"></iron-a11y-keys>
+        <iron-a11y-keys id="a11yCodeEditor" keys="ctrl+s ctrl+shift+s ctrl+c" on-keys-pressed="_shortcutKeyEditorHandler"></iron-a11y-keys>
+
+        <paper-toast autoFitOnAttach id="toast" duration="1000"></paper-toast>
+
+        <!--START add Job Dialog-->
+        <paper-dialog modal id="addJobDialog">
+            <div class="form-group">
+                <h6>Job Name</h6>
+                <input type="text" class="form-control" value="{{newJobName::input}}" placeholder="" autofocus on-keydown="checkForEnter">
+                <div class="form-control-feedback" hidden>Can't use space in job name</div>
+            </div>
+            <div class="buttons">
+                <paper-button class="btn btn-success submitbt" on-click="_createNewJobBt">create job</paper-button>
+                <paper-button class="btn btn-info submitbt" on-click="_onOpenFile">Open File</paper-button>
+                <paper-button class="btn btn-danger" dialog-confirm>cancel</paper-button>
+            </div>
+        </paper-dialog>
+
+        <paper-dialog modal id="addJobFromFileDialog">
+            <div class="form-group">
+                <h6>Set Job Name</h6>
+                <input type="text" class="form-control" value="{{newJobName::input}}" placeholder="" autofocus on-keydown="checkForEnter">
+                <div class="form-control-feedback" hidden>Can't use space in job name</div>
+            </div>
+            <div class="buttons">
+                <paper-button class="btn btn-success submitbt" on-click="_createNewJobFromFileBt">create job From File</paper-button>
+                <paper-button class="btn btn-danger" dialog-confirm>cancel</paper-button>
+            </div>
+        </paper-dialog>
+        <!--end add Job Dialog-->
+
+        <!--START save as Job Dialog-->
+        <paper-dialog modal id="saveasJobDialog">
+            <div class="form-group">
+                <h6>Save as</h6>
+                <input type="text" class="form-control" value="{{newJobName::input}}" placeholder="" autofocus on-keydown="checkForEnter">
+                <div class="form-control-feedback" hidden>Can't use space in job name</div>
+            </div>
+            <div class="buttons">
+                <paper-button class="btn btn-success submitbt" on-click="_createNewJobBt">Save</paper-button>
+                <paper-button class="btn btn-danger" dialog-confirm>cancel</paper-button>
+            </div>
+        </paper-dialog>
+        <!--end save as Job Dialog-->
+
+        <!--START delete Confirm Dialog-->
+        <paper-dialog modal id="deleteConfirmDialog">
+            <div class="form-group">
+                <h6>Are you sure to delete job?</h6>
+                <ul>
+                    <dom-repeat id="deleteJobList">
+                        <template>
+                            <li>[[item.job_id]]</li>
+                        </template>
+                    </dom-repeat>
+                </ul>
+            </div>
+            <div class="buttons">
+                <paper-button class="btn btn-success" dialog-confirm on-click="_deleteJobConfirm">Delete</paper-button>
+                <paper-button class="btn btn-danger" dialog-confirm>cancel</paper-button>
+            </div>
+        </paper-dialog>
+        <!--end delete Confirm Dialog-->
+
+        <!--START jobTree Dialog-->
+        <!-- <paper-dialog modal id="jobTreeDialog">
+            <job-tree id="jobTree" config="[[config]]" job-id="[[jsonResult.job_id]]"></job-tree>
+            <paper-fab icon="close" title="close" dialog-confirm></paper-fab>
+        </paper-dialog> -->
+        <!--end jobTree Dialog-->
+
+        <app-toolbar>
+            <div main-title>
+                [[titlePage]]
+                <span style="color:#414e5d;display: block;font-size: 14px;">[[jsonResult.job_id]]</span>
+            </div>
+            <!-- hidden="[[!fileOpened]]" -->
+            <!-- <paper-button class="btn btn-outline-info toggleEditor btn-import" on-click="_onOpenFile" title="Open file (ctrl+o)">
+                <iron-icon icon="icons:folder-open"></iron-icon>
+                Open File
+            </paper-button> -->
+            <paper-button class="btn btn-outline-success  toggleEditor btn-import" on-click="_onExportFile" hidden="[[!fileOpened]]" title="Export to file (ctrl+e)">
+                <iron-icon icon="icons:folder-open"></iron-icon>
+                Export
+            </paper-button>
+            <!-- <paper-button class="btn btn-outline-success toggleEditor" on-click="_saveJsonEditor" hidden="[[!fileOpened]]" title="Save [[jsonResult.job_id]] (ctrl+s)">
+                <iron-icon icon="icons:save"></iron-icon> Save
+            </paper-button> -->
+            <paper-button class="btn btn-outline-info toggleEditor" on-click="_saveasJsonEditorDialogToggle" hidden$="[[!fileOpened]]"
+                title="Save as (ctrl+shift+s)">
+                <iron-icon icon="icons:content-copy"></iron-icon> Save as
+            </paper-button>
+            <paper-button class="btn btn-outline-danger toggleEditor" on-click="_closeJsonEditor" hidden$="[[!fileOpened]]">
+                <iron-icon icon="icons:close"></iron-icon> Close
+            </paper-button>
+            <!-- <paper-button class="btn btn-outline-warning toggleEditor" on-click="_jobTreeDialogToggle" hidden$="[[!fileOpened]]">
+                <iron-icon icon="hardware:device-hub"></iron-icon> Tree
+            </paper-button> -->
+            <paper-button class="btn btn-secondary toggleEditor" on-click="_toggleEditor" hidden$="[[!fileOpened]]">
+                <iron-icon icon="icons:menu"></iron-icon>
+            </paper-button>
+
+        </app-toolbar>
+        <div class="container-fluid no-gutters main-page">
+            <div class="row no-gutters">
+                <vaadin-split-layout class="split">
+                    <div id="joblist" style="width: 80%;    overflow: hidden;" file-opened$="[[fileOpened]]">
+                        <joblist-element id="joblistElement" jobapi={{config.api.job_api}}></joblist-element>
+                    </div>
+                    <div id="code" style="min-width:140px;width: 20%;" file-opened$="[[fileOpened]]"></div>
+                </vaadin-split-layout>
+            </div>
+            <div class="editor" opened$="[[toggleEditor]]">
+                <div style="background: #5093e1;color: #eef2f7; padding-top: 34px; font-size: 24px;">Overview</div>
+                <!--General detail-->
+                <div class="jsonlabel">
+                    <h7>General detail</h7>
+                </div>
+                <div id="jsonDetail"></div>
+
+                <!--Trigger-->
+                <div class="jsonlabel">
+                    <h7>Trigger</h7>
+                    <paper-toggle-button checked="{{triggerToggle}}" on-change="_triggerToggle"></paper-toggle-button>
+                </div>
+                <plugin-select id="trigger" maxplugin="1" disabled="[[triggerToggle]]"></plugin-select>
+
+                <!--Data in-->
+                <div class="jsonlabel">
+                    <h7>Data in</h7>
+                </div>
+                <plugin-select id="data_in" maxplugin="1"></plugin-select>
+
+                <!--Data transform-->
+                <div class="jsonlabel">
+                    <h7>Data transform</h7>
+                </div>
+                <plugin-select id="data_transform"></plugin-select>
+
+                <!--Data out-->
+                <div class="jsonlabel">
+                    <h7>Data out</h7>
+                </div>
+                <plugin-select id="data_out" maxplugin="1" config="[[config]]"></plugin-select>
+            </div>
+        </div>
+
+    </template>
+
+    <script>
+        class PageJobsEditor extends Polymer.Element {
+
+            static get is() {
+                return 'page-jobs-editor';
+            }
+
+            static get properties() {
+                return {
+                    titlePage: {
+                        value: "Job Editor"
+                    },
+                    jsoneditor: {
+                        type: Object,
+                        value: {}
+                    },
+                    codeMode: {
+                        type: Boolean,
+                        value: false
+                    },
+                    triggerToggle: {
+                        type: Boolean,
+                        value: true
+                    },
+                    jsonResult: {
+                        type: Object,
+                        value: {}
+                    },
+                    fileOpened: {
+                        value: false
+                    },
+                    Job: {
+                        value: () => {
+                            return {
+                                "job_id": "new job",
+                                "active": false,
+                                "trigger": {},
+                                "data_in": {},
+                                "data_transform": {},
+                                "data_out": {}
+                            }
+                        }
+                    },
+                    JobFromFile: {},
+                    shortcutKeytarget: {
+                        type: Object,
+                        value: function () {
+                            return document.body;
+                        }
+                    }
+                };
+            }
+
+            constructor() {
+                super();
+            }
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function () {
+
+
+                    var jsoneditor = this.jsoneditor;
+
+                    $.getJSON("/src/config/jobPlugins.json", function (data) {
+                        jsoneditor.jobPlugins = data;
+                        var detail = {
+                            "job_id": "example",
+                            "active": true
+                        };
+
+                        this.$.trigger.plugins = data.trigger;
+                        this.$.data_in.plugins = data.data_in;
+                        this.$.data_transform.plugins = data.data_transform;
+                        this.$.data_out.plugins = data.data_out;
+
+                        this.$.trigger.addEventListener('jsonchanged', pluginSelectChange);
+                        this.$.data_in.addEventListener('jsonchanged', pluginSelectChange);
+                        this.$.data_transform.addEventListener('jsonchanged',
+                            pluginSelectChange);
+                        this.$.data_out.addEventListener('jsonchanged', pluginSelectChange);
+
+                        var options = {
+                            mode: 'code',
+                            modes: ['code', 'form', 'text', 'tree', 'view'],
+                            onChange: _codeJSONchange
+                        };
+                        var jsonDetailSchema = {
+                            "title": "Json Detail",
+                            "type": "object",
+                            "properties": {
+                                "job_id": {
+                                    "type": "string"
+                                },
+                                "active": {
+                                    "type": "boolean"
+                                }
+                            },
+                            "required": ["job_id", "active"]
+                        };
+                        var jsonDetailoptions = {
+                            mode: 'tree',
+                            onChange: _jsonDetailChange,
+                            schema: jsonDetailSchema
+                        };
+
+                        jsoneditor.jsonDetail = new JSONEditor(this.$.jsonDetail,
+                            jsonDetailoptions, detail);
+                        jsoneditor.code = new JSONEditor(this.$.code, options, {});
+                        jsoneditor.jsonDetail.setMode('tree');
+
+                    }.bind(this));
+
+                    var _codeJSONchange = function (ev) {
+                        var newjson = this.jsoneditor.code.get();
+                        var detail = {
+                            "job_id": newjson.job_id,
+                            "active": (newjson.active === 'true' || newjson.active == true)
+                        };
+                        if (newjson.trigger != this.$.trigger.get() || !newjson.trigger) this.$.trigger
+                            .set(newjson.trigger);
+                        if (newjson.data_in != this.$.data_in.get() || !newjson.data_in) this.$.data_in
+                            .set(newjson.data_in);
+                        if (newjson.data_transform != this.$.data_transform.get() || !newjson.data_transform)
+                            this.$.data_transform.set(newjson.data_transform);
+                        if (newjson.data_out != this.$.data_out.get() || !newjson.data_out) this.$.data_out
+                            .set(newjson.data_out);
+                        this.jsoneditor.jsonDetail.set(detail);
+                        this.jsonResult = newjson;
+                    }.bind(this);
+
+                    var _jsonDetailChange = function () {
+                        this.jsonResult.job_id = this.jsoneditor.jsonDetail.get().job_id;
+                        this.jsonResult.active = this.jsoneditor.jsonDetail.get().active;
+                        this.jsoneditor.code.set(this.jsonResult);
+                    }.bind(this);
+
+                    var pluginSelectChange = function (ev) {
+                        this.jsonResult[ev.detail.id] = ev.detail.json;
+                        this.jsoneditor.code.set(this.jsonResult);
+                    }.bind(this);
+
+                    this._selectedJobList = (ev) => {
+                        $.getJSON(this.config.api.job_api + '/' + encodeURIComponent(ev.detail.job_id),
+                            (data, status, request) => {
+                                this.fileOpened = true;
+                                $(this.$.code).css('width', '80%');
+                                $(this.$.joblist).css('width', '20%');
+                                $(this.$.code).attr('file-opening', '');
+                                $(this.$.joblist).attr('file-opening', '');
+
+                                this.jsoneditor.code.set(data);
+                                _codeJSONchange();
+
+                                setTimeout(() => {
+                                    $(this.$.code).removeAttr('file-opening');
+                                    $(this.$.joblist).removeAttr('file-opening');
+                                }, 800)
+
+                            });
+                    }
+
+                    this.$.joblistElement.addEventListener('selected-job-list', this._selectedJobList.bind(
+                        this));
+                    this.$.joblistElement.addEventListener('toggle-add-job', this._addJobDialogToggle.bind(
+                        this));
+                    this.$.joblistElement.addEventListener('delete-job', this._deleteJob.bind(this));
+
+                    // Key shortcut
+                    this.$.a11yCodeEditor.target = this.$.code;
+                });
+            }
+            _getJson() {
+                return this.jsoneditor.code.get();
+            }
+
+
+            _changeMode(e, element) {
+                if (element.item.textContent === 'Code') this.codeMode = true;
+                else this.codeMode = false;
+            }
+            _addError(e) {
+                console.log(e);
+            }
+
+            _addComplete(e, res) {
+                this.path = "/jobs";
+            }
+
+            _triggerToggle(ev, el) {
+                if (!this.triggerToggle)
+                    delete this.jsonResult.trigger;
+                else
+                    this.jsonResult.trigger = {};
+                this.$.trigger.set(this.jsonResult.trigger);
+                this.jsoneditor.code.set(this.jsonResult);
+            }
+            _toggleEditor() {
+                this.toggleEditor = !this.toggleEditor;
+            }
+
+            _addJobDialogToggle() {
+                this.$.addJobDialog.open();
+            }
+            _createNewJobBt(ev) {
+                let dialogTarget = Polymer.dom(ev).rootTarget.parentNode.parentNode;
+                if (this.newJobName.match('^[A-Za-z.0-9]+$')) {
+                    let newJob = JSON.parse(JSON.stringify(this.Job));
+                    if (this.$.saveasJobDialog.opened) {
+                        newJob = this.jsoneditor.code.get();
+                    }
+                    newJob.job_id = this.newJobName;
+                    console.log("creat");
+                    $.post(this.config.api.job_api, newJob, (data) => {
+                        if (data.response === 'OK')
+                            console.log('added new job');
+                        this.$.joblistElement._updateJoblist();
+                        var ev_temp = {};
+                        ev_temp.detail = {};
+                        ev_temp.detail.job_id = newJob.job_id;
+                        this._selectedJobList(ev_temp);
+                    }).fail(() => {
+                        let msg = {
+                            title: `Can't connect ${this.config.api.job_api} `,
+                            detail: "Please make sure your Job API is correct."
+                        }
+                        if (typeof ipc !== "undefined")
+                            ipc.send('open-error-dialog', msg)
+                        else
+                            alert(msg.title + msg.detail)
+                    });;
+                    this.newJobName = "";
+                    dialogTarget.toggle();
+                    $(dialogTarget.querySelector('input')).removeClass("form-control-danger");
+                    $(dialogTarget.querySelector('.form-group')).removeClass("has-danger");
+                    $(dialogTarget.querySelector('.form-control-feedback')).attr("hidden", '');
+                } else {
+                    $(dialogTarget.querySelector('input')).addClass("form-control-danger");
+                    $(dialogTarget.querySelector('.form-group')).addClass("has-danger");
+                    $(dialogTarget.querySelector('.form-control-feedback')).removeAttr("hidden");
+                }
+            }
+            _saveasJsonEditorDialogToggle() {
+                // this.newJobName = `${this.jsonResult.job_id}.copy`;
+                this.newJobName = `${this.jsonResult.job_id}`;
+                this.$.saveasJobDialog.querySelector('input').select();
+                this.$.saveasJobDialog.open();
+            }
+            _closeJsonEditor() {
+                this.toggleEditor = false;
+                this.fileOpened = false;
+                this.jsonResult = {};
+                $(this.$.code).css('width', '20%');
+                $(this.$.joblist).css('width', '80%');
+                $(this.$.code).attr('file-opening', '');
+                $(this.$.joblist).attr('file-opening', '');
+
+                this.jsoneditor.code.set({});
+
+                setTimeout(() => {
+                    $(this.$.code).removeAttr('file-opening');
+                    $(this.$.joblist).removeAttr('file-opening');
+                }, 800)
+            }
+            _saveJsonEditor() {
+                let json = this._getJson();
+                json.job_id = json.job_id.replace(/\s/g, '');
+                $.post(this.config.api.job_api + '?reload=true', this._getJson(), (data, status, request) => {
+                    // if (data.response === 'OK')
+                    //     console.log('added');
+                    this.$.joblistElement._updateJoblist();
+                }).fail(() => {
+                    let msg = {
+                        title: `Can't connect ${this.config.api.job_api}`,
+                        detail: "Please make sure your Job API is correct."
+                    }
+                    if (typeof ipc !== "undefined")
+                        ipc.send('open-error-dialog', msg)
+                    else
+                        alert(msg.title + msg.detail)
+                });
+            }
+            _deleteJob(ev) {
+                this.deleteJobList = ev.detail;
+                this.$.deleteJobList.items = ev.detail;
+                this.$.deleteJobList.render()
+                this.$.deleteConfirmDialog.open();
+            }
+            _deleteJobConfirm() {
+                for (let i = 0; i < this.deleteJobList.length; i += 1) {
+                    $.ajax({
+                        url: `${this.config.api.job_api}/${encodeURIComponent(this.deleteJobList[i].job_id)}`,
+                        type: 'DELETE',
+                        success: function (dt, status, request) {
+
+                        }.bind(this)
+                    });
+                    if (i == this.deleteJobList.length - 1)
+                        this.$.joblistElement._updateJoblist();
+                }
+            }
+            _shortcutKeyHandler(ev) {
+                let keydown = ev.detail.keyboardEvent;
+                if (keydown.code === 'KeyN' && this.classList.value === 'iron-selected')
+                    this._addJobDialogToggle();
+            }
+            _shortcutKeyEditorHandler(ev) {
+                let keydown = ev.detail.keyboardEvent;
+                if (keydown.code === 'KeyS' && keydown.key == 's')
+                    this._saveJsonEditor();
+                else if (keydown.code === 'KeyS' && keydown.key == 'S')
+                    this._saveasJsonEditorDialogToggle();
+                else if (keydown.code === 'KeyC' && keydown.key == 'C')
+                    this._onClipboard();
+            }
+            checkForEnter(e) {
+                // check if 'enter' was pressed
+                if (e.keyCode === 13) {
+                    Polymer.dom(e).rootTarget.parentNode.parentNode.querySelector('.submitbt').click();
+                }
+            }
+            // _jobTreeDialogToggle() {
+            //     this.$.jobTreeDialog.open();
+            //     setTimeout(function () {
+            //         this.$.jobTree._openning();
+            //     }.bind(this), 50);
+            // }
+
+            showToast(msg) {
+                this.$.toast.text = msg;
+                this.$.toast.horizontalAlign = "right";
+                this.$.toast.verticalAlign = "top";
+                this.$.toast.open();
+            }
+
+
+            _onClipboard() {
+
+                this.showToast("Copy Success");
+
+                console.log("copy click = ", this.jsonResult);
+                let json = JSON.stringify(this.jsonResult).replace(/,/g, ",\n");
+                // console.log("copy clipboard = ", json);
+                this.copyTextToClipboard(json);
+            }
+
+            copyTextToClipboard(text) {
+
+                if (!navigator.clipboard) {
+                    this.fallbackCopyTextToClipboard(text);
+                    return;
+                }
+
+                navigator.clipboard.writeText(text)
+                    .then(function () {
+                            console.log('Async: Copying to clipboard was successful!');
+                        },
+                        function (err) {
+                            console.error('Async: Could not copy text: ', err);
+                        });
+            }
+
+            fallbackCopyTextToClipboard(text) {
+
+                // e.clipboardData.setData('text/plain', content);
+                // e.preventDefault();
+                // document.removeEventListener('copy');
+
+                var pretty = JSON.stringify(this.jsonResult, undefined, 2);
+
+                var textArea = document.createElement("textarea");
+                // textArea.value = text;
+                textArea.value = pretty;
+
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+
+                try {
+                    var successful = document.execCommand('copy');
+                    var msg = successful ? 'successful' : 'unsuccessful';
+                    // console.log('Fallback: Copying text command was ' + msg);
+
+                } catch (err) {
+                    // console.error('Fallback: Oops, unable to copy', err);
+                }
+
+                document.body.removeChild(textArea);
+
+            }
+
+            // async testAsync(time) {
+            //     return new Promise((res, rej) => {
+            //         setTimeout(() => {
+            //             res("Hello World in : " + time)
+            //         }, time);
+            //     })
+            // }
+
+
+            async _onExportFile() {
+                try {
+                    var elerem = require('electron').remote;
+                    // var dialog = elerem.dialog;
+                    var app = elerem.app;
+                    // var http = require('http');
+                    // var fs = require('fs');
+                    var path = require('path');
+                    const {
+                        dialog
+                    } = require('electron').remote
+                    // let fs = require('fs');
+                    var toLocalPath = path.resolve(app.getPath("desktop")); //, path.basename(remoteUrl));
+                    console.log("toLocalPath = ", toLocalPath);
+                    var userChosenPath = await dialog.showSaveDialog({
+                        defaultPath: toLocalPath
+                    });
+
+                    if (userChosenPath) {
+
+                        this.savefile(JSON.stringify(this.jsonResult, undefined, 2), userChosenPath, this.myUrlSaveAsComplete)
+                    }
+
+                } catch (error) {
+                    console.log("error on export : ", error);
+                }
+            }
+
+            myUrlSaveAsComplete(err) {
+                console.log('The file has been saved2!');
+                alert("done");
+            }
+
+            savefile(data, dest, cb) {
+                // console.log("save file data ", data);
+                console.log("save file dest ", dest);
+                var fs = require('fs');
+
+                try {
+                    let saved = fs.writeFileSync(dest, data, {
+                        encoding: 'utf8',
+                        flag: 'w'
+                    }, (err) => {
+                        if (err) throw err;
+                        // console.log('The file has been saved!');
+                        fs.close(cb);
+                    })
+                    
+                    console.log('The file has been saved!');
+                    this.showToast("Export file successed");
+                } catch (error) {
+                    console.log("write file error = ",error);
+                }
+
+
+            };
+
+            async _onOpenFile() {
+                // console.log("async before");
+                // let res = await this.testAsync(2000);
+                // console.log("async after = ", res);
+
+                this.$.addJobDialog.close();
+
+                try {
+                    const {
+                        dialog
+                    } = require('electron').remote
+                    let fs = require('fs');
+
+                    let result = await dialog.showOpenDialog((fileNames) => {
+                        if (fileNames === undefined) return;
+                        var fileName = fileNames[0];
+                        fs.readFile(fileName, 'utf-8', (err, data) => {
+                            // document.getElementById("editor").value = data;
+                            if (err) {
+                                console.log("data open error = ", err);
+                                return
+                            }
+
+                            try {
+                                this.fileOpened = true;
+                                $(this.$.code).css('width', '80%');
+                                $(this.$.joblist).css('width', '20%');
+                                $(this.$.code).attr('file-opening', '');
+                                $(this.$.joblist).attr('file-opening', '');
+
+                                let jsonData = JSON.parse(data);
+                                this.JobFromFile = jsonData;
+                                console.log("data open = ", jsonData);
+
+                                this.jsoneditor.code.set(jsonData);
+                                // _codeJSONchange();
+
+                                //show dialog job name    
+                                // this.$.addJobFromFileDialog.open();
+
+                                //if create by not naming the job
+                                // this._createNewJobFromFile(jsonData); //page-home.html.bind(this);
+                            } catch (error) {
+                                this.showToast("Invalid JSON Format");
+                                alert("ไฟล์ JSON Format ไม่ถูกต้อง");
+                                console.log("data error open raw = ", data);
+                            }
+                        });
+
+                    });
+                } catch (error) {
+                    alert("ฟังก์ชั่นนี้ไม่สามารถใช้ผ่าน web site ได้");
+                }
+            }
+
+            _createNewJobFromFile() {
+                if (this.newJobName.match('^[A-Za-z.0-9]+$')) {
+                    let newJob = JSON.parse(JSON.stringify(this.JobFromFile));
+                    // newJob = this.jsoneditor.code.get(); 
+                    newJob.job_id = this.newJobName;
+                    console.log("creat job from file ", newJob);
+                    $.post(this.config.api.job_api, newJob, (data) => {
+                        if (data.response === 'OK')
+                            console.log('added new job from file success');
+                        this.$.joblistElement._updateJoblist();
+                        var ev_temp = {};
+                        ev_temp.detail = {};
+                        ev_temp.detail.job_id = newJob.job_id;
+                        this._selectedJobList(ev_temp);
+                    }).fail(() => {
+                        let msg = {
+                            title: `Can't connect ${this.config.api.job_api} `,
+                            detail: "Please make sure your Job API is correct."
+                        }
+                        if (typeof ipc !== "undefined")
+                            ipc.send('open-error-dialog', msg)
+                        else
+                            alert(msg.title + msg.detail)
+                    });;
+                    this.newJobName = "";
+                    this.$.addJobFromFileDialog.close();
+                } else {
+                    this.showToast("ไม่สามารถตั้งชื่อไฟล์นี้ได้");
+                }
+            }
+
+            _createNewJobFromFileBt() {
+                this._createNewJobFromFile();
+            }
+
+            _exportDataToFile(filename, data) {
+                try {
+
+                    var fs = require('fs');
+                    var stream = fs.createWriteStream(filename);
+                    stream.once('open', function (fd) {
+                        stream.write(data);
+                        stream.end();
+                    });
+
+                } catch (error) {
+                    console.log("_exportDataToFile : ", error);
+                }
+            }
+
+        }
+
+        window.customElements.define(PageJobsEditor.is, PageJobsEditor);
+    </script>
+</dom-module>

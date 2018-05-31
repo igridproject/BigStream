@@ -1,0 +1,216 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/vaadin-grid/all-imports.html">
+
+<link rel="import" href="/bower_components/paper-fab/paper-fab.html">
+
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="page-jobs">
+  <template>
+    <style include="bootstrap"></style>
+    <style include="app-grid-style"></style>
+    <style include="shared-styles">
+       :host {
+        --app-grid-columns: 1;
+        --app-grid-gutter: 15px;
+        box-sizing: border-box;
+        display: block;
+      }
+
+      ul {
+        padding: 0;
+        list-style: none;
+      }
+
+      .item {
+        background-color: white;
+        height: 100%;
+      }
+
+      paper-input {
+        width: 100%;
+      }
+
+
+      vaadin-grid {
+        border-right: 0;
+        border-left: 0;
+        height: 100%;
+      }
+
+      paper-input[label="Search"] {
+        width: 27%;
+        float: right;
+        padding: 0 28px;
+      }
+
+      paper-fab.createJobFab {
+        --paper-fab-background: var(--paper-light-blue-700);
+        position: fixed;
+        right: 20px;
+        bottom: 70px;
+        z-index: 100;
+      }
+
+      .main-page {
+        height: 100%;
+      }
+    </style>
+    <a href="/jobs/create">
+      <paper-fab mini icon="icons:add" title="Create job" class="createJobFab"></paper-fab>
+    </a>
+    <app-toolbar>
+      <div main-title>[[titlePage]]</div>
+      <paper-input label="Search" value="{{_filterJobName::input}}">
+        <iron-icon icon="icons:search" slot="prefix"></iron-icon>
+      </paper-input>
+    </app-toolbar>
+    <!-- Fetch an array of users to be shown in the grid -->
+    <iron-ajax auto loading="{{loading}}" url="[[jobapi]]" handle-as="json" last-response="{{jobs}}" on-error="_ajexerror" id="updateJobsList"
+      on-response="_loadJobsComplete"></iron-ajax>
+
+    <!-- The array is set as the <vaadin-grid>'s "items" property -->
+    <template is="dom-if" if="[[loading]]">
+      <paper-progress value="10" indeterminate="true" style="width:100%;position: absolute;z-index: 1;"></paper-progress>
+    </template>
+    <x-array-data-provider items="{{jobLists}}"></x-array-data-provider>
+    <div class="app-grid main-page">
+      <paper-card class="item">
+        <vaadin-grid class="material" id="material" items="[[jobLists]]">
+
+          <vaadin-grid-selection-column width="66px" flex="0" select-all="{{selectAll}}">
+            <template class="header">
+              <paper-checkbox checked="{{selectAll}}"></paper-checkbox>
+            </template>
+            <template>
+              <paper-checkbox checked="{{selected}}"></paper-checkbox>
+            </template>
+          </vaadin-grid-selection-column>
+
+          <vaadin-grid-column width="100px" flex="0">
+            <template class="header">
+              <vaadin-grid-filter aria-label="Job Name" path="job_id" value="[[_filterJobName]]">
+                <input slot="filter" type="text" hidden>
+              </vaadin-grid-filter>
+              <vaadin-grid-sorter path="job_id">
+                <div class="cell">
+                  <span>Name</span>
+                  <iron-icon icon="icons:arrow-upward"></iron-icon>
+                </div>
+              </vaadin-grid-sorter>
+            </template>
+            <template>
+              <a href="/jobs/detail/[[item.job_id]]">
+                <div class="cell">[[item.job_id]]</div>
+              </a>
+            </template>
+          </vaadin-grid-column>
+        </vaadin-grid>
+
+        <template is="dom-if" if="[[job_error]]">
+          <div style="padding: 85px 15px 0;position: absolute;top: 0;width:100%;height: 100%;background: rgba(227, 227, 227, 0.67);">
+            <div class="alert alert-danger" role="alert" style="width:100%">
+              <strong>Error !</strong> Can't GET [[jobapi]] , 404 (Not Found)
+            </div>
+          </div>
+        </template>
+      </paper-card>
+    </div>
+    <app-toolbar class="footer">
+      <paper-button class="btn btn-danger red" on-click="_deleteJob">Delete [[material.selectedItems.length]]</paper-button>
+    </app-toolbar>
+
+    <iron-ajax id="deleteJobAjax" method="DELETE" handle-as="json" on-response="_deleteComplete" on-error="_deleteError"></iron-ajax>
+
+    <paper-toast autoFitOnAttach id="toast"></paper-toast>
+  </template>
+
+  <script>
+    class PageJobs extends Polymer.Element {
+      static get is() {
+        return 'page-jobs';
+      }
+
+      static get properties() {
+        return {
+          titlePage: {
+            type: String,
+            value: 'Job lists'
+          },
+          jobLists: {
+            type: Array,
+            value: []
+          },
+          loading: {
+            type: Boolean,
+            notify: true,
+            value: false
+          },
+        };
+      }
+      ready() {
+        super.ready();
+
+        Polymer.RenderStatus.afterNextRender(this, function () {
+          this._updateJobLists();
+        });
+
+      }
+      _updateJobLists() {
+        this.$.updateJobsList.generateRequest();
+      }
+      _deleteJob() {
+        var deleteJobAjax = this.$.deleteJobAjax;
+        var selectedItems = this.$.material.selectedItems;
+        while (selectedItems.length != 0) {
+          deleteJobAjax.url = this.jobapi + '/' + encodeURIComponent(selectedItems[0].job_id);
+          deleteJobAjax.generateRequest();
+          selectedItems.shift();
+        }
+      }
+      _loadJobsComplete() {
+        this.job_error = false;
+        if (this.jobs) {
+          this.jobLists = [];
+          var jobLists = this.jobLists;
+          var material = this.$.material;
+          this.jobs.forEach(function (job, index) {
+            jobLists.push({
+              "job_id": job
+            });
+            if (index == this.jobs.length - 1)
+              material.clearCache();
+          }, this);
+
+          //this.$.material.items = this.jobLists;
+        }
+      }
+      _deleteComplete() {
+        this._updateJobLists();
+        this.$.toast.text = "Delete complete";
+        this.$.toast.horizontalAlign = "right";
+        this.$.toast.open();
+      }
+      _deleteError() {
+
+      }
+      _ajexerror(ev) {
+        this.jobLists = [];
+        this.$.material.clearCache();
+        this.job_error = true;
+      }
+    }
+
+    window.customElements.define(PageJobs.is, PageJobs);
+  </script>
+</dom-module>

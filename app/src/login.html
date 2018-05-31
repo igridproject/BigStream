@@ -1,0 +1,321 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/paper-spinner/paper-spinner-lite.html">
+<!--
+`<login>` is Description
+
+@element login
+-->
+<dom-module id="login-element">
+    <template>
+        <style include="bootstrap"></style>
+        <style>
+             :host {
+                display: block;
+                box-sizing: border-box;
+                height: 100%;
+                width: 100%;
+                box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.25);
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+             :host::before {
+                height: 100%;
+                width: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                background: #000;
+                content: "";
+                opacity: 0.2;
+            }
+
+            .logo {
+                color: azure;
+                text-align: center;
+                padding: 19px 0;
+                position: relative;
+                margin: 0 auto;
+                font-size: 30px;
+                width: 245px;
+            }
+
+            .logo span {
+                border-radius: 10px;
+                color: azure;
+                border: azure 1px solid;
+                padding: 10px 8px 17px;
+                margin-right: 8px;
+                --iron-icon-width: 50px;
+                --iron-icon-height: 50px;
+            }
+
+            .logo small {
+                position: absolute;
+                top: 9px;
+                right: 15px;
+                background: brown;
+                padding: 0px 5px;
+                font-size: 14px;
+            }
+
+            .login-box {
+                overflow: hidden;
+                position: fixed;
+                top: 40%;
+                left: 50%;
+                width: 30em;
+                margin-top: -9em;
+                /*set to a negative number 1/2 of your height*/
+                margin-left: -15em;
+                /*set to a negative number 1/2 of your width*/
+                background: rgba(248, 248, 248, 0.9);
+                border-radius: 10px;
+                box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.1), 0px 0px 131px -6px rgba(0, 0, 0, 0.25);
+            }
+
+            .logo-bar {
+                background: #2f323a;
+            }
+
+            @keyframes fadeAndScale {
+                from {
+                    opacity: 0;
+                    transform: scale(1.3, 1.3);
+                    visibility: hidden;
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1, 1);
+                    visibility: visible;
+                }
+            }
+
+            #login {
+                padding: 15px;
+            }
+
+            .login-form input::-webkit-input-placeholder {
+                color: var(--google-grey-500);
+            }
+
+            .form-control-feedback {
+                visibility: hidden;
+                opacity: 0;
+                transition: all 0.3s ease-in;
+                height: 0;
+            }
+
+            .has-danger .form-control-feedback {
+                visibility: visible;
+                opacity: 1;
+                height: initial;
+            }
+
+            .loading {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                margin-left: -1.5em;
+                display: none;
+            }
+
+            paper-spinner-lite.grey {
+                --paper-spinner-color: var(--google-grey-300);
+            }
+
+            div.content {
+                display: block;
+                transition: all 0.3s ease-in;
+            }
+
+            .login-box>div.content[loading] {
+                filter: blur(20px);
+                transform: scale(1.11);
+            }
+
+            .login-box>div.content[loading]::before {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                top: 0;
+                left: 0;
+                content: ''
+            }
+
+            .loading[loading] {
+                display: block;
+            }
+
+            .page {
+                width: 100%;
+                visibility: hidden;
+                opacity: 0;
+                transition: all 0.2s ease-out;
+                max-height: 0px;
+                padding: 0;
+            }
+
+            #settings.page.active {
+                padding: 15px;
+                max-height: 300px;
+            }
+
+            .page.active {
+                visibility: visible;
+                opacity: 1;
+            }
+
+            #login.page.active {
+                max-height: 400px;
+            }
+        </style>
+
+        <div class="login-box">
+            <div class="content" loading$="[[loading]]">
+                <div class="logo-bar">
+                    <div class="logo">
+                        <span><iron-icon icon="icons:cloud-download"></iron-icon></span>
+                        <text>Bigstream</text>
+                        <small>console<div class="arrow-down"></div></small></div>
+                </div>
+                <div class="page active" id="settings">
+                    <div class="form-group">
+                        <label for="example-text-input" class="col-12 form-control-label">Job API</label>
+                        <input class="form-control" type="url" value="{{config.api.job::input}}" id="example-text-input" placeholder="Ex. http://localhost:19980/v1">
+                    </div>
+                    <hr/>
+                    <div class="form-group">
+                        <label for="example-search-input" class="col-12 form-control-label">Storages API</label>
+                        <input class="form-control" type="url" value="{{config.api.storages::input}}" id="example-search-input" placeholder="Ex. http://localhost:19080/v1">
+                    </div>
+                    <hr/>
+                    <paper-button class="btn btn-success" on-click="_saveconfig">Next</paper-button>
+                </div>
+                <div class="page" id="login">
+                    <form class="login-form">
+                        <div class="form-group">
+                            <label class="form-control-label" for="username">Username / E-mail</label>
+                            <input type="text" class="form-control" id="username" placeholder="username" on-keypress="_submitEnter" autofocus required>
+                            <div class="form-control-feedback">Username is required</div>
+                        </div>
+                        <hr/>
+                        <div class="form-group">
+                            <label class="form-control-label" for="password">Password</label>
+                            <input type="password" class="form-control" id="password" placeholder="password" on-keypress="_submitEnter" required>
+                            <div class="form-control-feedback">Password is required</div>
+                        </div>
+                        <hr/>
+                        <div class="form-group" id="incorrect">
+                            <div class="form-control-feedback" style="font-size: 14px;">The user name or password is incorrect. Verify that CAPS LOCK is not on, and then retype the
+                                current user name and password.</div>
+                        </div>
+                    </form>
+                    <paper-button class="btn btn-success" on-click="_backpage">Back</paper-button>
+                    <paper-button class="btn btn-info" on-click="_submit">Login</paper-button>
+
+                </div>
+            </div>
+            <div class="loading" loading$="[[loading]]">
+                <paper-spinner-lite class="grey" active></paper-spinner-lite>
+            </div>
+        </div>
+
+    </template>
+
+    <script>
+        class loginElement extends Polymer.Element {
+
+            static get is() { return 'login-element'; }
+
+            static get properties() {
+                return {
+                    config: Object
+                };
+            }
+
+            constructor() {
+                super();
+            }
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this.config = store.get();
+                });
+            }
+
+            _submit() {
+                if (this.$.username.value === '')
+                    this.$.username.parentNode.classList.add('has-danger');
+                else
+                    this.$.username.parentNode.classList.remove('has-danger');
+                if (this.$.password.value === '')
+                    this.$.password.parentNode.classList.add('has-danger');
+                else
+                    this.$.password.parentNode.classList.remove('has-danger');
+
+                if (!(this.$.username.value === '') && !(this.$.password.value === '')) {
+
+                    this.loading = true;
+
+                    // user : admin, password : root
+                    if (this.$.username.value == 'admin' && this.$.password.value === 'admin') {
+                        setTimeout(() => {
+                            this.$.incorrect.classList.remove('has-danger');
+                            this.loading = false;
+                            store.set({ 'OAuth': { 'token': 'THISISFACKTOKEN' } });
+                            this.dispatchEvent(new CustomEvent('logged-in', {
+                                "detail": {
+                                    token: "THISISFACKTOKEN"
+                                }
+                            }));
+                        }, 2000)
+                    }
+                    else {
+                        setTimeout(() => {
+                            this.$.incorrect.classList.add('has-danger');
+                            this.loading = false;
+                        }, 2000)
+                    }
+
+                }
+            }
+
+            _submitEnter(e) {
+                if (e.keyCode == 13)
+                    this._submit();
+            }
+
+            _saveconfig(ev) {
+                if (!store.get('api'))
+                    store.set({ 'api': {} });
+                store.set({
+                    'api.job': this.config.api.job,
+                    'api.job_api': this.config.api.job + '/jobs',
+                    'api.storages': this.config.api.storages,
+                    'api.storages_api': this.config.api.storages + '/storage',
+                    'api.storages_obj_api': this.config.api.storages + '/object'
+                });
+                this.dispatchEvent(new CustomEvent('config-saved'));
+                this._nextpage(ev);
+            }
+
+            _nextpage(ev) {
+                Polymer.dom(ev).rootTarget.parentNode.classList.remove('active')
+                Polymer.dom(ev).rootTarget.parentNode.nextElementSibling.classList.add('active')
+            }
+
+            _backpage(ev) {
+                Polymer.dom(ev).rootTarget.parentNode.classList.remove('active')
+                Polymer.dom(ev).rootTarget.parentNode.previousElementSibling.classList.add('active')
+            }
+
+        }
+
+        window.customElements.define(loginElement.is, loginElement);
+    </script>
+</dom-module>

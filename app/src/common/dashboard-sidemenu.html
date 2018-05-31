@@ -1,0 +1,410 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/iron-menu-behavior/iron-menu-behavior.html">
+
+<!--route-->
+<link rel="import" href="/bower_components/app-route/app-location.html">
+<link rel="import" href="/bower_components/app-route/app-route.html">
+
+<!--pages-->
+<link rel="import" href="/bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="/bower_components/iron-selector/iron-selector.html">
+
+<link rel="import" href="./simple-menu.html">
+<link rel="import" href="./simple-expand-collapse.html">
+<!--
+`<Name>` is Description
+
+@element Name
+-->
+<dom-module id="dashboard-sidemenu">
+    <template>
+        <style>
+            :host {
+                display: block;
+                /*margin-top: 50px;*/
+                background-color: #fff;
+                height: 100%;
+                border: solid var(--google-grey-300);
+                border-width: 0px 1px 0px 0px;
+            }
+
+            :host> ::slotted(*) {
+                display: block;
+            }
+
+            simple-menu {
+                display: inline-block;
+                width: 100%;
+            }
+
+            simple-menu a {
+                outline: none;
+                display: block;
+            }
+
+            simple-menu iron-selector>a,
+            simple-menu iron-selector>simple-expand-collapse {
+                /*border: solid var(--google-grey-300);
+                border-width: 0px 0px 1px;*/
+                outline: none;
+                -webkit-transition: background 200ms ease-in;
+                -moz-transition: background 200ms ease-in;
+                -ms-transition: background 200ms ease-in;
+                -o-transition: background 200ms ease-in;
+                transition: background 200ms ease-in;
+            }
+
+            simple-menu iron-selector>a:hover,
+            simple-menu iron-selector>simple-expand-collapse:hover {
+                background-color: var(--google-grey-300);
+            }
+
+            .iron-selected {
+                color: var(--google-blue-700) !important;
+            }
+
+            simple-menu a {
+                padding: 13px 26px;
+                color: rgba(0, 0, 0, .654);
+                text-decoration: none;
+            }
+
+            simple-menu div.cat-title span {
+                text-transform: uppercase;
+                font-size: 11px;
+                font-weight: 500;
+                color: #797979;
+                background: #fff;
+                padding: 0 7px;
+                position: relative;
+                z-index: 1;
+                top: 4px;
+            }
+
+            simple-menu div.cat-title {
+                height: 20px;
+                text-align: center;
+                position: relative;
+                margin-top: 5px;
+                margin-bottom: 15px;
+            }
+
+            simple-menu div.cat-title:before {
+                color: #aca7a7;
+                font-size: 16px;
+                content: ":::::::::::::::::::::::::::::::::::::::::::::::";
+                position: absolute;
+                left: 0;
+                top: 3px;
+                transition: all 0.2s ease;
+                width: 100%;
+                overflow: hidden;
+            }
+
+            simple-menu a[disabled] {
+                color: var(--google-grey-300);
+            }
+
+            simple-menu a iron-icon {
+                margin-right: 9px;
+                margin-top: -5px;
+            }
+
+            .horizontal-section {
+                padding: 0;
+                margin-bottom: 20px;
+            }
+
+            .row {
+                height: 120px;
+            }
+
+            a.submenu {
+                padding-left: 45px;
+            }
+
+            [hidden] {
+                display: none;
+            }
+
+            * {
+                outline: none;
+            }
+
+            .logo {
+                background: #2f323a;
+                padding: 19px 0 20px;
+                color: azure;
+                text-align: center;
+                position: relative;
+                cursor: pointer;
+                margin-bottom: 15px;
+            }
+
+            .logo span {
+                border-radius: 10px;
+                color: azure;
+                border: azure 1px solid;
+                padding: 7px 8px 10px;
+                margin-right: 8px;
+            }
+
+            .logo small {
+                position: absolute;
+                top: 9px;
+                right: 15px;
+                background: brown;
+                padding: 0px 5px;
+                font-size: 10px;
+            }
+
+            .logo:hover,
+            .logo:hover span {
+                color: #ddd;
+                border-color: #ddd;
+            }
+
+            .logo:active,
+            .logo:active span {
+                color: #838894;
+                border-color: #838894;
+            }
+
+            .arrow-down {
+                width: 0;
+                height: 0;
+                border-left: 1px solid transparent;
+                border-right: 4px solid transparent;
+                border-top: 4px solid brown;
+                position: absolute;
+            }
+
+            [iscollapse] .logo text {
+                display: none;
+            }
+
+            [iscollapse] .logo span {
+                margin: 0;
+            }
+
+            [iscollapse] .drawer-list a {
+                font-size: 10px;
+                text-align: center;
+                padding: 13px 0;
+            }
+
+            [iscollapse] .drawer-list a iron-icon {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .bottom-menu {
+                /* padding-left: 45px; */
+                /* border: 1px solid red; */
+                /* height: 40%;; */
+                position: absolute;
+                bottom: 0;
+            }
+        </style>
+        <!--<style>
+             :host {
+                background-color: #2f323a;
+            }
+
+            simple-menu a {
+                color: rgb(240, 255, 255);
+            }
+
+            simple-menu div.cat-title:before {
+                color: #aca7a7;
+            }
+
+            simple-menu div.cat-title span {
+                color: #f0ffff;
+                background: #2f323a;
+            }
+
+            simple-menu a:hover {
+                color: #6b7b9e;
+            }
+
+            simple-menu a.iron-selected {
+                background: #e0e0e0;
+            }
+        </style>-->
+        <div iscollapse$="[[iscollapse]]" dark$="">
+            <div class="logo" on-click="_togglemenu">
+                <span>
+                    <iron-icon icon="icons:cloud-download"></iron-icon>
+                </span>
+                <text>Bigstream</text>
+                <small>console
+                    <div class="arrow-down"></div>
+                </small>
+            </div>
+
+            <simple-menu class="drawer-list" role="navigation">
+                <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+                    <template is="dom-repeat" items="[[menuList]]" as="item">
+                        <template is="dom-if" if="{{!item.categoryTitle}}">
+                            <a href="[[item.url]]" name="[[item.name]]">
+                                <iron-icon icon="[[item.icon]]"></iron-icon> [[item.title]] </a>
+                        </template>
+                        <template is="dom-if" if="{{item.categoryTitle}}">
+                            <!-- <div class="cat-title"><span>[[item.categoryTitle]]</span></div> -->
+                            <template is="dom-repeat" items="[[item.sublist]]" as="sub">
+                                <a href="[[sub.url]]" name="[[sub.name]]">
+                                    <iron-icon icon="[[sub.icon]]"></iron-icon> [[sub.title]]</a>
+                            </template>
+
+                        </template>
+
+                        <!--<template is="dom-if" if="{{item.submenuTitle}}">
+                        <simple-expand-collapse text-expand="[[item.submenuTitle]]">
+                            <template is="dom-repeat" items="[[item.sublist]]" as="sub">
+                                <a href="[[sub.url]]" name="[[sub.url]]" class="submenu">
+                                    <iron-icon icon="[[sub.icon]]"></iron-icon> [[sub.title]]</a>
+                            </template>
+                        </simple-expand-collapse>
+                    </template>-->
+
+                    </template>
+                    <!-- <div class="bottom-menu">
+                            <a href="#" name="new-window">
+                                <iron-icon icon="hardware:desktop-windows"></iron-icon> New Window</a>
+                        </div> -->
+                </iron-selector>
+
+            </simple-menu>
+
+        </div>
+        <div class="bottom-menu">
+            <!-- <simple-menu class="drawer-list"> -->
+            <!-- <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation"> -->
+            <!-- <a name="new-window">
+                                <iron-icon icon="hardware:desktop-windows"></iron-icon>
+                            </a> -->
+            <!-- </iron-selector> -->
+            <paper-button class="btn btn-outline-danger" on-click="_newWindow">
+                <iron-icon icon="hardware:desktop-windows"></iron-icon>
+            </paper-button>
+            <!-- </simple-menu> -->
+        </div>
+
+
+    </template>
+
+    <script>
+        class DashboardSidemenu extends Polymer.Element {
+
+            static get is() {
+                return 'dashboard-sidemenu';
+            }
+
+            static get behaviors() {
+                return [SuperBehavior];
+            }
+
+            static get properties() {
+                return {
+                    page: {
+                        type: String,
+                        reflectToAttribute: true
+                    },
+                    menuList: {
+                        type: Array,
+                        value: [{
+                                url: '/home',
+                                name: 'home',
+                                title: 'Home',
+                                icon: 'icons:home'
+                            },
+                            {
+                                categoryTitle: 'Jobs',
+                                sublist: [
+                                    //     {
+                                    //     url: '/jobs',
+                                    //     name: 'jobs',
+                                    //     title: 'Job lists',
+                                    //     icon: 'icons:work'
+                                    // },
+                                    {
+                                        url: '/jobs/editor',
+                                        name: 'jobs-editor',
+                                        title: 'Job editor',
+                                        icon: 'icons:work'
+                                    }
+                                    //  {
+                                    //     url: '/jobs/create',
+                                    //     name: 'jobs-create',
+                                    //     title: 'Create job',
+                                    //     icon: 'icons:work'
+                                    // }
+                                ]
+                            }, {
+                                categoryTitle: 'Storage',
+                                sublist: [{
+                                    url: '/storages',
+                                    name: 'storages',
+                                    title: 'Storage lists',
+                                    icon: 'device:storage'
+                                }]
+                            },
+                            {
+                                categoryTitle: 'Setting',
+                                sublist: [{
+                                    url: '/setting',
+                                    name: 'setting',
+                                    title: 'Setting',
+                                    icon: 'icons:settings'
+                                }]
+                            }
+                        ]
+                    }
+                };
+            }
+
+            static get observers() {
+                return [];
+            }
+
+            constructor() {
+                super();
+            }
+
+
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function () {
+
+                });
+
+
+            }
+
+            _togglemenu() {
+                this.dispatchEvent(new CustomEvent('collapsechange', {}));
+            }
+
+            _newWindow() {
+
+
+                var win = new BrowserWindow({
+                    width: 1024,
+                    height: 600,
+                    show: false
+                });
+                win.on('closed', function () {
+                    win = null;
+                });
+
+                win.loadURL('http://localhost:3000/');
+                win.show();
+            }
+        }
+
+        window.customElements.define(DashboardSidemenu.is, DashboardSidemenu);
+    </script>
+</dom-module>

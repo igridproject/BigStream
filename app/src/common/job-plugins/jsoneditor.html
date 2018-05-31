@@ -1,0 +1,93 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+
+<!--
+`<jsoneditor>` is Description
+
+@element jsoneditor
+-->
+<dom-module id="json-editor">
+    <template>
+        <link href="../../../asset/jsoneditor/jsoneditor.css" rel="stylesheet" type="text/css">
+        <style>
+             :host {
+                display: block
+            }
+
+            div.jsoneditor {
+                border: none!important;
+            }
+
+            div.jsoneditor-menu,
+            table.jsoneditor-tree>tbody>tr:first-child {
+                display: none;
+            }
+
+            div.jsoneditor-outer {
+                margin: 0!important;
+                padding: 0!important;
+            }
+
+            div.jsoneditor-tree {
+                overflow: visible!important;
+            }
+        </style>
+        <div id="jsoneditor"></div>
+
+    </template>
+    <!-- <script src="../../../asset/jsoneditor/jsoneditor.js"></script> -->
+    <script src="../../../../bower_components/jsoneditor/dist/jsoneditor.js"></script>
+    <script>
+        class JsonEditor extends Polymer.Element {
+
+            static get is() {
+                return 'json-editor';
+            }
+
+            static get properties() {
+                return {
+                    "editorchange": {
+                        "type": Event,
+                        "value": function () {
+                            return new CustomEvent('editorchange', {
+                                detail: {
+                                    json: this.json
+                                }
+                            })
+                        }
+                    }
+                };
+            }
+
+            constructor() {
+                super();
+            }
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    var options = {
+                        mode: 'tree',
+                        onError: function (err) {
+                            alert(err.toString());
+                        },
+                        onChange: function (ev) {
+                            this.json = this.jsoneditor.get();
+                            this.dispatchEvent(this.editorchange);
+                        }.bind(this)
+                    };
+
+                    this.jsoneditor = new JSONEditor(this.$.jsoneditor, options, this.json);
+                    if (!this.editting) this.dispatchEvent(this.editorchange);
+                    this.jsoneditor.expandAll();
+                });
+            }
+
+            get() {
+                return this.jsoneditor.get();
+            }
+        }
+
+        window.customElements.define(JsonEditor.is, JsonEditor);
+    </script>
+</dom-module>

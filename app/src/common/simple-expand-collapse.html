@@ -1,0 +1,81 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="/bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="/bower_components/paper-styles/shadow.html">
+
+<dom-module id="simple-expand-collapse">
+
+  <template>
+
+    <style>
+       :host {
+        display: block;
+      }
+
+      a {
+        display: block;
+      }
+
+      a {
+        padding: 13px 26px;
+        text-decoration: none;
+      }
+
+      a iron-icon {
+        margin-right: 9px;
+        margin-top: -5px;
+      }
+
+      
+
+    </style>
+    <a id="trigger" on-click="toggle" aria-expanded$="[[opened]]" aria-controls="collapse" role="menuitem">
+      <iron-icon icon="icons:work"></iron-icon> [[textExpand]]</a>
+    <iron-collapse id="collapse" opened="{{opened}}" horizontal="[[horizontal]]" no-animation="[[noAnimation]]" tabindex="0">
+      <slot></slot>
+    </iron-collapse>
+
+  </template>
+
+</dom-module>
+
+<script>
+  Polymer({
+
+    is: 'simple-expand-collapse',
+
+    properties: {
+
+      horizontal: {
+        type: Boolean
+      },
+      opened: {
+        type: Boolean,
+        reflectToAttribute: true
+      },
+      noAnimation: {
+        type: Boolean
+      },
+      textExpand: {
+        type: String
+      }
+    },
+
+    toggle: function () {
+      this.$.collapse.toggle();
+    },
+
+    _getText: function (opened) {
+      return opened ? 'Collapse' : 'Expand';
+    }
+
+  });
+</script>

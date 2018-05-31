@@ -1,0 +1,291 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<script src="/bower_components/Sortable/Sortable.min.js"></script>
+<link rel="import" href="/bower_components/vaadin-combo-box/vaadin-combo-box.html">
+<link rel="import" href="/bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="/bower_components/neon-animation/web-animations.html">
+
+<!--
+`<plugin>` is Description
+
+@element plugin
+-->
+<dom-module id="plugin-call">
+    <template>
+        <style include="bootstrap"></style>
+        <style include="shared-styles">
+             :host {
+                display: block;
+                padding: 10px;
+                box-sizing: border-box;
+            }
+
+            paper-button.add {
+                width: 100%;
+                padding: 0;
+                margin: 0;
+                font-size: 15px;
+            }
+
+            paper-button.add {
+                padding: 5px;
+                color: var(--google-grey-500);
+                text-transform: none;
+                border: 1px solid var(--google-grey-300);
+            }
+
+            ul#job-items {
+                margin: 0;
+                list-style: none;
+                padding: 25px;
+            }
+
+            ul#job-items li {
+                padding: 11px 18px;
+                border: 1px solid var(--google-grey-300);
+                margin-bottom: 9px;
+                position: relative;
+                border-radius: 5px;
+            }
+
+            .job-remove {
+                cursor: pointer;
+                position: absolute;
+                right: 16px;
+                color: #cecece;
+                font-size: 11px;
+            }
+
+            paper-dialog.size-position {
+                position: fixed;
+                top: 100%;
+                right: 0;
+                width: 399px;
+                height: 100%;
+                overflow: auto;
+                box-shadow: 0px -8px 11px -2px rgba(0, 0, 0, 0.16);
+                margin: 0;
+                transition: all 0.2s ease;
+                padding: 0;
+                text-align: initial;
+                border-top-right-radius: 10px;
+                border-top-left-radius: 10px;
+                --iron-icon-fill-color: #edeff5;
+                overflow: visible;
+            }
+
+            paper-dialog.size-position paper-button {
+                position: absolute;
+                top: 15px;
+                right: 5px;
+                margin: 0;
+            }
+
+            .job-overview {
+                width: 350px;
+                box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.56);
+                --paper-tooltip-opacity: 1;
+            }
+
+            .job-overview>div {
+                box-sizing: border-box;
+                font-size: 14px;
+                width: 100%;
+                background: #fff;
+                color: var(--google-grey-700);
+                padding: 15px;
+                text-align: left;
+            }
+
+            .job-overview>div p {
+                border-bottom: 1px solid var(--google-grey-300);
+                padding-bottom: 5px;
+                margin-bottom: 5px;
+                line-height: 25px;
+            }
+
+            .job-overview span.triangle {
+                width: 0;
+                height: 0;
+                border-style: solid;
+                border-width: 10px 10px 0 10px;
+                border-color: #616161 transparent transparent transparent;
+                position: absolute;
+                bottom: -8px;
+                left: 25px;
+            }
+        </style>
+        <iron-ajax loading="{{loading}}" url="[[config.api.job_api]]" handle-as="json" last-response="{{jobs}}" on-error="_ajexerror"
+            id="updateJobsList" on-response="_loadJobsComplete"></iron-ajax>
+
+        <paper-button class="add" on-click="_modalToggle">Manage</paper-button>
+
+        <paper-dialog id="modal" class="size-position" modal>
+            <h5 style="padding-bottom: 20px;background: var(--paper-blue-grey-600);color: #edeff5;padding-top: 16px;">Data out : Call</h5>
+            <paper-button on-click="_closeModal">
+                <iron-icon icon="icons:close"></iron-icon>
+            </paper-button>
+            <!-- <p>Select job to add in list</p> -->
+            <vaadin-combo-box id="joblist" label="Job" on-selected-item-changed="_addJob" autofocus></vaadin-combo-box>
+
+            <ul id="job-items"></ul>
+            <div class="buttons">
+
+            </div>
+        </paper-dialog>
+
+    </template>
+
+    <script>
+        class pluginCall extends Polymer.Element {
+
+            static get is() { return 'plugin-call'; }
+
+            static get properties() {
+                return {
+                    pluginCallEditorChange: {
+                        value: () => {
+                            return new CustomEvent('plugin-call-editor-change', {})
+                        }
+                    },
+                    jobLists: {
+                        value: []
+                    },
+                    numJob: {
+                        value: 0
+                    }
+                };
+            }
+
+            constructor() {
+                super();
+            }
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this.json.param.to.forEach((item, index) => {
+                        let temp = {};
+                        this._addJob(temp, { value: item });
+                        // if (index == this.json.param.to.length - 1)
+                        //     this.editting = false;
+                    }, this);
+
+                    // this._jobChanged();
+                });
+            }
+
+            get() {
+                return this.json;
+            }
+
+            _modalToggle() {
+                this.$.modal.open();
+                this.$.updateJobsList.generateRequest();
+                setTimeout(function () {
+                    $(this.$.modal).css('top', '130px');
+                    $(this.$.modal).css('max-height', 'none');
+                }.bind(this), 50)
+            }
+
+            _ajexerror(ev) {
+                this.jobLists = [];
+                this.$.material.clearCache();
+                this.job_error = true;
+            }
+
+            _loadJobsComplete() {
+                this.job_error = false;
+                if (this.jobs) {
+                    this.$.joblist.items = this.jobs;
+                }
+            }
+
+            _addJob(ev, item) {
+                var el = document.createElement('li');
+                var n = this.numJob;
+                el.setAttribute("id", "job-" + n);
+
+                if (item.value) {
+                    this.numJob += 1;
+                    $.getJSON(`${this.config.api.job_api}/${item.value}`, (data) => {
+                        el.innerHTML = `<span class="job-name">${item.value}</span><i class="job-remove">✖</i>
+                <paper-tooltip for="job-${n}" position="top" animation-delay="100" class="job-overview">
+                        <div>
+                            <p><strong>Job ID : </strong>${data.job_id}</p>
+                            <p><strong>Data in : </strong>${this.arrToStr(data.data_in)}</p>
+                            <p><strong>Data transform : </strong>${this.arrToStr(data.data_transform)}</p>
+                            <p><strong>Data out : </strong>${this.arrToStr(data.data_out)}</p>
+                        </div>
+                        <span class="triangle"></span>
+                    </paper-tooltip>`;
+
+                    }).fail(() => {
+                        el.innerHTML = `<span class="job-name">${item.value}</span><i class="job-remove">✖</i>
+                        <paper-tooltip for="job-${n}" position="top" animation-delay="100" class="job-overview">
+                        <div style="text-align:center">
+                            "${item.value}" isn't registered
+                        </div>
+                        <span class="triangle"></span>
+                        </paper-tooltip>`;
+
+                    }).always(() => {
+                        $(el).children("i")[0].addEventListener('click', (evt) => {
+                            var el = Polymer.dom(evt).rootTarget;
+                            el.parentNode.parentNode.removeChild(el.parentNode);
+                            this._jobChanged();
+                        })
+                        if (item.value) {
+
+                            this.$['job-items'].appendChild(el);
+                        }
+                        this.$.joblist.selectedItem = null;
+
+                        if (!this.editting)
+                            this._jobChanged();
+                        else
+                            this._isEditting();
+                    })
+                }
+            }
+            _jobChanged() {
+                this.json.param.to = [];
+
+                Polymer.dom(this.$['job-items']).querySelectorAll('li span.job-name').forEach(function (element) {
+                    this.json.param.to.push(element.textContent);
+                }, this);
+                if (Polymer.dom(this.$['job-items']).querySelectorAll('li span').length == 0)
+                    this.$.jobListOverview.items = [];
+                this.dispatchEvent(this.pluginCallEditorChange);
+
+            }
+            _closeModal(ev) {
+                $(this.$.modal).css('top', '100%');
+                $(this.$.modal).css('max-height', 'none');
+                setTimeout(function () {
+                    this.$.modal.toggle();
+                }.bind(this), 100)
+            }
+            arrToStr(arr) {
+                if (arr) {
+                    let str = '';
+                    if (arr.length)
+                        arr.forEach((item, index) => {
+                            if (index != 0)
+                                str += ', ';
+                            str += item.type;
+                        })
+                    else
+                        str = arr.type
+                    return str
+                }
+            }
+            _isEditting() {
+                if (Polymer.dom(this.$['job-items']).querySelectorAll('li span.job-name').length == this.json.param.to.length)
+                    this.editting = false;
+            }
+        }
+
+        window.customElements.define(pluginCall.is, pluginCall);
+    </script>
+</dom-module>

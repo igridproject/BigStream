@@ -1,0 +1,9 @@
+["igrid.testproxy",
+    "tpb.agritronics.temperature",
+    "tpb.agritronics.rain",
+    "tpb.agritronics.battery",
+    "igrid.rainradar.nck",
+    "igrid.rainradar.nkm",
+    "igrid.env",
+    "sds.gistda-water"
+]

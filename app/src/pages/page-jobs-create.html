@@ -1,0 +1,371 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="../shared-styles.html">
+
+<link rel="import" href="/bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="/bower_components/app-layout/app-grid/app-grid-style.html">
+<link rel="import" href="/bower_components/paper-card/paper-card.html">
+<link rel="import" href="/bower_components/paper-toggle-button/paper-toggle-button.html">
+
+<link rel="import" href="../common/plugin-select.html">
+
+<dom-module id="page-createjob">
+  <template>
+    <style include="app-grid-style"></style>
+    <link href="../../asset/jsoneditor/jsoneditor.css" rel="stylesheet" type="text/css">
+    <style include="shared-styles">
+       :host {
+        box-sizing: border-box;
+        display: block;
+        --app-grid-columns: 2;
+        --app-grid-gutter: 15px;
+        position: relative;
+        --paper-dropdown-menu: {
+          width: 30%;
+          position: absolute;
+          right: 10px;
+        }
+        ;
+        --paper-input-container-input-color: var(--google-grey-700);
+        --paper-input-container-underline: {
+          display: none;
+        }
+        ;
+      }
+
+
+      .code>div {
+        height: 100%;
+      }
+
+      .code div.jsoneditor-menu {
+        background-color: var(--paper-blue-500);
+      }
+
+      paper-card {
+        overflow: scroll;
+      }
+
+      paper-card.form #jsoneditor {
+        height: 500px;
+        border: none;
+      }
+
+      paper-card.form .jsoneditor {
+        border: none!important;
+      }
+
+      paper-card.form div.jsoneditor-menu {
+        background-color: var(--google-grey-100)!important;
+        border-bottom: 1px solid var(--google-grey-100)!important;
+        color: #444!important
+      }
+
+      paper-card.form div.jsoneditor-menu>button,
+      paper-card.form div.jsoneditor-menu>div.jsoneditor-modes>button {
+        background-color: rgba(68, 68, 68, 0.59)!important;
+        cursor: pointer;
+      }
+
+      paper-card.form div.jsoneditor-menu {
+        display: none;
+      }
+
+      paper-card.form div.jsoneditor-outer {
+        margin: 0!important;
+        padding: 0!important;
+      }
+
+      div.editor>div {
+        padding: 10px 20px;
+        position: relative;
+      }
+
+      div.editor .jsonlabel {
+        color: #616161;
+        padding: 0 20px;
+        border: 1px solid var(--google-grey-300);
+        border-width: 1px 0 0 0px;
+        display: flex;
+      }
+
+      div.jsoneditor-tree {
+        overflow: visible!important;
+      }
+
+      div.editor .jsonlabel h5 {
+        width: 20%;
+        padding-top: 11px;
+      }
+
+      div.editor {
+        background: #fff;
+      }
+
+      table.jsoneditor-tree>tbody>tr:first-child {
+        display: none;
+      }
+
+      app-toolbar.footer {
+        border-top: 1px solid var(--google-grey-300);
+        bottom: 0;
+        position: fixed;
+        width: 100%;
+        font-size: 16px;
+        height: 50px;
+      }
+
+      paper-button.green {
+        background-color: var(--paper-green-500);
+        color: white;
+        padding: 5px;
+      }
+
+      @media all and (min-width: 641px) {
+        .mode-toggle {
+          display: none;
+        }
+      }
+
+      @media all and (max-width: 640px) {
+         :host {
+          --app-grid-columns: 1;
+        }
+        paper-card.form,
+        paper-card.code {
+          display: none;
+          min-height: 600px;
+        }
+        paper-card[mode-active] {
+          display: block;
+        }
+      }
+
+      paper-toggle-button {
+        position: absolute;
+        right: 12px;
+        top: 12px;
+      }
+
+      .main-page {
+        height: 100%;
+      }
+    </style>
+
+    <app-toolbar>
+      <div main-title>[[titlePage]]</div>
+      <paper-dropdown-menu label="Mode" class="mode-toggle" on-iron-select="_changeMode" no-animations>
+        <paper-listbox slot="dropdown-content" selected="0">
+          <paper-item>Form</paper-item>
+          <paper-item>Code</paper-item>
+        </paper-listbox>
+      </paper-dropdown-menu>
+    </app-toolbar>
+    <div class="app-grid main-page">
+      <paper-card class="item form" mode-active$="[[!codeMode]]">
+        <div class="editor">
+
+          <!--General detail-->
+          <div class="jsonlabel">
+            <h5>General detail</h5>
+          </div>
+          <div id="jsonDetail"></div>
+
+          <!--Trigger-->
+          <div class="jsonlabel">
+            <h5>Trigger</h5>
+            <paper-toggle-button checked="{{triggerToggle}}" on-change="_triggerToggle"></paper-toggle-button>
+          </div>
+          <plugin-select id="trigger" maxplugin="1" disabled="[[triggerToggle]]"></plugin-select>
+
+          <!--Data in-->
+          <div class="jsonlabel">
+            <h5>Data in</h5>
+          </div>
+          <plugin-select id="data_in" maxplugin="1"></plugin-select>
+
+          <!--Data transform-->
+          <div class="jsonlabel">
+            <h5>Data transform</h5>
+          </div>
+          <plugin-select id="data_transform"></plugin-select>
+
+          <!--Data out-->
+          <div class="jsonlabel">
+            <h5>Data out</h5>
+          </div>
+          <plugin-select id="data_out" maxplugin="1"></plugin-select>
+        </div>
+      </paper-card>
+      <paper-card class="code item" mode-active$="[[codeMode]]">
+        <div id="code"></div>
+      </paper-card>
+
+
+    </div>
+    <app-toolbar class="footer">
+      <iron-ajax id="addDataAjax" url="[[jobapi]]" handle-as="json" method="POST" on-response="_addComplete" on-error="_addError"
+        content-type="application/json"></iron-ajax>
+      <paper-button class="btn btn-success green" on-click="_addJob">Add</paper-button>
+    </app-toolbar>
+    <iron-location path='{{path}}'></iron-location>
+  </template>
+
+  <script src="../../asset/jsoneditor/jsoneditor.js"></script>
+  <script>
+    class PageCreatejob extends Polymer.Element {
+      static get is() {
+        return 'page-createjob';
+      }
+
+      static get properties() {
+        return {
+          titlePage: {
+            type: String,
+            value: 'Create Job'
+          },
+          jsoneditor: {
+            type: Object,
+            value: {}
+          },
+          codeMode: {
+            type: Boolean,
+            value: false
+          },
+          triggerToggle: {
+            type: Boolean,
+            value: true
+          },
+          jsonResult: {
+            type: Object,
+            value: {
+              "job_id": "example",
+              "active": true,
+              "trigger": {},
+              "data_in": {},
+              "data_transform": {},
+              "data_out": {}
+            }
+          }
+        };
+      }
+
+      ready() {
+        super.ready();
+
+        Polymer.RenderStatus.afterNextRender(this, function () {
+
+          var jsoneditor = this.jsoneditor;
+
+          $.getJSON("/src/config/jobPlugins.json", function (data) {
+            jsoneditor.jobPlugins = data;
+            var detail = {
+              "job_id": "example",
+              "active": true
+            };
+
+            this.$.trigger.plugins = data.trigger;
+            this.$.data_in.plugins = data.data_in;
+            this.$.data_transform.plugins = data.data_transform;
+            this.$.data_out.plugins = data.data_out;
+
+            this.$.trigger.addEventListener('jsonchanged', pluginSelectChange);
+            this.$.data_in.addEventListener('jsonchanged', pluginSelectChange);
+            this.$.data_transform.addEventListener('jsonchanged', pluginSelectChange);
+            this.$.data_out.addEventListener('jsonchanged', pluginSelectChange);
+
+            var options = {
+              mode: 'code',
+              modes: ['code', 'form', 'text', 'tree', 'view'],
+              onChange: _codeJSONchange
+            };
+
+            var jsonDetailoptions = {
+              mode: 'tree',
+              onChange: _jsonDetailChange
+            };
+
+            jsoneditor.jsonDetail = new JSONEditor(this.$.jsonDetail, jsonDetailoptions, detail);
+            jsoneditor.code = new JSONEditor(this.$.code, options, this.jsonResult);
+            jsoneditor.jsonDetail.setMode('tree');
+
+          }.bind(this));
+
+          var _codeJSONchange = function (ev) {
+            var newjson = this.jsoneditor.code.get();
+            var detail = {
+              "job_id": newjson.job_id,
+              "active": newjson.active
+            };
+            if (newjson.trigger != this.$.trigger.get()) this.$.trigger.set(newjson.trigger);
+            if (newjson.data_in != this.$.data_in.get()) this.$.data_in.set(newjson.data_in);
+            if (newjson.data_transform != this.$.data_transform.get()) this.$.data_transform.set(newjson.data_transform);
+            if (newjson.data_out != this.$.data_out.get()) this.$.data_out.set(newjson.data_out);
+            this.jsoneditor.jsonDetail.set(detail);
+            this.jsonResult = newjson;
+          }.bind(this);
+
+          var _jsonDetailChange = function () {
+            this.jsonResult.job_id = this.jsoneditor.jsonDetail.get().job_id;
+            this.jsonResult.active = this.jsoneditor.jsonDetail.get().active;
+            this.jsoneditor.code.set(this.jsonResult);
+          }.bind(this);
+
+          var pluginSelectChange = function (ev) {
+            this.jsonResult[ev.detail.id] = ev.detail.json;
+            this.jsoneditor.code.set(this.jsonResult);
+          }.bind(this);
+
+        });
+
+      }
+
+      static get observers() {
+        return [];
+      }
+
+      _getJson() {
+        return this.jsoneditor.code.get();
+      }
+
+
+      _changeMode(e, element) {
+        if (element.item.textContent === 'Code') this.codeMode = true;
+        else this.codeMode = false;
+      }
+
+      _addJob() {
+        this.$.addDataAjax.body = this._getJson();
+        this.$.addDataAjax.generateRequest();
+      }
+
+      _addError(e) {
+        console.log(e);
+      }
+
+      _addComplete(e, res) {
+        this.path = "/jobs";
+      }
+
+      _triggerToggle(ev, el) {
+        if (!this.triggerToggle)
+          delete this.jsonResult.trigger;
+        else
+          this.jsonResult.trigger = {};
+        this.$.trigger.set(this.jsonResult.trigger);
+        this.jsoneditor.code.set(this.jsonResult);
+      }
+    }
+
+    window.customElements.define(PageCreatejob.is, PageCreatejob);
+  </script>
+</dom-module>

@@ -1,0 +1,299 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/vaadin-grid/all-imports.html">
+<!--
+`<joblist>` is Description
+
+@element joblist
+-->
+<dom-module id="joblist-element">
+    <template>
+        <style include="bootstrap"></style>
+        <style include="shared-styles">
+             :host {
+                display: block;
+                height: 100%;
+            }
+
+            .joblist .active-status {
+                color: red;
+                font-size: 20px;
+                position: absolute;
+                top: 9px;
+            }
+
+            .joblist .active-status[active] {
+                color: green;
+            }
+
+            vaadin-grid.joblist {
+                height: 100%;
+                border: 0;
+                --vaadin-grid-header-cell: {
+                    font-size: 14px!important;
+                    padding-left: 20px;
+                    height: initial;
+                    background: #fbfbfb;
+                }
+                ;
+                --vaadin-grid-body-cell: {
+                    padding: 0;
+                    padding-left: 14px;
+                    height: 48px;
+                    color: rgba(0, 0, 0, var(--dark-primary-opacity));
+                    font-size: 13px;
+                }
+                ;
+
+                --vaadin-grid-body-row-hover-cell: {
+                    cursor: pointer;
+                    background-color: var(--paper-grey-200);
+                }
+                ;
+            }
+
+            .job-search-input {
+                position: absolute;
+                top: 13px;
+                right: 60px;
+                --iron-icon-width: 14px;
+                min-width: initial;
+                padding: 0px 5px;
+                height: 32px;
+                width: 200px;
+            }
+
+            vaadin-grid.material .cell {
+                padding-right: 0!important;
+                height: 100%;
+                padding-top: 15px;
+            }
+
+            paper-fab.createJobFab {
+                --paper-fab-background: var(--paper-light-blue-700);
+                position: absolute;
+                right: 20px;
+                bottom: 20px;
+                z-index: 100;
+                transition: all 0.3s ease;
+            }
+
+            vaadin-grid.material paper-checkbox {
+                height: 100%;
+                padding-top: 16px;
+                padding-left: 16px;
+            }
+
+            #toolbarSelect {
+                background: rgba(47, 50, 58, 0.94);
+                width: 100%;
+                height: 55px;
+                position: absolute;
+                bottom: -55px;
+                left: 0;
+                z-index: 111;
+                transition: all 0.3s ease;
+            }
+
+            #toolbarSelect paper-button {
+                margin-top: 9px;
+                float: right;
+                margin-right: 10px;
+            }
+
+            #toolbarSelect[have-select] {
+                bottom: 0;
+            }
+
+            .createJobFab[have-select] {
+                bottom: 75px;
+            }
+
+            .refreshbt {
+                cursor: pointer;
+                margin-right: 15px;
+                position: absolute;
+                top: 19px;
+                right: 10px;
+                color: var(--google-grey-700);
+            }
+
+            .refreshbt.active {
+                animation-name: spin;
+                animation-duration: 0.4s;
+            }
+
+            @keyframes spin {
+                from {
+                    transform: rotate(0deg);
+                }
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .jobname {
+                margin-left: 20px;
+            }
+        </style>
+        <!-- Fetch an array of users to be shown in the grid -->
+        <iron-ajax auto loading="{{loading}}" url="[[jobapi]]" handle-as="json" last-response="{{jobs}}" on-error="_ajexerror" id="updateJobsList"
+            on-response="_loadJobsComplete"></iron-ajax>
+
+        <template is="dom-if" if="[[loading]]">
+            <paper-progress value="10" indeterminate="true" style="width:100%;position: absolute;z-index: 1;"></paper-progress>
+        </template>
+        <paper-fab mini icon="icons:add" title="Create job" class="createJobFab" on-click="_addJobBt" have-select$="[[haveSelect]]"></paper-fab>
+        <x-array-data-provider items="{{jobLists}}"></x-array-data-provider>
+        <vaadin-grid class="material joblist" id="material" items="[[jobLists]]" on-active-item-changed="_selectJob" on-selected-items-changed="_jobSelectedChanged"
+            selected-items="{{jobSelected}}">
+
+            <vaadin-grid-column flex="0">
+                <template class="header">
+                    <vaadin-grid-filter aria-label="Job Name" path="job_id" value="[[_filterJobName]]">
+                        <input slot="filter" type="text" hidden>
+                    </vaadin-grid-filter>
+                    <div class="cell">
+                        <vaadin-grid-sorter path="job_id">
+                            <span>Job list</span> ({{jobs.length}} jobs)
+                        </vaadin-grid-sorter>
+                    </div>
+                </template>
+                <template>
+                    <div class="cell"><span class="active-status" active$="[[item.active]]">&#9679</span> <span class="jobname">[[item.job_id]]</span></div>
+                </template>
+            </vaadin-grid-column>
+            <vaadin-grid-column width="160px" flex-grow="0">
+                <template class="header">
+                    <div class="cell">
+                        <div class="input-group addjobbt job-search-input">
+                            <div class="input-group-addon">
+                                <iron-icon icon="icons:search"></iron-icon>
+                            </div>
+                            <input type="text" class="form-control form-control-sm" value="{{_filterJobName::input}}">
+                        </div>
+                        <iron-icon icon="icons:refresh" class="refreshbt" on-click="_refreshbt"></iron-icon>
+                    </div>
+                </template>
+                <template>
+                    <paper-checkbox aria-label="Select Row" checked="{{selected}}">
+                    </paper-checkbox>
+                </template>
+            </vaadin-grid-column>
+        </vaadin-grid>
+
+        <template is="dom-if" if="[[job_error]]">
+            <div style="padding: 85px 15px 0;position: absolute;top: 0;width:100%;height: 100%;background: rgba(239, 239, 239, 0.79);    z-index: 112;">
+                <div class="alert alert-danger" role="alert" style="width:100%">
+                    <strong>Error !</strong> Can't GET [[jobapi]] , 404 (Not Found), Please go to <strong><a style="color: #aa4644;" href="/setting">Setting</a></strong>                    to set other job api
+                </div>
+            </div>
+        </template>
+        <div id="toolbarSelect" have-select$="[[haveSelect]]">
+            <paper-button type="button" class="btn btn-danger" on-click="_deleteBt">Delete (selected [[jobSelected.length]] items)</paper-button>
+        </div>
+
+    </template>
+
+    <script>
+        class joblistElement extends Polymer.Element {
+
+            static get is() { return 'joblist-element'; }
+
+            static get properties() {
+                return {
+                    jobLists: {
+                        value: []
+                    }
+                };
+            }
+            static get observers() {
+                return [
+                    '_jobListsChanged(jobLists)'
+                ];
+            }
+            constructor() {
+                super();
+            }
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function () {
+
+                });
+            }
+            _loadJobsComplete() {
+                this.job_error = false;
+                if (this.jobs) {
+                    this.jobLists = [];
+                    var jobLists = this.jobLists;
+                    var material = this.$.material;
+                    this.jobs.forEach(function (job, index) {
+                        $.getJSON(`${this.jobapi}/${encodeURIComponent(job)}`, (data) => {
+                            jobLists.push({
+                                "job_id": job,
+                                "active": (data.active === 'true' || data.active == true)
+                            });
+                            if (index == this.jobs.length - 1)
+                                material.clearCache();
+                        }).fail(function (jqXHR, textStatus, errorThrown) { material.clearCache(); });
+                    }, this);
+
+                    //this.$.material.items = this.jobLists;
+                }
+            }
+
+            _selectJob(ev, item) {
+                if (this.$.material.activeItem != null) {
+                    // this.$.material.selectedItems = this.$.material.activeItem ? [this.$.material.activeItem] : [];
+                    this.dispatchEvent(new CustomEvent('selected-job-list', {
+                        "detail": item.value
+                    }));
+                }
+                this.$.material.activeItem = null;
+            }
+            _ajexerror(ev) {
+                this.jobLists = [];
+                this.$.material.clearCache();
+                this.job_error = true;
+            }
+            _addJobBt(ev) {
+                this.dispatchEvent(new CustomEvent('toggle-add-job'));
+            }
+            _updateJoblist() {
+                this.$.updateJobsList.generateRequest();
+            }
+            _jobSelectedChanged(ev, item) {
+                if (this.$.material.selectedItems.length >= 1)
+                    this.haveSelect = true;
+                else
+                    this.haveSelect = false;
+            }
+            _deleteBt() {
+                this.dispatchEvent(new CustomEvent('delete-job', {
+                    "detail": this.$.material.selectedItems
+                }));
+            }
+            _jobListsChanged(jobLists) {
+                this.jobSelected = [];
+                if (this.$.material.selectedItems.length >= 1)
+                    this.haveSelect = true;
+                else
+                    this.haveSelect = false;
+            }
+            _refreshbt(ev) {
+                let refreshbt = Polymer.dom(this.root).querySelector('iron-icon.refreshbt');
+                refreshbt.classList.remove('active');
+                refreshbt.classList.add('active');
+                setTimeout(() => {
+                    refreshbt.classList.remove('active');
+                }, 400);
+                Polymer.dom(this.root).querySelectorAll('iron-ajax').forEach((el) => {
+                    el.generateRequest();
+                })
+            }
+        }
+
+        window.customElements.define(joblistElement.is, joblistElement);
+    </script>
+</dom-module>

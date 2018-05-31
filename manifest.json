@@ -1,0 +1,6 @@
+{
+  "name": "bigstream-dashboard",
+  "short_name": "bigstream-dashboard",
+  "start_url": "/",
+  "display": "standalone"
+}

@@ -1,0 +1,323 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="/bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="/bower_components/iron-icons/editor-icons.html">
+<script src="/bower_components/Sortable/Sortable.min.js"></script>
+<!--job plugins-->
+<link rel="import" href="../common/job-plugins/jsoneditor.html">
+<link rel="import" href="../common/job-plugins/plugin-call.html">
+
+<!--
+`<pluginSelect>` is Description
+
+@element pluginSelect
+-->
+<dom-module id="plugin-select">
+    <template>
+        <style>
+             :host {
+                display: block;
+                padding: 10px;
+            }
+
+            .box {
+                padding: 10px;
+                text-align: center;
+            }
+
+            .box>paper-menu-button:hover {
+                background: var(--google-grey-100);
+            }
+
+            .box>paper-menu-button[hidden] {
+                display: none;
+            }
+
+            .add,
+            .add paper-button {
+                width: 100%;
+                padding: 0;
+                margin: 0;
+                font-size: 15px;
+            }
+
+            .add paper-button {
+                padding: 5px;
+                color: var(--google-grey-500);
+                text-transform: none;
+                border: 1px solid var(--google-grey-300);
+            }
+
+            .box>paper-menu-button[disabled] {
+                background: #dfdfdf;
+                border-radius: 5px;
+            }
+
+            ul#plugins-items {
+                margin: 0;
+                list-style: none;
+                padding: 0;
+            }
+
+            ul#plugins-items li {
+                padding: 5px;
+                border: 1px solid var(--google-grey-300);
+                margin-bottom: 9px;
+                position: relative;
+            }
+
+            .js-remove {
+                cursor: pointer;
+                position: absolute;
+                right: 12px;
+                color: #cecece;
+                font-size: 11px;
+                top: 10px;
+                padding: 3px 6px;
+            }
+
+            paper-button.toggle {
+                width: 100%;
+                margin: 0;
+                padding: 4px 0;
+                text-transform: none;
+            }
+
+            paper-button.toggle iron-icon.down {
+                transition: transform 0.4s ease;
+            }
+
+            paper-button.toggle[active] iron-icon.down {
+                transform: rotate(-180deg)
+            }
+
+            paper-menu-button {
+                cursor: pointer;
+            }
+
+            iron-icon.drag {
+                position: absolute;
+                cursor: move;
+                left: 7px;
+                z-index: 1;
+                color: var(--google-grey-500);
+                --iron-icon-width: 18px;
+            }
+
+            iron-icon.drag:hover,
+            .js-remove:hover {
+                background: var(--google-grey-100);
+                border: 1px solid var(--google-grey-300);
+            }
+        </style>
+
+        <div class="box">
+            <ul id="plugins-items">
+
+            </ul>
+            <paper-menu-button class="add" no-animations on-iron-select="_clickAddPlugins" hidden$="[[isFull]]" disabled$="[[!disabled]]">
+                <paper-button slot="dropdown-trigger">+ Add plugin</paper-button>
+                <paper-listbox slot="dropdown-content" id="pulginsSelector">
+                    <dom-repeat id="pulginsList">
+                        <template>
+                            <paper-item index="[[index]]">[[item.type]]</paper-item>
+                        </template>
+                    </dom-repeat>
+                </paper-listbox>
+            </paper-menu-button>
+        </div>
+    </template>
+
+    <script>
+        class pluginSelectElement extends Polymer.Element {
+
+            static get is() {
+                return 'plugin-select';
+            }
+
+            static get properties() {
+                return {
+                    "plugins": Array,
+                    "sortable": Object,
+                    "json": Object,
+                    "numOfPlugin": {
+                        "type": Number,
+                        "value": 0
+                    },
+                    "maxplugin": Number
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_pluginsChanged(plugins)',
+                ];
+            }
+
+            constructor() {
+                super();
+            }
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    var el = this.$['plugins-items'];
+                    this.sortable = Sortable.create(el, {
+                        animation: 150,
+                        filter: '.js-remove',
+                        onFilter: function (evt) {
+                            evt.item.parentNode.removeChild(evt.item);
+                            this._jsonChanged();
+                            this.numOfPlugin -= 1;
+                            this.isFull = (this.maxplugin <= this.numOfPlugin);
+                        }.bind(this),
+                        onEnd: function (evt, originalEvent) {
+                            this._jsonChanged()
+                        }.bind(this),
+                        draggable: 'li.plugin-item',
+                        handle: '.drag'
+                    });
+                    // if (this.maxplugin == 1)
+                    //     this.sortable.option("disabled", true);
+
+                });
+            }
+
+            _pluginsChanged(plugins) {
+                this.$.pulginsList.items = plugins;
+                var pluginObjConvert = () => {
+                    let temp = {};
+                    plugins.forEach((item) => {
+                        temp[item.type] = item;
+                    }, this)
+                    return temp;
+                }
+                this.pluginObj = pluginObjConvert();
+            }
+
+            _clickAddPlugins(ev, element) {
+                this._addPlugins(this.plugins[element.item.index]);
+            }
+
+            _addPlugins(plugin) {
+                var json = plugin.value;
+
+                if (json && json.type) {
+                    var el = document.createElement('li');
+                    el.setAttribute("class", "plugin-item");
+                    var innerHTML = '<iron-icon icon="editor:drag-handle" class="drag"></iron-icon><paper-button class="toggle" toggles>' +
+                        json.type +
+                        '<iron-icon icon="icons:arrow-drop-down" class="down"></iron-icon></paper-button><iron-collapse id="collapse">';
+
+                    if (plugin.extended) { // Plugins that have specific editor
+                        el.innerHTML = `${innerHTML}<${plugin.editor_tag} class="plugin-editor"></${plugin.editor_tag}></iron-collapse><i class="js-remove">✖</i>`;
+
+                        el.childNodes[1].onclick = function (ev) {
+                            el.querySelector('iron-collapse').toggle();
+                        };
+
+                        Polymer.dom(el).querySelector(plugin.editor_tag)
+                            .addEventListener(`${plugin.editor_tag}-editor-change`, function (ev) {
+                                this._jsonChanged()
+                            }.bind(this));
+
+                        Polymer.dom(el).querySelector(plugin.editor_tag)
+                            .editting = this.editting;
+
+                        Polymer.dom(el).querySelector(plugin.editor_tag)
+                            .json = json;
+
+                        Polymer.dom(el).querySelector(plugin.editor_tag).config = this.config;
+
+                        this.sortable.el.appendChild(el);
+                    } else {    // General plugins is use json-editor
+                        el.innerHTML = innerHTML + '<json-editor class="plugin-editor"></json-editor>' +
+                            '</iron-collapse><i class="js-remove">✖</i>';
+
+                        el.childNodes[1].onclick = function (ev) {
+                            el.querySelector('iron-collapse').toggle();
+                        };
+
+                        el.childNodes[2].firstChild.json = JSON.parse(JSON.stringify(json));
+                        el.childNodes[2].firstChild.editting = this.editting;
+
+                        // addEventListener when json in each plugin changed
+                        el.childNodes[2].firstChild.addEventListener('editorchange', function (ev) {
+                            this._jsonChanged()
+                        }.bind(this));
+
+                        this.sortable.el.appendChild(el);
+
+                    }
+                    // count num of plugins that register in this 
+                    this.numOfPlugin += 1;
+                    this.isFull = (this.maxplugin >= this.numOfPlugin);
+
+                }
+                this.$.pulginsSelector.selected = null;
+            }
+
+            // when plugin added/removed or text changed or list moved
+            _jsonChanged() {
+                var editorlist = this.sortable.el.querySelectorAll('.plugin-editor');
+                var newjson;
+                if (editorlist.length > 1) {
+                    newjson = [];
+                    for (var i = 0; i < editorlist.length; i++) {
+                        newjson.push(editorlist[i].get());
+                    }
+                } else if (editorlist.length == 1) {
+                    newjson = editorlist[0].get();
+                } else {
+                    newjson = {};
+                }
+                this.json = newjson;
+                this.dispatchEvent(new CustomEvent('jsonchanged', {
+                    detail: {
+                        "id": this.id,
+                        "json": this.json
+                    }
+                }));
+                // console.log(this.json);
+            }
+
+            deleteAll() {
+                this.$['plugins-items'].innerHTML = "";
+                this.numOfPlugin = 0;
+                this.isFull = (this.maxplugin <= this.numOfPlugin);
+            }
+
+            set(newjson) {
+                this.deleteAll();
+                if (newjson && (this.editting = true)) {
+                    if (newjson.length) newjson.forEach(function (element, index) {
+                        let elConvert = {};
+                        if (this.pluginObj[element.type])
+                            elConvert = JSON.parse(JSON.stringify(this.pluginObj[element.type]));
+                        elConvert.value = element;
+                        this._addPlugins(elConvert);
+                        if (newjson.length - 1 == index) {
+                            this.editting = false;
+                        }
+                    }, this);
+                    else {
+                        let elConvert = {};
+                        if (this.pluginObj[newjson.type])
+                            elConvert = JSON.parse(JSON.stringify(this.pluginObj[newjson.type]));
+                        elConvert.value = newjson;
+                        this._addPlugins(elConvert);
+                        this.editting = false;
+                    }
+                }
+            }
+
+            get() {
+                return this.json;
+            }
+        }
+
+        window.customElements.define(pluginSelectElement.is, pluginSelectElement);
+    </script>
+</dom-module>

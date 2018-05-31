@@ -1,0 +1,362 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="../shared-styles.html">
+
+<link rel="import" href="/bower_components/iron-selector/iron-selector.html">
+
+<dom-module id="page-jobs-detail">
+    <template>
+
+        <link href="../../asset/jsoneditor/jsoneditor.css" rel="stylesheet" type="text/css">
+        <style include="shared-styles">
+             :host {
+                display: block;
+                --app-grid-columns: 12;
+                --app-grid-item-height: 100px;
+                --paper-dropdown-menu: {
+                    position: absolute;
+                    right: 10px;
+                }
+                ;
+
+                --paper-input-container-input-color: var(--google-grey-700);
+                --paper-input-container-underline: {
+                    display: none;
+                }
+                ;
+            }
+
+            app-toolbar {
+                color: #616161;
+                background-color: var(--google-grey-100);
+                border-bottom: 1px solid var(--paper-grey-300)
+            }
+
+            code {
+                background-color: #f5f5f5;
+            }
+
+            #jsoneditor {
+                height: 500px;
+                border: none;
+            }
+
+            .jsoneditor {
+                border: none!important;
+            }
+
+            div.jsoneditor-menu {
+                background-color: var(--google-grey-100)!important;
+                border-bottom: 1px solid var(--google-grey-100)!important;
+                color: #444!important
+            }
+
+            div.jsoneditor-menu>button,
+            div.jsoneditor-menu>div.jsoneditor-modes>button {
+                background-color: rgba(68, 68, 68, 0.59)!important;
+                cursor: pointer;
+            }
+
+            div.jsoneditor-menu {
+                display: none;
+            }
+
+            div.jsoneditor-outer {
+                margin: 0!important;
+                padding: 0!important;
+            }
+
+            div.editor>div {
+                padding: 10px 20px;
+            }
+
+            div.editor .jsonlabel {
+                color: #616161;
+                padding: 0 20px;
+                border: 1px solid var(--google-grey-300);
+                border-width: 1px 0 0 0px;
+                display: flex;
+            }
+
+            div.jsoneditor-tree {
+                overflow: visible!important;
+            }
+
+            div.editor .jsonlabel h5 {
+                width: 20%;
+                padding-top: 11px;
+            }
+
+            table.jsoneditor-tree>tbody>tr:first-child {
+                display: none;
+            }
+
+            app-toolbar.footer {
+                border-top: 1px solid var(--google-grey-300);
+                bottom: 0;
+                position: fixed;
+                width: 100%;
+                font-size: 16px;
+                height: 50px;
+            }
+
+            paper-button.green {
+                background-color: var(--paper-green-500);
+                color: white;
+                padding: 5px;
+            }
+
+            .main-page {
+                height: 100%;
+            }
+        </style>
+
+        <app-route route="[[route]]" pattern="/:jobid" data="{{routeData}}"></app-route>
+        <iron-ajax auto url="[[jobapi]]/[[routeData.jobid]]" handle-as="json" on-response="_loadJobComplete" last-response="{{jobDetail}}"
+            id="updateJobsDetail"></iron-ajax>
+
+        <app-toolbar>
+            <div main-title>[[titlePage]] : {{routeData.jobid}}</div>
+        </app-toolbar>
+        <div class="editor main-page">
+
+            <!--General detail-->
+            <div class="jsonlabel">
+                <h5>General detail</h5>
+            </div>
+            <div id="jsonDetail"></div>
+
+            <!--Trigger-->
+            <div class="jsonlabel">
+                <h5>Trigger</h5>
+                <paper-dropdown-menu no-label-float noink no-animations on-iron-select="_pluginsChanges" name="trigger" placeholder="trigger preset">
+                    <paper-listbox slot="dropdown-content" class="dropdown-content">
+                        <dom-repeat class="pulginsList">
+                            <template>
+                                <paper-item>[[item.type]]</paper-item>
+                            </template>
+                        </dom-repeat>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+            </div>
+            <div id="trigger"></div>
+
+            <!--Data in-->
+            <div class="jsonlabel">
+                <h5>Data in</h5>
+                <paper-dropdown-menu no-label-float noink no-animations on-iron-select="_pluginsChanges" name="data_in" placeholder="data_in preset">
+                    <paper-listbox slot="dropdown-content" class="dropdown-content">
+                        <dom-repeat class="pulginsList">
+                            <template>
+                                <paper-item>[[item.type]]</paper-item>
+                            </template>
+                        </dom-repeat>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+            </div>
+            <div id="data_in"></div>
+
+            <!--Data transform-->
+            <div class="jsonlabel">
+                <h5>Data transform</h5>
+                <paper-dropdown-menu no-label-float noink no-animations on-iron-select="_pluginsChanges" name="data_transform" placeholder="data_transform preset">
+                    <paper-listbox slot="dropdown-content" class="dropdown-content">
+                        <dom-repeat class="pulginsList">
+                            <template>
+                                <paper-item>[[item.type]]</paper-item>
+                            </template>
+                        </dom-repeat>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+            </div>
+            <div id="data_transform"></div>
+
+            <!--Data out-->
+            <div class="jsonlabel">
+                <h5>Data out</h5>
+                <paper-dropdown-menu no-label-float noink no-animations on-iron-select="_pluginsChanges" name="data_out" placeholder="data_out preset">
+                    <paper-listbox slot="dropdown-content" class="dropdown-content">
+                        <dom-repeat class="pulginsList">
+                            <template>
+                                <paper-item>[[item.type]]</paper-item>
+                            </template>
+                        </dom-repeat>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+            </div>
+            <div id="data_out"></div>
+        </div>
+
+        <app-toolbar class="footer">
+            <iron-ajax id="addDataAjax" url="[[jobapi]]" handle-as="json" method="POST" on-response="_addComplete" on-error="_addError"
+                content-type="application/json"></iron-ajax>
+            <paper-button raised class="green none-shadow" on-click="_addJob">Edit</paper-button>
+        </app-toolbar>
+    </template>
+
+    <script src="../../asset/jsoneditor/jsoneditor.js"></script>
+    <script>
+        class pageJobsDetail extends Polymer.Element {
+            static get is() {
+                return 'page-jobs-detail';
+            }
+
+            static get properties() {
+                return {
+                    titlePage: {
+                        type: String,
+                        value: 'Job'
+                    },
+                    jsoneditor: {
+                        type: Object,
+                        value: {}
+                    },
+                    pluginSwitch: {
+                        type: Object,
+                        value: {
+                            trigger: ""
+                        }
+                    },
+                    route: {
+                        type: Object
+                    },
+                    routeData: {
+                        type: Object
+                    }
+                };
+            }
+
+            static get observers() {
+                return [];
+            }
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    var jsoneditor = this.jsoneditor;
+                    var trigger = this.trigger;
+                    var repeater = Polymer.dom(this.root).querySelectorAll('dom-repeat.pulginsList');
+
+
+                    $.getJSON("/src/config/jobPlugins.json", function (data) {
+                        updatePulngins(data, jsoneditor);
+                        repeater[0].items = data.trigger;
+                        repeater[1].items = data.data_in;
+                        repeater[2].items = data.data_transform;
+                        repeater[3].items = data.data_out;
+
+                        //add first element class="iron-selected"
+                        repeater.forEach(function (repeatDom) {
+                            repeatDom.items.push({
+                                type: "custom",
+                                "param": {
+                                    "param_1": ""
+                                }
+                            });
+                        });
+                    });
+
+                    var updatePulngins = function (data, jsoneditor) {
+                        jsoneditor.jobPlugins = data;
+                    }
+                });
+
+            }
+            _getJson() {
+                this.jsonResult = {
+                    "job_id": this.jsoneditor.jsonDetail.get().job_id,
+                    "active": this.jsoneditor.jsonDetail.get().active,
+                    "trigger": this.jsoneditor.trigger.get(),
+                    "data_in": this.jsoneditor.data_in.get(),
+                    "data_transform": this.jsoneditor.data_transform.get(),
+                    "data_out": this.jsoneditor.data_out.get()
+                };
+                return this.jsonResult;
+            }
+
+            _pluginsChanges(e, element) {
+                var selectedItem = element.item.textContent;
+                var pluginName = element.item.parentNode.parentNode.name;
+                var jsonEditorToChange = this.jsoneditor[pluginName];
+                var setJson = function (newJSON) {
+                    jsonEditorToChange.set(newJSON);
+                    jsonEditorToChange.expandAll()
+                }
+                this.jsoneditor.jobPlugins[pluginName].forEach(function (item) {
+                    if (item.type === selectedItem) {
+                        setJson(item);
+                        return;
+                    }
+                });
+                //this.jsoneditor.trigger.set(this.jobPlugins.trigger[this.$.trigger.selectedItem.textContent]);
+            }
+
+            _addJob() {
+                this.$.addDataAjax.body = this._getJson();
+                this.$.addDataAjax.generateRequest();
+            }
+            _addError(e) {
+                console.log(e);
+            }
+            _addComplete(e, res) {
+                alert('whoa! request complete');
+            }
+            _loadJobComplete() {
+                var options = {
+                    mode: 'tree',
+                    onError: function (err) {
+                        alert(err.toString());
+                    },
+                    onModeChange: function (newMode, oldMode) {
+                        console.log('Mode switched from', oldMode, 'to', newMode);
+                    }
+                };
+                var container = [
+                    this.$.jsonDetail,
+                    this.$.trigger,
+                    this.$.data_in,
+                    this.$.data_transform,
+                    this.$.data_out
+                ];
+                var job = this.jobDetail;
+                var jsoneditor = this.jsoneditor;
+                // console.log(job);
+                var detail = {
+                    "job_id": job.job_id,
+                    "active": job.active
+                };
+                if (jsoneditor.jsonDetail) {
+                    jsoneditor.jsonDetail.destroy();
+                    jsoneditor.trigger.destroy();
+                    jsoneditor.data_in.destroy();
+                    jsoneditor.data_transform.destroy();
+                    jsoneditor.data_out.destroy();
+                }
+
+                jsoneditor.jsonDetail = new JSONEditor(container[0], options, detail);
+                jsoneditor.trigger = new JSONEditor(container[1], options, job.trigger);
+                jsoneditor.data_in = new JSONEditor(container[2], options, job.data_in);
+                jsoneditor.data_transform = new JSONEditor(container[3], options, job.data_transform);
+                jsoneditor.data_out = new JSONEditor(container[4], options, job.data_out);
+
+                jsoneditor.jsonDetail.expandAll();
+                jsoneditor.trigger.expandAll();
+                jsoneditor.data_in.expandAll();
+                jsoneditor.data_transform.expandAll();
+                jsoneditor.data_out.expandAll();
+            }
+        }
+
+        window.customElements.define(pageJobsDetail.is, pageJobsDetail);
+    </script>
+</dom-module>

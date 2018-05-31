@@ -1,0 +1,152 @@
+{
+    "trigger": [
+        {
+            "type": "cron",
+            "value": {
+                "type": "cron",
+                "param": {
+                    "cmd": "* * * * * *"
+                }
+            }
+        },
+        {
+            "type": "http",
+            "value": {
+                "type": "http",
+                "param": {
+                    "appkey": "appkeyName",
+                    "method": "get"
+                }
+            }
+        },
+        {
+            "type": "custom",
+            "value": {
+                "type": "custom",
+                "param": {}
+            }
+        }
+    ],
+    "data_in": [
+        {
+            "type": "example",
+            "value": {
+                "type": "example",
+                "param": {}
+            }
+        },
+        {
+            "type": "input",
+            "value": {
+                "type": "input",
+                "param": {
+                    "object": "httpdata"
+                }
+            }
+        },
+        {
+            "type": "http-request",
+            "value": {
+                "type": "http-request",
+                "param": {
+                    "url": "http://203.155.220.231/Radar/pics/zfiltered.jpg",
+                    "encoding": "binary"
+                }
+            }
+        },
+        {
+            "type": "custom",
+            "value": {
+                "type": "custom",
+                "param": {}
+            }
+        }
+    ],
+    "data_transform": [
+        {
+            "type": "noop",
+            "value": {
+                "type": "noop",
+                "param": {}
+            }
+        },
+        {
+            "type": "jsmap",
+            "value": {
+                "type": "jsmap",
+                "param": {
+                    "script": "data=(src.data[0].data.light>50)?'open':'close';meta={'ts':src.data[0].data.ts}"
+                }
+            }
+        },
+        {
+            "type": "filter-duplicate",
+            "value": {
+                "type": "filter-duplicate",
+                "param": {}
+            }
+        },
+        {
+            "type": "custom",
+            "value": {
+                "type": "custom",
+                "param": {}
+            }
+        }
+    ],
+    "data_out": [
+        {
+            "type": "console",
+            "value": {
+                "type": "console",
+                "param": {}
+            }
+        },
+        {
+            "type": "storage",
+            "value": {
+                "type": "storage",
+                "param": {
+                    "storage_name": "test.http"
+                }
+            }
+        },
+        {
+            "type": "call",
+            "value": {
+                "type": "call",
+                "param": {
+                    "to": []
+                }
+            },
+            "extended": true,
+            "editor_tag": "plugin-call"
+        },
+        {
+            "type": "line-notify",
+            "value": {
+                "type": "line-notify",
+                "param": {
+                    "token": "ks3CD8b8yMSbpabBEgEPOoF0kmVqzFiaNjmKcLsN3NT",
+                    "message": "${data}"
+                }
+            }
+        },
+        {
+            "type": "dweet",
+            "value": {
+                "type": "dweet",
+                "param": {
+                    "thing": "igrid-weather-kl"
+                }
+            }
+        },
+        {
+            "type": "custom",
+            "value": {
+                "type": "custom",
+                "param": {}
+            }
+        }
+    ]
+}

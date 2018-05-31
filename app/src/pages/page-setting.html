@@ -1,0 +1,183 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="/bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../shared-styles.html">
+<!--
+`<setting>` is Description
+
+@element setting
+-->
+<dom-module id="page-setting">
+    <template>
+        <style include="bootstrap"></style>
+        <style include="shared-styles">
+             :host {
+                display: block;
+                box-sizing: border-box!important;
+            }
+
+            paper-card {
+                width: 100%;
+            }
+
+            .detail {
+                border-left: 1px solid #ddd;
+                color: var(--paper-grey-500);
+            }
+
+            h6 {
+                color: var(--paper-grey-700);
+            }
+
+            .col-form-label {
+                font-size: 14px;
+            }
+
+            .submit {
+                margin-top: 15px;
+                text-align: right;
+            }
+
+            .section-card {
+                margin-top: 15px;
+            }
+
+            .any-empty {
+                position: fixed;
+                transition: all 0.3s ease-in;
+                height: 100%;
+                width: var(--app-drawer-width);
+                background: rgba(97, 97, 97, 0.7);
+                top: 0;
+                left: 0;
+                z-index: 1;
+                visibility: visible;
+                opacity: 1;
+            }
+
+            .any-empty[notshow] {
+                visibility: hidden;
+                opacity: 0;
+            }
+        </style>
+
+        <paper-toast autoFitOnAttach id="toast" duration="1000"></paper-toast>
+        <app-toolbar>
+            <div main-title>
+                [[titlePage]] </div>
+        </app-toolbar>
+        <div class="container">
+            <div class="row">
+                <div class="col-12 section-card">
+                    <h6>API</h6>
+                    <paper-card image="" elevation="1" animated-shadow="true">
+                        <div class="card-content">
+                            <div class="d-flex">
+                                <div style="width: 70%;padding-right:15px;">
+                                    <div class="form-group row">
+                                        <label for="example-text-input" class="col-12 col-form-label">Job API</label>
+                                        <div class="col-12">
+                                            <input class="form-control" type="url" value="{{config.api.job::input}}" id="example-text-input" placeholder="Ex. http://localhost:19980/v1">
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                    <div class="form-group row">
+                                        <label for="example-search-input" class="col-12 col-form-label">Storages API</label>
+                                        <div class="col-12">
+                                            <input class="form-control" type="url" value="{{config.api.storages::input}}" id="example-search-input" placeholder="Ex. http://localhost:19080/v1">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="align-self-start detail" style="width: 30%;padding:15px 0 15px 20px;font-size: 14px;">
+                                    <p> Job API is used to authenticate please make sure your user was registered in that API.</p>
+                                    <p> Storages API is used to view data only, it doesn't matter used to authenticate.</p>
+                                    <p> Both APIs do not need to be the same server.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </paper-card>
+                </div>
+                <div class="col-12 submit">
+                    <paper-button class="btn btn-success" on-click="_savebt">Save</paper-button>
+                </div>
+            </div>
+        </div>
+
+        </div>
+
+        <!-- <div notshow$="[[anyEmpty]]" class="any-empty"></div> -->
+    </template>
+
+    <script>
+        class setting extends Polymer.Element {
+
+            static get is() { return 'page-setting'; }
+
+            static get properties() {
+                return {
+                    titlePage: {
+                        type: String,
+                        value: 'Setting'
+                    },
+                    tabselected: {
+                        type: Number,
+                        value: 0
+                    },
+                    config: {
+                        type: Object,
+                        value: () => { return store.get() }
+                    },
+                    anyEmpty: {
+                        value: true
+                    }
+                };
+            }
+
+            constructor() {
+                super();
+            }
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    if (store.get('api.job') === '' || store.get('api.storages') === '') {
+                        this.anyEmpty = false;
+                    }
+                    if (this.config.platform === 'web client') {
+                        window.history.pushState({}, null, '/');
+                        window.dispatchEvent(new CustomEvent('location-changed'));
+                    }
+                });
+            }
+
+            _savebt(ev) {
+                if (!store.get('api'))
+                    store.set({ 'api': {} });
+                store.set({
+                    'api.job': this.config.api.job,
+                    'api.job_api': this.config.api.job + '/jobs',
+                    'api.storages': this.config.api.storages,
+                    'api.storages_api': this.config.api.storages + '/storage',
+                    'api.storages_obj_api': this.config.api.storages + '/object'
+                });
+                this.dispatchEvent(new CustomEvent('config-update'));
+                this.$.toast.text = "Config saved";
+                this.$.toast.horizontalAlign = "right";
+                this.$.toast.verticalAlign = "top";
+                this.$.toast.open();
+                // if (store.get('api.job') === '' || store.get('api.storages') === '')
+                //     this.anyEmpty = false;
+                // else
+                //     this.anyEmpty = true;
+            }
+
+        }
+
+        window.customElements.define(setting.is, setting);
+    </script>
+
+    <script>
+
+    </script>
+</dom-module>
