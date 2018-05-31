@@ -29,7 +29,11 @@ This packaging will be create built file in ./release-builds
 # npm install electron-packager -g
 
 # packaging for Windows
-$ npm run package-win
+for window 32bit
+$ npm run package-win32 
+
+for window 64bit
+$ npm run package-win64 
 
 # packaging for Mac OS X
 $ npm run package-mac
