@@ -15,12 +15,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template>
     <style include="bootstrap"></style>
     <style include="shared-styles">
-       :host {
+      :host {
         display: block;
         box-sizing: border-box;
         padding: 10px;
-        padding-bottom: 25px!important;
-        padding-top: 25px!important;
+        padding-bottom: 25px !important;
+        padding-top: 25px !important;
       }
 
       paper-card {
@@ -96,8 +96,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
     </style>
-    <iron-ajax auto loading="{{loading}}" url="[[config.api.job_api]]" handle-as="json" last-response="{{jobs}}" on-error="_ajexerror"
-      id="updateJobsList"></iron-ajax>
+    <iron-ajax loading="{{loading}}" url="[[config.api.job_api]]" handle-as="json" last-response="{{jobs}}" on-error="_ajexerror"
+      id="updateJobsList" on-response="_responseJobs"></iron-ajax>
     <iron-ajax url="[[config.api.storages_api]]" loading="{{loading}}" handle-as="json" last-response="{{storages}}" id="updateStorageLists"
       on-error="_ajexerror" auto></iron-ajax>
 
@@ -123,7 +123,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-card class="lite-detail" style="--paper-card-background-color: var(--google-red-500);">
             <div class="card-content">
               <div class="paper-header">
-                <iron-icon icon="icons:cancel"></iron-icon> [[jobs.length]] Inactive jobs</div>
+                <iron-icon icon="icons:cancel"></iron-icon> [[countInactive]] Inactive jobs</div>
             </div>
           </paper-card>
         </div>
@@ -140,49 +140,70 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   <div class="console-msg">
                     <small class="card-title">Last at 01-04-2017, 00:00:00</small>
                     <p class="card-text">agritronics-MMSIIIV116-005-1</p>
-                    <div class="datetime"><span>11</span><span>messages</span></div>
+                    <div class="datetime">
+                      <span>11</span>
+                      <span>messages</span>
+                    </div>
                   </div>
                 </div>
                 <div class="col-sm-6">
                   <div class="console-msg">
                     <small class="card-title">Last at 01-04-2017, 00:00:00</small>
                     <p class="card-text">agritronics-MMSIIIV116-005-1</p>
-                    <div class="datetime"><span>23</span><span>messages</span></div>
+                    <div class="datetime">
+                      <span>23</span>
+                      <span>messages</span>
+                    </div>
                   </div>
                 </div>
                 <div class="col-sm-6">
                   <div class="console-msg">
                     <small class="card-title">Last at 01-04-2017, 00:00:00</small>
                     <p class="card-text">agritronics-MMSIIIV116-005-1</p>
-                    <div class="datetime"><span>25</span><span>messages</span></div>
+                    <div class="datetime">
+                      <span>25</span>
+                      <span>messages</span>
+                    </div>
                   </div>
                 </div>
                 <div class="col-sm-6">
                   <div class="console-msg">
                     <small class="card-title">Last at 01-04-2017, 00:00:00</small>
                     <p class="card-text">agritronics-MMSIIIV116-005-1</p>
-                    <div class="datetime"><span>25</span><span>messages</span></div>
+                    <div class="datetime">
+                      <span>25</span>
+                      <span>messages</span>
+                    </div>
                   </div>
                 </div>
                 <div class="col-sm-6">
                   <div class="console-msg">
                     <small class="card-title">Last at 01-04-2017, 00:00:00</small>
                     <p class="card-text">agritronics-MMSIIIV116-005-1</p>
-                    <div class="datetime"><span>25</span><span>messages</span></div>
+                    <div class="datetime">
+                      <span>25</span>
+                      <span>messages</span>
+                    </div>
                   </div>
                 </div>
                 <div class="col-sm-6">
                   <div class="console-msg">
                     <small class="card-title">Last at 01-04-2017, 00:00:00</small>
                     <p class="card-text">agritronics-MMSIIIV116-005-1</p>
-                    <div class="datetime"><span>25</span><span>messages</span></div>
+                    <div class="datetime">
+                      <span>25</span>
+                      <span>messages</span>
+                    </div>
                   </div>
                 </div>
                 <div class="col-sm-6">
                   <div class="console-msg">
                     <small class="card-title">Last at 01-04-2017, 00:00:00</small>
                     <p class="card-text">agritronics-MMSIIIV116-005-1</p>
-                    <div class="datetime"><span>25</span><span>messages</span></div>
+                    <div class="datetime">
+                      <span>25</span>
+                      <span>messages</span>
+                    </div>
                   </div>
                 </div>
 
@@ -226,10 +247,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     class PageHome extends Polymer.Element {
       static get is() { return 'page-home'; }
 
+      static get properties() {
+        return {
+          jobapi: {
+            type: String
+          },
+          config: {
+            type: Object
+          },
+          jobLists: {
+            type: Array,
+            values: []
+          },
+          countInactive: {
+            type: Number
+          }
+        }
+      }
+
       ready() {
         super.ready();
 
-        Polymer.RenderStatus.afterNextRender(this, function () {
+        Polymer.RenderStatus.afterNextRender(this, () => {
+          this.$.updateJobsList.generateRequest();
+          // this.config = store.get();
+
+          // this.jobapi = this.config.api.job_api;//this.config.get('api.job_api');
+          // // console.log("config = ",this.config);
+          // console.log("config jobapi= ",this.jobapi); 
+
           window.chartColors = {
             red: 'rgb(255, 99, 132)',
             orange: 'rgb(255, 159, 64)',
@@ -332,6 +378,70 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           });
 
         })
+      }
+
+      async _responseJobs(e) {
+
+        this.config = store.get();
+        this.jobapi = this.config.api.job_api;//this.config.get('api.job_api');
+        // console.log("config = ",this.config);
+        // console.log("config jobapi= ", this.jobapi);
+
+
+        this.countInactive = 0;
+        let res = e.detail.response;
+        // console.log("job = ", this.jobs.length);
+
+        let countInactive = await this.countDataInactive(this.jobs.length)
+          // .then((countInactive) => {
+            this.countInactive = countInactive;
+          // });
+
+        // this.jobLists.push({
+        //   data: "data" 
+        // });
+        // console.log("jobLists data1 = ", _jobLists);
+        // this.set("jobLists", _jobLists);
+        // console.log("jobLists data2 = ", this.jobLists);
+        // this.set("countInactive", _countInactive);
+        // console.log("countInactive = ", this.countInactive + " | ", _countInactive);
+      }
+
+      async countDataInactive(len) {
+        if (len > 0) {
+          let _jobLists = [];
+          let _countInactive = 0;
+          return new Promise((res, rej) => {
+            let _countInactive = 0;
+            this.jobs.forEach((job, index) => {
+              let url = `${this.jobapi}/${encodeURIComponent(job)}`;
+              // console.log("_countInactive : ", _countInactive);
+              $.getJSON(url, function (data) {
+                _jobLists.push({
+                  "job_id": job,
+                  "active": (data.active === 'true' || data.active == true)
+                });
+
+                if (data.active === 'true' || data.active == true) {
+
+                }
+                else {
+                  _countInactive++;
+                }
+                // console.log("data = ", data);
+                if (index == len - 1) {
+                  // console.log("_countInactive : ", _countInactive);
+                  res(_countInactive);
+                }
+              })
+                .fail((jqXHR, textStatus, errorThrown) => {
+                  // material.clearCache();
+                  console.log("error = ", errorThrown);
+                })
+            }, this)
+
+          })
+        }
       }
 
     }

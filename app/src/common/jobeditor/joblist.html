@@ -137,7 +137,7 @@
         </style>
         <!-- Fetch an array of users to be shown in the grid -->
         <iron-ajax auto loading="{{loading}}" url="[[jobapi]]" handle-as="json" last-response="{{jobs}}" on-error="_ajexerror" id="updateJobsList"
-            on-response="_loadJobsComplete"></iron-ajax>
+            on-response="_loadJobsComplete" ></iron-ajax>
 
         <template is="dom-if" if="[[loading]]">
             <paper-progress value="10" indeterminate="true" style="width:100%;position: absolute;z-index: 1;"></paper-progress>
@@ -222,7 +222,11 @@
 
                 });
             }
-            _loadJobsComplete() {
+            _loadJobsComplete(e) {
+
+                let res = e.detail.response;
+             
+
                 this.job_error = false;
                 if (this.jobs) {
                     this.jobLists = [];
@@ -238,7 +242,8 @@
                                 material.clearCache();
                         }).fail(function (jqXHR, textStatus, errorThrown) { material.clearCache(); });
                     }, this);
-
+                    // console.log("_responseJobsEditor : ",this.jobs);
+                    // console.log("_responseJobsEditor jobLists : ",this.jobLists);
                     //this.$.material.items = this.jobLists;
                 }
             }
@@ -292,6 +297,8 @@
                     el.generateRequest();
                 })
             }
+
+          
         }
 
         window.customElements.define(joblistElement.is, joblistElement);
