@@ -819,8 +819,13 @@
                     // let fs = require('fs');
                     // let filepath = app.getPath("desktop");
                     // let filepath2 = path.basename("john");
-                    let fileName = this.jsoneditor.code.get().job_id + ".json";//this.jsonResult.job_id + ".json";
-
+                    let fileName = this.jsoneditor.code.get().job_id;//this.jsonResult.job_id + ".json";
+                    if (fileName && fileName.length > 0) {
+                        fileName = fileName + ".json";
+                    }
+                    else {
+                        fileName = "";
+                    }
                     var toLocalPath = path.resolve(app.getPath("desktop"), path.basename(fileName)); //, path.basename(remoteUrl));
 
                     // console.log("filepath = ",filepath," | ",filepath2);
@@ -927,7 +932,7 @@
 
             _createNewJobFromFile() {
                 // if (this.newJobName.match('^[A-Za-z.0-9]+$')) {
-                if (this.newJobName) {
+                if (this.newJobName && this.newJobName.length > 0) {
                     let newJob = JSON.parse(JSON.stringify(this.JobFromFile));
                     // newJob = this.jsoneditor.code.get(); 
                     newJob.job_id = this.newJobName;
