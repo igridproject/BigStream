@@ -30,7 +30,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <style include="bootstrap"></style>
         <style include="app-grid-style"></style>
         <style include="shared-styles">
-             :host {
+            :host {
                 box-sizing: border-box;
                 display: block;
                 --app-grid-columns: 2;
@@ -38,8 +38,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 --app-grid-expandible-item-columns: 2;
                 --app-primary-color: #2f323a;
                 --app-secondary-color: #5093e1;
-                overflow: hidden!important;
-                padding-bottom: 15px!important;
+                overflow: hidden !important;
+                padding-bottom: 15px !important;
             }
 
             div[main-title] {
@@ -51,7 +51,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 padding-bottom: 130px;
                 border-top: 0;
                 --vaadin-grid-header-cell: {
-                    font-size: 14px!important;
+                    font-size: 14px !important;
                     padding-left: 20px;
                     height: initial;
                     background: #fbfbfb;
@@ -330,13 +330,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <app-toolbar>
             <div main-title>
-                [[titlePage]] <span style="color:#414e5d;">| [[routeData.storageid]]</span></div>
+                [[titlePage]]
+                <span style="color:#414e5d;">| [[routeData.storageid]]</span>
+            </div>
         </app-toolbar>
 
         <div class="app-grid stats" style="position: absolute;width: 100%;">
             <div class="item">
-                <span><iron-icon icon="editor:insert-drive-file"></iron-icon> file name : [[stats.filename]]</span>
-                <span><iron-icon icon="editor:attach-file"></iron-icon> file size : [[stats.filesize]]</span>
+                <span>
+                    <iron-icon icon="editor:insert-drive-file"></iron-icon> file name : [[stats.filename]]</span>
+                <span>
+                    <iron-icon icon="editor:attach-file"></iron-icon> file size : [[stats.filesize]]</span>
                 <span>[[stats.count]] rows</span>
             </div>
         </div>
@@ -411,14 +415,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                             <vaadin-grid-column width="50px" flex-grow="0">
                                 <template class="header">#</template>
-                                <template><span style="text-align: center;display: block;">[[index]]</span></template>
+                                <template>
+                                    <span style="text-align: center;display: block;">[[index]]</span>
+                                </template>
                             </vaadin-grid-column>
 
                             <vaadin-grid-column>
                                 <template class="header">
                                     <vaadin-grid-sorter path="_id">List</vaadin-grid-sorter>
                                 </template>
-                                <template><span class="mini-icon">{ }</span> id : [[item._id]]</template>
+                                <template>
+                                    <span class="mini-icon">{ }</span> id : [[item._id]]</template>
                             </vaadin-grid-column>
 
                             <vaadin-grid-column>
@@ -439,7 +446,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         </paper-button>
                         <div class="obj-title">
                             <small>[[objectType]] [[dataType]]</small>
-                            <h6><span>ID</span>[[activeItem._id]]</h6>
+                            <h6>
+                                <span>ID</span>[[activeItem._id]]</h6>
                         </div>
                         <div class="details">
 
@@ -512,7 +520,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         observer: '_activeItemChanged'
                     },
                     objectType: String,
-                    dataType: String
+                    dataType: String,
+                    lastfilter: {
+                        type: Number,
+                    }
 
                 };
             }
@@ -576,7 +587,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     // console.log(data);
                 }.bind(this))
                 this._closeObjDetail();
-                this.lastfilter = this.fromfilter = this.objidfilter = this.limitfilter = "";
+                this.lastfilter = 100;
+                this.fromfilter = this.objidfilter = this.limitfilter = "";
 
             }
 
