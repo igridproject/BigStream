@@ -321,7 +321,8 @@
                 <iron-icon icon="icons:folder-open"></iron-icon>
                 Open File
             </paper-button> -->
-            <paper-button class="btn btn-outline-success  toggleEditor btn-import" on-click="_onExportFile" hidden="[[!fileOpened]]" title="Export to file (ctrl+e)">
+            <paper-button class="btn btn-outline-success  toggleEditor btn-import" on-click="_onExportFile" hidden="[[!fileOpened]]"
+                title="Export to file (ctrl+e)">
                 <iron-icon icon="icons:folder-open"></iron-icon>
                 Export
             </paper-button>
@@ -592,11 +593,13 @@
             }
 
             _addJobDialogToggle() {
+                this.newJobName = "";
                 this.$.addJobDialog.open();
             }
             _createNewJobBt(ev) {
                 let dialogTarget = Polymer.dom(ev).rootTarget.parentNode.parentNode;
-                if (this.newJobName.match('^[A-Za-z.0-9]+$')) {
+                // if (this.newJobName.match('^[A-Za-z.0-9]+$')) {
+                if (this.newJobName && this.newJobName.length > 0) {
                     let newJob = JSON.parse(JSON.stringify(this.Job));
                     if (this.$.saveasJobDialog.opened) {
                         newJob = this.jsoneditor.code.get();
@@ -634,7 +637,15 @@
             }
             _saveasJsonEditorDialogToggle() {
                 // this.newJobName = `${this.jsonResult.job_id}.copy`;
-                this.newJobName = `${this.jsonResult.job_id}`;
+                let fileName = this.jsoneditor.code.get().job_id;//this.jsonResult.job_id + ".json";
+                // if (this.jsonResult.job_id) {
+                //     this.newJobName = `${this.jsonResult.job_id}`;
+                // }
+                // else {
+                //     this.newJobName = "";
+                // }
+                this.newJobName = fileName;
+
                 this.$.saveasJobDialog.querySelector('input').select();
                 this.$.saveasJobDialog.open();
             }
@@ -745,8 +756,8 @@
 
                 navigator.clipboard.writeText(text)
                     .then(function () {
-                            console.log('Async: Copying to clipboard was successful!');
-                        },
+                        console.log('Async: Copying to clipboard was successful!');
+                    },
                         function (err) {
                             console.error('Async: Could not copy text: ', err);
                         });
@@ -791,7 +802,11 @@
 
 
             async _onExportFile() {
+                // console.log("_onExportFile");
                 try {
+
+                    // console.log("code job_id = ",this.jsoneditor.code.get().job_id);
+
                     var elerem = require('electron').remote;
                     // var dialog = elerem.dialog;
                     var app = elerem.app;
@@ -802,10 +817,23 @@
                         dialog
                     } = require('electron').remote
                     // let fs = require('fs');
-                    var toLocalPath = path.resolve(app.getPath("desktop")); //, path.basename(remoteUrl));
-                    console.log("toLocalPath = ", toLocalPath);
+                    // let filepath = app.getPath("desktop");
+                    // let filepath2 = path.basename("john");
+                    let fileName = this.jsoneditor.code.get().job_id;//this.jsonResult.job_id + ".json";
+                    if (fileName && fileName.length > 0) {
+                        fileName = fileName + ".json";
+                    }
+                    else {
+                        fileName = "";
+                    }
+                    var toLocalPath = path.resolve(app.getPath("desktop"), path.basename(fileName)); //, path.basename(remoteUrl));
+
+                    // console.log("filepath = ",filepath," | ",filepath2);
+
+                    // console.log("toLocalPath = ", toLocalPath);
                     var userChosenPath = await dialog.showSaveDialog({
-                        defaultPath: toLocalPath
+                        defaultPath: toLocalPath,
+
                     });
 
                     if (userChosenPath) {
@@ -837,11 +865,11 @@
                         // console.log('The file has been saved!');
                         fs.close(cb);
                     })
-                    
+
                     console.log('The file has been saved!');
                     this.showToast("Export file successed");
                 } catch (error) {
-                    console.log("write file error = ",error);
+                    console.log("write file error = ", error);
                 }
 
 
@@ -903,7 +931,8 @@
             }
 
             _createNewJobFromFile() {
-                if (this.newJobName.match('^[A-Za-z.0-9]+$')) {
+                // if (this.newJobName.match('^[A-Za-z.0-9]+$')) {
+                if (this.newJobName && this.newJobName.length > 0) {
                     let newJob = JSON.parse(JSON.stringify(this.JobFromFile));
                     // newJob = this.jsoneditor.code.get(); 
                     newJob.job_id = this.newJobName;

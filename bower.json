@@ -40,7 +40,8 @@
     "paper-tooltip": "PolymerElements/paper-tooltip#^2.0.0",
     "paper-spinner": "PolymerElements/paper-spinner#^2.0.0",
     "chart.js": "^2.6.0",
-    "jsoneditor": "^5.15.0"
+    "jsoneditor": "^5.15.0",
+    "paper-fab-transitions": "^0.1.0"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^6.0.0",
