@@ -1,35 +1,35 @@
 <link rel="import" href="/bower_components/polymer/polymer-element.html">
 <link rel="import" href="/bower_components/vaadin-grid/all-imports.html">
+
+<link rel="import" href="/bower_components/paper-fab-speed-dial/paper-fab-speed-dial.html">
+<link rel="import" href="/bower_components/paper-fab-speed-dial/paper-fab-speed-dial-action.html">
+<link rel="import" href="/bower_components/paper-fab-speed-dial/paper-fab-speed-dial-overlay.html">
 <!--
 `<joblist>` is Description
-
 @element joblist
 -->
 <dom-module id="joblist-element">
     <template>
         <style include="bootstrap"></style>
         <style include="shared-styles">
-             :host {
+            :host {
                 display: block;
                 height: 100%;
             }
-
             .joblist .active-status {
                 color: red;
                 font-size: 20px;
                 position: absolute;
                 top: 9px;
             }
-
             .joblist .active-status[active] {
                 color: green;
             }
-
             vaadin-grid.joblist {
                 height: 100%;
                 border: 0;
                 --vaadin-grid-header-cell: {
-                    font-size: 14px!important;
+                    font-size: 14px !important;
                     padding-left: 20px;
                     height: initial;
                     background: #fbfbfb;
@@ -43,14 +43,12 @@
                     font-size: 13px;
                 }
                 ;
-
                 --vaadin-grid-body-row-hover-cell: {
                     cursor: pointer;
                     background-color: var(--paper-grey-200);
                 }
                 ;
             }
-
             .job-search-input {
                 position: absolute;
                 top: 13px;
@@ -61,13 +59,11 @@
                 height: 32px;
                 width: 200px;
             }
-
             vaadin-grid.material .cell {
-                padding-right: 0!important;
+                padding-right: 0 !important;
                 height: 100%;
                 padding-top: 15px;
             }
-
             paper-fab.createJobFab {
                 --paper-fab-background: var(--paper-light-blue-700);
                 position: absolute;
@@ -76,13 +72,24 @@
                 z-index: 100;
                 transition: all 0.3s ease;
             }
-
+            paper-fab.OpenJobFab {
+                --paper-fab-background: var(--paper-light-blue-700);
+                position: absolute;
+                right: 20px;
+                /* 70px; */
+                bottom: 70px;
+                z-index: 100;
+                transition: all 0.3s ease;
+            }
+            vaadin-grid {
+                position: relative;
+                z-index: 0 !important;
+            }
             vaadin-grid.material paper-checkbox {
                 height: 100%;
                 padding-top: 16px;
                 padding-left: 16px;
-            }
-
+            } 
             #toolbarSelect {
                 background: rgba(47, 50, 58, 0.94);
                 width: 100%;
@@ -93,21 +100,20 @@
                 z-index: 111;
                 transition: all 0.3s ease;
             }
-
             #toolbarSelect paper-button {
                 margin-top: 9px;
                 float: right;
                 margin-right: 10px;
             }
-
             #toolbarSelect[have-select] {
                 bottom: 0;
             }
-
             .createJobFab[have-select] {
                 bottom: 75px;
             }
-
+            .OpenJobFab[have-select] {
+                bottom: 75px;
+            }
             .refreshbt {
                 cursor: pointer;
                 margin-right: 15px;
@@ -116,12 +122,10 @@
                 right: 10px;
                 color: var(--google-grey-700);
             }
-
             .refreshbt.active {
                 animation-name: spin;
                 animation-duration: 0.4s;
             }
-
             @keyframes spin {
                 from {
                     transform: rotate(0deg);
@@ -130,19 +134,33 @@
                     transform: rotate(360deg);
                 }
             }
-
             .jobname {
                 margin-left: 20px;
+            }
+            paper-fab-speed-dial {
+                /* --paper-fab-speed-dial-position: relative; */
+                /* --paper-fab-speed-dial-right: -130px; */
+                --paper-fab-speed-dial-bottom: 20px;
+                /* z-index: 0 !important; */
+                --paper-fab-speed-dial-background: #0089DD;
+            }
+            paper-fab-speed-dial-action {
+                --paper-fab-speed-dial-action-background: #0089DD;
             }
         </style>
         <!-- Fetch an array of users to be shown in the grid -->
         <iron-ajax auto loading="{{loading}}" url="[[jobapi]]" handle-as="json" last-response="{{jobs}}" on-error="_ajexerror" id="updateJobsList"
-            on-response="_loadJobsComplete" ></iron-ajax>
+            on-response="_loadJobsComplete"></iron-ajax>
 
         <template is="dom-if" if="[[loading]]">
             <paper-progress value="10" indeterminate="true" style="width:100%;position: absolute;z-index: 1;"></paper-progress>
         </template>
-        <paper-fab mini icon="icons:add" title="Create job" class="createJobFab" on-click="_addJobBt" have-select$="[[haveSelect]]"></paper-fab>
+        <!-- <paper-fab mini icon="icons:add" title="Create job" class="createJobFab" on-click="_addJobBt" have-select$="[[haveSelect]]"></paper-fab> -->
+
+        <!-- <paper-fab mini icon="icons:folder-open" title="Open File" class="OpenJobFab" on-click="_OpenJobBt"></paper-fab> -->
+
+
+
         <x-array-data-provider items="{{jobLists}}"></x-array-data-provider>
         <vaadin-grid class="material joblist" id="material" items="[[jobLists]]" on-active-item-changed="_selectJob" on-selected-items-changed="_jobSelectedChanged"
             selected-items="{{jobSelected}}">
@@ -159,7 +177,10 @@
                     </div>
                 </template>
                 <template>
-                    <div class="cell"><span class="active-status" active$="[[item.active]]">&#9679</span> <span class="jobname">[[item.job_id]]</span></div>
+                    <div class="cell">
+                        <span class="active-status" active$="[[item.active]]">&#9679</span>
+                        <span class="jobname">[[item.job_id]]</span>
+                    </div>
                 </template>
             </vaadin-grid-column>
             <vaadin-grid-column width="160px" flex-grow="0">
@@ -181,10 +202,24 @@
             </vaadin-grid-column>
         </vaadin-grid>
 
+        <paper-fab-speed-dial id="fabSpeedDial" icon="icons:more-vert" have-select$="[[haveSelect]]">
+            <paper-fab-speed-dial-action icon="icons:folder-open" style="margin-top: 20px;" on-click="_OpenJobBt">
+                <!-- <span  style="border: 1px solid green;margin-right:-10px;padding: 10px;border-radius: 10px;margin-top: 15px;">Open File</span> -->
+            </paper-fab-speed-dial-action>
+            <paper-fab-speed-dial-action icon="icons:add" on-click="_addJobBt">
+                <!-- <span  style="border: 1px solid green;margin-right:-10px;padding: 10px;border-radius: 10px;margin-top: 15px;">
+                    Create Job
+                    </span> -->
+            </paper-fab-speed-dial-action>
+        </paper-fab-speed-dial>
+
         <template is="dom-if" if="[[job_error]]">
             <div style="padding: 85px 15px 0;position: absolute;top: 0;width:100%;height: 100%;background: rgba(239, 239, 239, 0.79);    z-index: 112;">
                 <div class="alert alert-danger" role="alert" style="width:100%">
-                    <strong>Error !</strong> Can't GET [[jobapi]] , 404 (Not Found), Please go to <strong><a style="color: #aa4644;" href="/setting">Setting</a></strong>                    to set other job api
+                    <strong>Error !</strong> Can't GET [[jobapi]] , 404 (Not Found), Please go to
+                    <strong>
+                        <a style="color: #aa4644;" href="/setting">Setting</a>
+                    </strong> to set other job api
                 </div>
             </div>
         </template>
@@ -196,9 +231,7 @@
 
     <script>
         class joblistElement extends Polymer.Element {
-
             static get is() { return 'joblist-element'; }
-
             static get properties() {
                 return {
                     jobLists: {
@@ -214,19 +247,13 @@
             constructor() {
                 super();
             }
-
             ready() {
                 super.ready();
-
                 Polymer.RenderStatus.afterNextRender(this, function () {
-
                 });
             }
             _loadJobsComplete(e) {
-
                 let res = e.detail.response;
-             
-
                 this.job_error = false;
                 if (this.jobs) {
                     this.jobLists = [];
@@ -247,7 +274,6 @@
                     //this.$.material.items = this.jobLists;
                 }
             }
-
             _selectJob(ev, item) {
                 if (this.$.material.activeItem != null) {
                     // this.$.material.selectedItems = this.$.material.activeItem ? [this.$.material.activeItem] : [];
@@ -263,7 +289,12 @@
                 this.job_error = true;
             }
             _addJobBt(ev) {
+                this.$.fabSpeedDial.close();
                 this.dispatchEvent(new CustomEvent('toggle-add-job'));
+            }
+            _OpenJobBt(ev) {
+                this.$.fabSpeedDial.close();
+                this.dispatchEvent(new CustomEvent('toggle-open-job'));
             }
             _updateJoblist() {
                 this.$.updateJobsList.generateRequest();
@@ -297,10 +328,7 @@
                     el.generateRequest();
                 })
             }
-
-          
         }
-
         window.customElements.define(joblistElement.is, joblistElement);
     </script>
 </dom-module>

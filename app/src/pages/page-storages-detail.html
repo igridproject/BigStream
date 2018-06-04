@@ -541,6 +541,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             this._nextView();
                         if (ev.code === 'ArrowLeft')
                             this._preView()
+                        if (ev.code === 'Escape')
+                            this.$.imgview.close();
                     });
 
                     var start = this.$.start

@@ -41,7 +41,9 @@
     "paper-spinner": "PolymerElements/paper-spinner#^2.0.0",
     "chart.js": "^2.6.0",
     "jsoneditor": "^5.15.0",
-    "paper-fab-transitions": "^0.1.0"
+    "paper-fab-transitions": "GabiAxel/paper-fab-transitions#^0.1.0",
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#^2.0.3",
+    "paper-fab-speed-dial": "Collaborne/paper-fab-speed-dial#^2.4.0"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^6.0.0",
