@@ -9,6 +9,8 @@
 <link rel="import" href="/bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="/bower_components/iron-selector/iron-selector.html">
 
+<link rel="import" href="/bower_components/paper-dialog/paper-dialog.html">
+
 <link rel="import" href="./simple-menu.html">
 <link rel="import" href="./simple-expand-collapse.html">
 <!--
@@ -18,6 +20,7 @@
 -->
 <dom-module id="dashboard-sidemenu">
     <template>
+        <style include="bootstrap"></style>
         <style>
             :host {
                 display: block;
@@ -232,6 +235,32 @@
                 background: #e0e0e0;
             }
         </style>-->
+
+        <paper-dialog modal id="dialogSettingNewWindow" style="width: 490px;padding: 20px;">
+            <h6 style="text-align: center;margin:10px 5px;">
+                Setup API
+            </h6>
+            <!-- <div style="border: 1px solid rgba(114, 114, 114,0.3);padding: 15px;border-radius: 10px;margin:10px 0px;"> -->
+
+            <div class="form-group">
+                <h6>JOB API</h6>
+                <input type="text" class="form-control" value="{{config.api.job::input}}" placeholder="Ex. http://localhost:19980/v1">
+                <!-- <div class="form-control-feedback" hidden>Can't use space in job name</div> -->
+            </div>
+            <div class="form-group">
+                <h6>Storage API</h6>
+                <input type="text" class="form-control" value="{{config.api.storages::input}}" placeholder="Ex. http://localhost:19080/v1">
+                <!-- <div class="form-control-feedback" hidden>Can't use space in job name</div> -->
+            </div>
+            <!-- </div> -->
+            <div class="buttons">
+                <paper-button class="btn btn-success submitbt" on-click="_onClickCreateNewWindow">&nbsp;&nbsp;OK&nbsp;&nbsp;</paper-button>
+                <paper-button class="btn btn-danger" dialog-confirm>cancel</paper-button>
+            </div>
+
+        </paper-dialog>
+
+
         <div iscollapse$="[[iscollapse]]" dark$="">
             <div class="logo" on-click="_togglemenu">
                 <span>
@@ -285,7 +314,7 @@
                                 <iron-icon icon="hardware:desktop-windows"></iron-icon>
                             </a> -->
             <!-- </iron-selector> -->
-            <paper-button class="btn btn-outline-danger" on-click="_newWindow">
+            <paper-button class="btn" on-click="showDialogNewWindow">
                 <iron-icon icon="hardware:desktop-windows"></iron-icon>
             </paper-button>
             <!-- </simple-menu> -->
@@ -314,53 +343,57 @@
                     menuList: {
                         type: Array,
                         value: [{
-                                url: '/home',
-                                name: 'home',
-                                title: 'Home',
-                                icon: 'icons:home'
-                            },
-                            {
-                                categoryTitle: 'Jobs',
-                                sublist: [
-                                    //     {
-                                    //     url: '/jobs',
-                                    //     name: 'jobs',
-                                    //     title: 'Job lists',
-                                    //     icon: 'icons:work'
-                                    // },
-                                    {
-                                        url: '/jobs/editor',
-                                        name: 'jobs-editor',
-                                        title: 'Job editor',
-                                        icon: 'icons:work'
-                                    }
-                                    //  {
-                                    //     url: '/jobs/create',
-                                    //     name: 'jobs-create',
-                                    //     title: 'Create job',
-                                    //     icon: 'icons:work'
-                                    // }
-                                ]
-                            }, {
-                                categoryTitle: 'Storage',
-                                sublist: [{
-                                    url: '/storages',
-                                    name: 'storages',
-                                    title: 'Storage lists',
-                                    icon: 'device:storage'
-                                }]
-                            },
-                            {
-                                categoryTitle: 'Setting',
-                                sublist: [{
-                                    url: '/setting',
-                                    name: 'setting',
-                                    title: 'Setting',
-                                    icon: 'icons:settings'
-                                }]
-                            }
+                            url: '/home',
+                            name: 'home',
+                            title: 'Home',
+                            icon: 'icons:home'
+                        },
+                        {
+                            categoryTitle: 'Jobs',
+                            sublist: [
+                                //     {
+                                //     url: '/jobs',
+                                //     name: 'jobs',
+                                //     title: 'Job lists',
+                                //     icon: 'icons:work'
+                                // },
+                                {
+                                    url: '/jobs/editor',
+                                    name: 'jobs-editor',
+                                    title: 'Job editor',
+                                    icon: 'icons:work'
+                                }
+                                //  {
+                                //     url: '/jobs/create',
+                                //     name: 'jobs-create',
+                                //     title: 'Create job',
+                                //     icon: 'icons:work'
+                                // }
+                            ]
+                        }, {
+                            categoryTitle: 'Storage',
+                            sublist: [{
+                                url: '/storages',
+                                name: 'storages',
+                                title: 'Storage lists',
+                                icon: 'device:storage'
+                            }]
+                        },
+                        {
+                            categoryTitle: 'Setting',
+                            sublist: [{
+                                url: '/setting',
+                                name: 'setting',
+                                title: 'Setting',
+                                icon: 'icons:settings'
+                            }]
+                        }
                         ]
-                    }
+                    },
+                    config: {
+                        type: Object,
+                        value: () => { return store.get() }
+                    },
                 };
             }
 
@@ -388,20 +421,62 @@
                 this.dispatchEvent(new CustomEvent('collapsechange', {}));
             }
 
+            showDialogNewWindow() {
+
+                this.$.dialogSettingNewWindow.open();
+            }
+
             _newWindow() {
 
+                try {
+                    var win = new BrowserWindow({
+                        width: 1024,
+                        height: 600,
+                        show: false
+                    });
+                    win.on('closed', function () {
+                        win = null;
+                    });
 
-                var win = new BrowserWindow({
-                    width: 1024,
-                    height: 600,
-                    show: false
-                });
-                win.on('closed', function () {
-                    win = null;
-                });
+                    win.loadURL('http://localhost:3000/');
+                    win.show();
 
-                win.loadURL('http://localhost:3000/');
-                win.show();
+                } catch (error) {
+                    console.log("_newWindow error : ", error);
+                }
+            }
+
+            _onClickCreateNewWindow() {
+
+                this.$.dialogSettingNewWindow.close();
+
+                if (typeof require !== 'undefined') {
+                    console.log("this is electron");
+
+                    if (!store.get('api'))
+                        store.set({ 'api': {} });
+                    store.set({
+                        'api.job': this.config.api.job,
+                        'api.job_api': this.config.api.job + '/jobs',
+                        'api.storages': this.config.api.storages,
+                        'api.storages_api': this.config.api.storages + '/storage',
+                        'api.storages_obj_api': this.config.api.storages + '/object'
+                    });
+                    // this.dispatchEvent(new CustomEvent('config-update'));
+
+                    this._newWindow();
+                    // this.$.toast.text = "Config saved";
+                    // this.$.toast.horizontalAlign = "right";
+                    // this.$.toast.verticalAlign = "top";
+                    // this.$.toast.open();
+                }
+                else {
+                    console.log("this is not electron");
+                }
+
+
+
+
             }
         }
 
