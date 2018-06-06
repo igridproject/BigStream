@@ -555,7 +555,9 @@
                         var ev_temp = {};
                         ev_temp.detail = {};
                         ev_temp.detail.job_id = newJob.job_id;
+                        this._saveJsonEditor();
                         this._selectedJobList(ev_temp);
+                        
                     }).fail(() => {
                         let msg = {
                             title: `Can't connect ${this.config.api.job_api} `,
@@ -607,11 +609,15 @@
             _saveJsonEditor() {
                 let json = this._getJson();
                 json.job_id = json.job_id.replace(/\s/g, '');
-                $.post(this.config.api.job_api + '?reload=true', this._getJson(), (data, status, request) => {
+                let url = this.config.api.job_api + '?reload=true';
+                // console.log("_saveJsonEditor call reload = ",url);
+                $.post(url, this._getJson(), (data, status, request) => {
                     // if (data.response === 'OK')
                     //     console.log('added');
+                    // console.log("_saveJsonEditor response 1 = ",data.response);
                     this.$.joblistElement._updateJoblist();
                 }).fail(() => {
+                    console.log("_saveJsonEditor response 0 = ",this.config.api.job_api);
                     let msg = {
                         title: `Can't connect ${this.config.api.job_api}`,
                         detail: "Please make sure your Job API is correct."

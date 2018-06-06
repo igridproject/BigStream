@@ -7,6 +7,12 @@ require("./server.js");
 require("./modules/config.js");
 require("./modules/mainproc.js");
 
+// require('electron-debug')({enabled: true});
+// require('electron-dl')();
+require("electron-context-menu")();
+
+const appMenu = require("./mainmenu");
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
@@ -78,21 +84,28 @@ function handleSquirrelEvent(application) {
   }
 }
 function createWindow() {
+  // // Create the Application's main menu
+  // const { app, Menu } = require("electron");
+
+
   // Create the browser window.
   win = new BrowserWindow({
+    title: app.getName(),
     width: 1024,
     height: 600,
     webPreferences: {
       webSecurity: false
     },
     minHeight: 600,
-    minWidth: 1024
+    minWidth: 1024,
+    autoHideMenuBar: false
   });
   // and load the index.html of the app.
   win.loadURL("http://localhost:3000");
 
   // Open the DevTools.
   // win.webContents.openDevTools()
+  Menu.setApplicationMenu(appMenu);
 
   // Emitted when the window is closed.
   win.on("closed", () => {
@@ -102,63 +115,68 @@ function createWindow() {
     win = null;
   });
 
-  // Create the Application's main menu
-  var template = [
-    {
-      label: "Application", 
-      submenu: [
-        // { label: "About Application", selector: "orderFrontStandardAboutPanel:" },
-        { label: "Version 040620181625", selector: "orderFrontStandardAboutPanel:" },
-        { type: "separator" },
-        {
-          label: "Quit",
-          accelerator: "Command+Q",
-          click: function() {
-            app.quit();
-          }
-        }
-      ]
-    },
-    {
-      label: "Edit",
-      submenu: [
-        { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
-        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
-        { type: "separator" },
-        { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
-        { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
-        { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
-        {
-          label: "Select All",
-          accelerator: "CmdOrCtrl+A",
-          selector: "selectAll:"
-        }
-      ]
-    },
-    {
-      label: "View",
-      submenu: [
-        { type: "separator" },
-        { role: "resetzoom" },
-        { role: "zoomin" },
-        { role: "zoomout" },
-        { role: "togglefullscreen" }
-      ]
-    },
-    {
-      role: "help",
-      submenu: [
-        {
-          label: "Learn More",
-          click() {
-            require("electron").shell.openExternal("https://electron.atom.io");
-          }
-        }
-      ]
-    }
-  ];
+  // var template = [
+  //   {
+  //     label: "Application",
+  //     submenu: [
+  //       // { label: "About Application", selector: "orderFrontStandardAboutPanel:" },
+  //       { label: app.getName()+" V. 040620181625", selector: "orderFrontStandardAboutPanel:" },
+  //       { type: "separator" },
+  //       {
+  //         label: "Quit",
+  //         accelerator: "Command+Q",
+  //         click: function() {
+  //           app.quit();
+  //         }
+  //       }
+  //     ]
+  //   },
+  //   {
+  //     label: "Edit",
+  //     submenu: [
+  //       { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+  //       { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+  //       { type: "separator" },
+  //       { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+  //       { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+  //       { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+  //       {
+  //         label: "Select All",
+  //         accelerator: "CmdOrCtrl+A",
+  //         selector: "selectAll:"
+  //       }
+  //     ]
+  //   },
+  //   {
+  //     label: "View",
+  //     submenu: [
+  //       { type: "separator" },
+  //       { role: "resetzoom" },
+  //       { role: "zoomin" },
+  //       { role: "zoomout" },
+  //       { role: "togglefullscreen" }
+  //     ]
+  //   },
+  //   {
+  //     role: "help",
+  //     submenu: [
+  //       {
+  //         label: "Learn More",
+  //         click() {
+  //           require("electron").shell.openExternal("https://electron.atom.io");
+  //         }
+  //       }
+  //     ]
+  //   }
+  // ];
 
   // Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+
+  // electron.Menu.setApplicationMenu(appMenu);
+
+  console.log("main.js init platform = ", process.platform);
+
+ 
 }
 
 // This method will be called when Electron has finished
@@ -181,6 +199,11 @@ app.on("activate", () => {
   if (win === null) {
     createWindow();
   }
+});
+
+app.on('browser-window-created',function(e,window) {
+  window.setMenu(null);
+  console.log("on browser-window-created");
 });
 
 // In this file you can include the rest of your app's specific main process
