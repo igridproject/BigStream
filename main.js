@@ -105,6 +105,7 @@ function createWindow() {
 
   // Open the DevTools.
   // win.webContents.openDevTools()
+  win.setMenuBarVisibility(true);
   Menu.setApplicationMenu(appMenu);
 
   // Emitted when the window is closed.
