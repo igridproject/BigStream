@@ -343,51 +343,51 @@
                     menuList: {
                         type: Array,
                         value: [{
-                                url: '/home',
-                                name: 'home',
-                                title: 'Home',
-                                icon: 'icons:home'
-                            },
-                            {
-                                categoryTitle: 'Jobs',
-                                sublist: [
-                                    //     {
-                                    //     url: '/jobs',
-                                    //     name: 'jobs',
-                                    //     title: 'Job lists',
-                                    //     icon: 'icons:work'
-                                    // },
-                                    {
-                                        url: '/jobs/editor',
-                                        name: 'jobs-editor',
-                                        title: 'Job editor',
-                                        icon: 'icons:work'
-                                    }
-                                    //  {
-                                    //     url: '/jobs/create',
-                                    //     name: 'jobs-create',
-                                    //     title: 'Create job',
-                                    //     icon: 'icons:work'
-                                    // }
-                                ]
-                            }, {
-                                categoryTitle: 'Storage',
-                                sublist: [{
-                                    url: '/storages',
-                                    name: 'storages',
-                                    title: 'Storage lists',
-                                    icon: 'device:storage'
-                                }]
-                            },
-                            {
-                                categoryTitle: 'Setting',
-                                sublist: [{
-                                    url: '/setting',
-                                    name: 'setting',
-                                    title: 'Setting',
-                                    icon: 'icons:settings'
-                                }]
-                            }
+                            url: '/home',
+                            name: 'home',
+                            title: 'Home',
+                            icon: 'icons:home'
+                        },
+                        {
+                            categoryTitle: 'Jobs',
+                            sublist: [
+                                //     {
+                                //     url: '/jobs',
+                                //     name: 'jobs',
+                                //     title: 'Job lists',
+                                //     icon: 'icons:work'
+                                // },
+                                {
+                                    url: '/jobs/editor',
+                                    name: 'jobs-editor',
+                                    title: 'Job editor',
+                                    icon: 'icons:work'
+                                }
+                                //  {
+                                //     url: '/jobs/create',
+                                //     name: 'jobs-create',
+                                //     title: 'Create job',
+                                //     icon: 'icons:work'
+                                // }
+                            ]
+                        }, {
+                            categoryTitle: 'Storage',
+                            sublist: [{
+                                url: '/storages',
+                                name: 'storages',
+                                title: 'Storage lists',
+                                icon: 'device:storage'
+                            }]
+                        },
+                        {
+                            categoryTitle: 'Setting',
+                            sublist: [{
+                                url: '/setting',
+                                name: 'setting',
+                                title: 'Setting',
+                                icon: 'icons:settings'
+                            }]
+                        }
                         ]
                     },
                     config: {
@@ -395,6 +395,9 @@
                         value: () => {
                             return store.get()
                         }
+                    },
+                    appPort: {
+                        type: Number
                     }
                 };
             }
@@ -407,8 +410,6 @@
                 super();
             }
 
-
-
             ready() {
                 super.ready();
 
@@ -416,19 +417,41 @@
 
                     window.addEventListener('new-window', (e) => {
                         // console.log("revrived new window on dashboard sidemenu");
-                        this.showDialogNewWindow();
+                        try {
+                            this.showDialogNewWindow();
+                        } catch (error) {
+                            console.log("no dialog to show since it close");
+                        }
                     });
+
+                    // console.log("data from nodeJS = ",app);
 
                     // let dashboard = document.querySelector("dashboard-app");
                     // dashboard.addEventListener('new-window-show', (e) => {
                     //     // console.log("dashboard received event = ",e.detail);
                     //     this.showDialogNewWindow();
                     // })
-
-
+                    this.getAppPort();
                 });
 
 
+            }
+
+            getAppPort() {
+                $.ajax({
+                    url: '/port',
+                    type: 'POST',
+                    complete: (data) => {
+                        // console.log("receive app port = ", data.responseJSON.port);
+                        try {
+                            let port = data.responseJSON.port;
+                            this.appPort = port;
+                            // alert("port = "+port);
+                        } catch (error) {
+                            console.log("error get app port");
+                        }
+                    }
+                });
             }
 
 
@@ -438,6 +461,7 @@
             }
 
             showDialogNewWindow() {
+
 
                 this.$.dialogSettingNewWindow.open();
 
@@ -454,10 +478,10 @@
                         win = null;
                     });
 
-                    win.loadURL('http://localhost:3000/');
+                    win.loadURL('http://localhost:' + this.appPort);
                     win.show();
 
-                    // console.log("_newWindow success : ");
+                    console.log("_newWindow success at port : ", this.appPort);
 
                 } catch (error) {
                     console.log("_newWindow error : ", error);

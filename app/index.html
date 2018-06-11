@@ -16,7 +16,7 @@
 
   <link rel="import" href="/src/dashboard-app.html">
   <link rel="import" href="/src/login.html">
-
+ 
   <style>
     html {
       height: 100%;
@@ -296,6 +296,7 @@
     const Store = require('electron-store');
     store = new Store();
     // store.delete('OAuth');
+
   } else { //Web version
     const Store = class {
       constructor() {

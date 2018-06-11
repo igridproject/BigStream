@@ -104,23 +104,23 @@ window.addEventListener('contextmenu', (e) => {
 
 
 
-function openWin2() {
-  // const mainWindow = new BrowserWindow({});
-  // console.log("mainWindow : ",mainWindow);
-  // mainWindow.loadURL(mainWindowUrl);
+// function openWin2() {
+//   // const mainWindow = new BrowserWindow({});
+//   // console.log("mainWindow : ",mainWindow);
+//   // mainWindow.loadURL(mainWindowUrl);
 
-  // const menu = Menu.buildFromTemplate(menuTemplate);
-  // Menu.setApplicationMenu(menu);
+//   // const menu = Menu.buildFromTemplate(menuTemplate);
+//   // Menu.setApplicationMenu(menu);
 
 
-var win = new BrowserWindow({ width: 1024, height: 600, show: false });
-win.on('closed', function() {
-  win = null;
-});
+// var win = new BrowserWindow({ width: 1024, height: 600, show: false });
+// win.on('closed', function() {
+//   win = null;
+// });
 
-win.loadURL('http://localhost:3000/');
-win.show();
-}
+// win.loadURL('http://localhost:3000/');
+// win.show();
+// }
 
 
 //###########################################

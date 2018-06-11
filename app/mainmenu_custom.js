@@ -6,52 +6,94 @@ const electron = require('electron')
 //   // app,
 //   // BrowserWindow,
 //   // Menu
-// } = electron;
+// } = electron
 // const config = require('./config')
 // const {sendAction} = require('./util')
 
 // const appName = app.getName()
 
-function onClickNewWindow(){
-  // console.log("new window click menu");
-  window.dispatchEvent(new CustomEvent('new-window'));
+function onClickNewWindow () {
+  // console.log("new window click menu")
+  try {
+    window.dispatchEvent(new CustomEvent('new-window'))
+  } catch (error) {
+    console.log('no dialog to show since it close')
+  }
+}
+
+function callAppPort () {
+  $.ajax({
+    url: '/port',
+    type: 'POST',
+    complete: (data) => {
+      // console.log("receive app port = ", data.responseJSON.port)
+      try {
+        let port = data.responseJSON.port
+        let appPort = port
+        _newWindow(appPort)
+      } catch (error) {
+        console.log('error get app port')
+      }
+    }
+  })
+}
+
+function _newWindow (appPort) {
+  try {
+    console.log('_newWindow success at port : ', appPort)
+
+    var win = new BrowserWindow({
+      width: 1024,
+      height: 600,
+      show: false
+    })
+    win.on('closed', function () {
+      win = null
+    })
+
+    win.loadURL('http://localhost:' + appPort)
+    win.show()
+  } catch (error) {
+    console.log('_newWindow error : ', error)
+  }
 }
 
 const template = [{
-    label: 'Application',
-    submenu: [
-      // { label: "About Application", selector: "orderFrontStandardAboutPanel:" },
-      {
-        label: app.getName() + ' V. 1',
-        selector: 'orderFrontStandardAboutPanel:'
-      },
-      {
-        label: "New Window",
-        click() {
+  label: 'Application',
+  submenu: [
+    // { label: "About Application", selector: "orderFrontStandardAboutPanel:" },
+    {
+      label: app.getName() + ' V. 1',
+      selector: 'orderFrontStandardAboutPanel:'
+    },
+    // {
+    //   label: 'New Window',
+    //   click() {
 
-          onClickNewWindow();
-
-        }
-      },
-      {
-        type: 'separator'
-      },
-      {
-        label: 'Quit',
-        accelerator: 'Command+Q',
-        click: function () {
-          app.quit()
-        }
+    //     // onClickNewWindow()
+    //     // _newWindow()
+    //     callAppPort();
+    //   }
+    // },
+    {
+      type: 'separator'
+    },
+    {
+      label: 'Quit',
+      accelerator: 'Command+Q',
+      click: function () {
+        app.quit()
       }
-    ]
-  },
+    }
+  ]
+},
   {
     label: 'Edit',
     submenu: [{
-        label: 'Undo',
-        accelerator: 'CmdOrCtrl+Z',
-        selector: 'undo:'
-      },
+      label: 'Undo',
+      accelerator: 'CmdOrCtrl+Z',
+      selector: 'undo:'
+    },
       {
         label: 'Redo',
         accelerator: 'Shift+CmdOrCtrl+Z',
@@ -85,8 +127,8 @@ const template = [{
   {
     label: 'View',
     submenu: [{
-        type: 'separator'
-      },
+      type: 'separator'
+    },
       {
         role: 'resetzoom'
       },
@@ -100,13 +142,13 @@ const template = [{
         role: 'togglefullscreen'
       },
       {
-          //fortest
+        // fortest
         role: 'reload'
       }, ,
       {
-        //fortest
+        // fortest
         role: 'toggledevtools'
-      },
+      }
     ]
   },
   {
@@ -122,11 +164,9 @@ const template = [{
 
 if (process.platform === 'darwin') {} else {}
 
-console.log("main menu init = ", process.platform);
+console.log('main menu init = ', process.platform)
 
-// const tpl = process.platform === 'darwin' ? macosTpl : otherTpl;
-const mymenu = Menu.buildFromTemplate(template);
-// Menu.setApplicationMenu(mymenu);
-module.exports = mymenu;
-
-
+// const tpl = process.platform === 'darwin' ? macosTpl : otherTpl
+const mymenu = Menu.buildFromTemplate(template)
+// Menu.setApplicationMenu(mymenu)
+// module.exports = mymenu; 
