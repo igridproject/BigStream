@@ -106,7 +106,8 @@ function createWindow() {
   // Open the DevTools.
   // win.webContents.openDevTools()
   win.setMenuBarVisibility(true);
-  Menu.setApplicationMenu(appMenu);
+  //fortest disbale menu
+  // Menu.setApplicationMenu(appMenu);
 
   // Emitted when the window is closed.
   win.on("closed", () => {
@@ -175,7 +176,7 @@ function createWindow() {
 
   // electron.Menu.setApplicationMenu(appMenu);
 
-  console.log("main.js init platform = ", process.platform);
+  // console.log("main.js init platform = ", process.platform);
 
  
 }
@@ -203,8 +204,8 @@ app.on("activate", () => {
 });
 
 app.on('browser-window-created',function(e,window) {
-  window.setMenu(null);
-  console.log("on browser-window-created");
+  // window.setMenu(null);
+  // console.log("on browser-window-created");
 });
 
 // In this file you can include the rest of your app's specific main process

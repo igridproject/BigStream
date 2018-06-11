@@ -2,19 +2,19 @@
 // const os = require('os')
 // const path = require('path')
 const electron = require('electron')
-const {
-  app,
-  BrowserWindow,
-  Menu
-} = electron;
+// const {
+//   // app,
+//   // BrowserWindow,
+//   // Menu
+// } = electron;
 // const config = require('./config')
 // const {sendAction} = require('./util')
 
 // const appName = app.getName()
 
 function onClickNewWindow(){
-  console.log("new window click menu");
-  // window.dispatchEvent(new CustomEvent('new-indow'));
+  // console.log("new window click menu");
+  window.dispatchEvent(new CustomEvent('new-window'));
 }
 
 const template = [{

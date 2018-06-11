@@ -343,57 +343,59 @@
                     menuList: {
                         type: Array,
                         value: [{
-                            url: '/home',
-                            name: 'home',
-                            title: 'Home',
-                            icon: 'icons:home'
-                        },
-                        {
-                            categoryTitle: 'Jobs',
-                            sublist: [
-                                //     {
-                                //     url: '/jobs',
-                                //     name: 'jobs',
-                                //     title: 'Job lists',
-                                //     icon: 'icons:work'
-                                // },
-                                {
-                                    url: '/jobs/editor',
-                                    name: 'jobs-editor',
-                                    title: 'Job editor',
-                                    icon: 'icons:work'
-                                }
-                                //  {
-                                //     url: '/jobs/create',
-                                //     name: 'jobs-create',
-                                //     title: 'Create job',
-                                //     icon: 'icons:work'
-                                // }
-                            ]
-                        }, {
-                            categoryTitle: 'Storage',
-                            sublist: [{
-                                url: '/storages',
-                                name: 'storages',
-                                title: 'Storage lists',
-                                icon: 'device:storage'
-                            }]
-                        },
-                        {
-                            categoryTitle: 'Setting',
-                            sublist: [{
-                                url: '/setting',
-                                name: 'setting',
-                                title: 'Setting',
-                                icon: 'icons:settings'
-                            }]
-                        }
+                                url: '/home',
+                                name: 'home',
+                                title: 'Home',
+                                icon: 'icons:home'
+                            },
+                            {
+                                categoryTitle: 'Jobs',
+                                sublist: [
+                                    //     {
+                                    //     url: '/jobs',
+                                    //     name: 'jobs',
+                                    //     title: 'Job lists',
+                                    //     icon: 'icons:work'
+                                    // },
+                                    {
+                                        url: '/jobs/editor',
+                                        name: 'jobs-editor',
+                                        title: 'Job editor',
+                                        icon: 'icons:work'
+                                    }
+                                    //  {
+                                    //     url: '/jobs/create',
+                                    //     name: 'jobs-create',
+                                    //     title: 'Create job',
+                                    //     icon: 'icons:work'
+                                    // }
+                                ]
+                            }, {
+                                categoryTitle: 'Storage',
+                                sublist: [{
+                                    url: '/storages',
+                                    name: 'storages',
+                                    title: 'Storage lists',
+                                    icon: 'device:storage'
+                                }]
+                            },
+                            {
+                                categoryTitle: 'Setting',
+                                sublist: [{
+                                    url: '/setting',
+                                    name: 'setting',
+                                    title: 'Setting',
+                                    icon: 'icons:settings'
+                                }]
+                            }
                         ]
                     },
                     config: {
                         type: Object,
-                        value: () => { return store.get() }
-                    },
+                        value: () => {
+                            return store.get()
+                        }
+                    }
                 };
             }
 
@@ -410,12 +412,26 @@
             ready() {
                 super.ready();
 
-                Polymer.RenderStatus.afterNextRender(this, function () {
+                Polymer.RenderStatus.afterNextRender(this, () => {
+
+                    window.addEventListener('new-window', (e) => {
+                        // console.log("revrived new window on dashboard sidemenu");
+                        this.showDialogNewWindow();
+                    });
+
+                    // let dashboard = document.querySelector("dashboard-app");
+                    // dashboard.addEventListener('new-window-show', (e) => {
+                    //     // console.log("dashboard received event = ",e.detail);
+                    //     this.showDialogNewWindow();
+                    // })
+
 
                 });
 
 
             }
+
+
 
             _togglemenu() {
                 this.dispatchEvent(new CustomEvent('collapsechange', {}));
@@ -424,10 +440,10 @@
             showDialogNewWindow() {
 
                 this.$.dialogSettingNewWindow.open();
+
             }
 
             _newWindow() {
-
                 try {
                     var win = new BrowserWindow({
                         width: 1024,
@@ -441,9 +457,13 @@
                     win.loadURL('http://localhost:3000/');
                     win.show();
 
+                    // console.log("_newWindow success : ");
+
                 } catch (error) {
                     console.log("_newWindow error : ", error);
                 }
+
+
             }
 
             _onClickCreateNewWindow() {
@@ -454,7 +474,9 @@
                     console.log("this is electron");
 
                     if (!store.get('api'))
-                        store.set({ 'api': {} });
+                        store.set({
+                            'api': {}
+                        });
                     store.set({
                         'api.job': this.config.api.job,
                         'api.job_api': this.config.api.job + '/jobs',
@@ -469,8 +491,7 @@
                     // this.$.toast.horizontalAlign = "right";
                     // this.$.toast.verticalAlign = "top";
                     // this.$.toast.open();
-                }
-                else {
+                } else {
                     console.log("this is not electron");
                 }
 

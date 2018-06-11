@@ -277,7 +277,7 @@
 
 <script src="/bower_components/jquery/dist/jquery.min.js"></script>
 <script src="./rightclickmenu.js"></script>
-<!-- <script src="./mainmenu.js"></script> -->
+<script src="./mainmenu_custom.js"></script>
 <!-- <script src="./electron-default-menu/index.js"></script> -->
 <script>
   var store;
@@ -288,6 +288,8 @@
     const ipc = require('electron').ipcRenderer;
     const electron = require('electron');
 
+    // console.log("appMenu = ",mymenu);
+    Menu.setApplicationMenu(mymenu)
 
     // Electron version
     // config

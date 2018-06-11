@@ -258,9 +258,26 @@
           //   }));
           // });
 
+          // window.addEventListener('new-window', (e) => {
+          //   this._newWindowFromTopbar();
+          // });
+
+
         });
 
       }
+
+
+      _newWindowFromTopbar() {
+        // let sidemenu = this.$.sidemenu;
+        console.log("fire new-window-show");
+        this.dispatchEvent(new CustomEvent('new-window-show', {
+          detail: {
+            from: "TopMenuBar"
+          }
+        }));
+      }
+
       _updateConfig() {
         this.jobapi = store.get('api.job_api');
         this.storagesapi = store.get('api.storages_api')
