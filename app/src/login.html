@@ -266,10 +266,12 @@
                         setTimeout(() => {
                             this.$.incorrect.classList.remove('has-danger');
                             this.loading = false;
-                            store.set({ 'OAuth': { 'token': 'THISISFACKTOKEN' } });
+                            // THISISFACKTOKEN
+                            store.set({ 'OAuth': { 'token': '' } });
                             this.dispatchEvent(new CustomEvent('logged-in', {
                                 "detail": {
-                                    token: "THISISFACKTOKEN"
+                                    token: ""
+                                    // token: "THISISFACKTOKEN"
                                 }
                             }));
                         }, 2000)

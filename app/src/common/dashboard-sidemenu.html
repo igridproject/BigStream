@@ -243,7 +243,7 @@
             <!-- <div style="border: 1px solid rgba(114, 114, 114,0.3);padding: 15px;border-radius: 10px;margin:10px 0px;"> -->
 
             <div class="form-group">
-                <h6>JOB API</h6>
+                <h6>Console API</h6>
                 <input type="text" class="form-control" value="{{config.api.job::input}}" placeholder="Ex. http://localhost:19980/v1">
                 <!-- <div class="form-control-feedback" hidden>Can't use space in job name</div> -->
             </div>
@@ -252,6 +252,13 @@
                 <input type="text" class="form-control" value="{{config.api.storages::input}}" placeholder="Ex. http://localhost:19080/v1">
                 <!-- <div class="form-control-feedback" hidden>Can't use space in job name</div> -->
             </div>
+
+            <div class="form-group">
+                <h6>Storage API</h6>
+                <input class="form-control" type="url" value="{{config.OAuth.token::input}}" id="example-search-input" placeholder="User Token">
+                <!-- <div class="form-control-feedback" hidden>Can't use space in job name</div> -->
+            </div>
+
             <!-- </div> -->
             <div class="buttons">
                 <paper-button class="btn btn-success submitbt" on-click="_onClickCreateNewWindow">&nbsp;&nbsp;OK&nbsp;&nbsp;</paper-button>
@@ -461,10 +468,8 @@
             }
 
             showDialogNewWindow() {
-
-
+                this.config = store.get();
                 this.$.dialogSettingNewWindow.open();
-
             }
 
             _newWindow() {
@@ -506,7 +511,8 @@
                         'api.job_api': this.config.api.job + '/jobs',
                         'api.storages': this.config.api.storages,
                         'api.storages_api': this.config.api.storages + '/storage',
-                        'api.storages_obj_api': this.config.api.storages + '/object'
+                        'api.storages_obj_api': this.config.api.storages + '/object',
+                        'OAuth.token': this.config.OAuth.token
                     });
                     // this.dispatchEvent(new CustomEvent('config-update'));
 

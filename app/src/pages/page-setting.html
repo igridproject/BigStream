@@ -75,7 +75,7 @@
                             <div class="d-flex">
                                 <div style="width: 70%;padding-right:15px;">
                                     <div class="form-group row">
-                                        <label for="example-text-input" class="col-12 col-form-label">Job API</label>
+                                        <label for="example-text-input" class="col-12 col-form-label">Console API</label>
                                         <div class="col-12">
                                             <input class="form-control" type="url" value="{{config.api.job::input}}" id="example-text-input" placeholder="Ex. http://localhost:19980/v1">
                                         </div>
@@ -85,6 +85,12 @@
                                         <label for="example-search-input" class="col-12 col-form-label">Storages API</label>
                                         <div class="col-12">
                                             <input class="form-control" type="url" value="{{config.api.storages::input}}" id="example-search-input" placeholder="Ex. http://localhost:19080/v1">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="example-search-input" class="col-12 col-form-label">Token</label>
+                                        <div class="col-12">
+                                            <input class="form-control" type="url" value="{{config.OAuth.token::input}}" id="example-search-input" placeholder="User Token">
                                         </div>
                                     </div>
                                 </div>
@@ -148,6 +154,8 @@
                         window.history.pushState({}, null, '/');
                         window.dispatchEvent(new CustomEvent('location-changed'));
                     }
+
+                    // console.log("store = ",this.config);
                 });
             }
 
@@ -159,7 +167,8 @@
                     'api.job_api': this.config.api.job + '/jobs',
                     'api.storages': this.config.api.storages,
                     'api.storages_api': this.config.api.storages + '/storage',
-                    'api.storages_obj_api': this.config.api.storages + '/object'
+                    'api.storages_obj_api': this.config.api.storages + '/object',
+                    'OAuth.token':this.config.OAuth.token
                 });
                 this.dispatchEvent(new CustomEvent('config-update'));
                 this.$.toast.text = "Config saved";
