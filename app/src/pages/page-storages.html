@@ -20,7 +20,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style include="app-grid-style"></style>
     <style include="bootstrap"></style>
     <style include="shared-styles">
-       :host {
+      :host {
         box-sizing: border-box;
         display: block;
         --app-grid-columns: 1;
@@ -76,7 +76,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       vaadin-grid.material {
         --vaadin-grid-header-cell: {
-          font-size: 14px!important;
+          font-size: 14px !important;
           padding-left: 20px;
           height: initial;
           background: #fbfbfb;
@@ -141,7 +141,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           <vaadin-grid-column width="50px" flex-grow="0">
             <template class="header">#</template>
-            <template><span style="text-align: center;display: block;">[[index]]</span></template>
+            <template>
+              <span style="text-align: center;display: block;">[[index]]</span>
+            </template>
           </vaadin-grid-column>
 
           <vaadin-grid-column width="100px" flex="0">
@@ -168,7 +170,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <template is="dom-if" if="[[job_error]]">
           <div style="padding: 85px 15px 0;position: absolute;top: 0;width:100%;height: 100%;background: rgba(239, 239, 239, 0.79);    z-index: 112;">
             <div class="alert alert-danger" role="alert" style="width:100%">
-              <strong>Error !</strong> Can't GET [[storagesapi]], 404 (Not Found), Please go to <strong><a style="color: #aa4644;" href="/setting">Setting</a></strong>              to set other storages api
+              <template is="dom-if" if="[[isJobError404]]">
+                <strong>Error !</strong> Can't GET [[storagesapi]], 404 (Not Found), Please go to
+                <strong>
+                  <a style="color: #aa4644;" href="/setting">Setting</a>
+                </strong> to set other storages api
+              </template>
+              <template is="dom-if" if="[[!isJobError404]]">
+                <strong>Error !</strong> The request failed with status code: 401 (Unauthorized), Please go to
+                <strong>
+                  <a style="color: #aa4644;" href="/setting">Setting</a>
+                </strong> to set Your API Token
+              </template>
             </div>
           </div>
         </template>
@@ -193,6 +206,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           storageLists: {
             type: Array,
             value: []
+          },
+          job_error_code: {
+            type: Number
+          },
+          isJobError404: {
+            type: Boolean
           }
         };
       }
@@ -211,13 +230,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _loadStoragesComplete(event) {
         let res = event.detail.response;
-        if (res){
+        // console.log("_loadStoragesComplete = ", res);
+        if (res) {
           // console.log("_loadStoragesComplete complete = ",res);
         }
-        else{
+        else {
           // console.log("_loadStoragesComplete error = ",event);
         }
-     
+
         this.job_error = false;
         this.storageLists = [];
         if (this.storages && this.storages.length)
@@ -230,7 +250,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.storageLists = [];
         this.$.material.clearCache();
       }
+
       _ajexerror(ev) {
+        let detail = "" + ev.detail.error;
+
+        if (detail.indexOf("401") >= 0) {
+          // console.log("error job_error 401");
+          this.job_error_code = 401;
+          this.isJobError404 = false;
+        }
+        else {
+          this.job_error_code = 404;
+          this.isJobError404 = true;
+          // console.log("error job_error ",detail);
+        }
+
+        // console.log("error job_error = ", detail + " | ", detail.indexOf("401") + " | ", this.job_error_code);
+
+
         this.storageLists = [];
         this.$.material.clearCache();
         this.job_error = true;
