@@ -3,9 +3,9 @@
     "api": {
         "job":"http://localhost:19980/v1",
         "job_api": "http://localhost:19980/v1/jobs",
-        "storages":"http://bigmaster.igridproject.info:19080/v1",
-        "storages_api": "http://bigmaster.igridproject.info:19080/v1/storage",
-        "storages_obj_api": "http://bigmaster.igridproject.info:19080/v1/object"
+        "storages":"http://localhost.igridproject.info:19080/v1",
+        "storages_api": "http://localhost.igridproject.info:19080/v1/storage",
+        "storages_obj_api": "http://localhost.igridproject.info:19080/v1/object"
     },
     "platform":"web client"
 }
