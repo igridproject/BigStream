@@ -332,14 +332,15 @@
 
   function defaultLogin() {
 
-    if (!store.get('api')){
+    if (!store.get('api')) {
       store.set({
         'api.job': defaultConfig.api.job,
         'api.job_api': defaultConfig.api.job + '/jobs',
         'api.storages': defaultConfig.api.storages,
         'api.storages_api': defaultConfig.api.storages + '/storage',
         'api.storages_obj_api': defaultConfig.api.storages + '/object',
-        'OAuth.token': ""
+        'OAuth.token': "",
+        'api.version': "1"
       });
       // console.log("no default config");
     }

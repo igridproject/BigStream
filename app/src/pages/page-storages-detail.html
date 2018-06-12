@@ -467,10 +467,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </paper-card>
         </div>
 
+  
+        <br>
+
         <paper-toast autoFitOnAttach id="toast"></paper-toast>
         <paper-dialog id="imgview" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
             <h6 style="padding: 10px;background: #3e3e3e;margin: 0;color: azure;">ID : [[activeItem._id]]</h6>
-            <img src="[[storagesobjapi]]/[[routeData.storageid]].[[activeItem._id]]/data?datatype=jpg" alt="[[activeItem._id]]">
+            <img src="[[storagesobjapi]]/[[routeData.storageid]][[strAPI]][[activeItem._id]]/data?datatype=jpg" alt="[[activeItem._id]]">
             <iron-icon icon="icons:chevron-left" on-click="_preView"></iron-icon>
             <iron-icon icon="icons:chevron-right" style="right: 0;left: initial;" on-click="_nextView"></iron-icon>
         </paper-dialog>
@@ -523,6 +526,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     dataType: String,
                     lastfilter: {
                         type: Number,
+                    },
+                    strAPI: {
+                        type: String,
+                        value: "."
                     }
 
                 };
@@ -534,6 +541,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
             ready() {
                 super.ready();
+
+
 
                 Polymer.RenderStatus.afterNextRender(this, function () {
                     this.$.imgview.addEventListener('keydown', (ev) => {
@@ -592,6 +601,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.lastfilter = 100;
                 this.fromfilter = this.objidfilter = this.limitfilter = "";
 
+                let config = store.get();
+                this.strAPI = config.api.version == 1 ? "$" : ".";
+                // console.log("config storage details = ", config.api.version," so use ",this.strAPI);
             }
 
             _activeItemChanged(item) {
@@ -600,7 +612,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.detailLoading = true;
                 if (item) {
                     this.$.jsonviewer.json = {};
-                    $.getJSON(this.storagesobjapi + '/' + this.routeData.storageid + '.' + item._id,
+                    $.getJSON(this.storagesobjapi + '/' + this.routeData.storageid + this.strAPI + item._id,
                         (res) => {
                             this.objectType = res.data.object_type;
                             this.dataType = res.data.data_type;

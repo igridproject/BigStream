@@ -11,9 +11,9 @@
     <template>
         <style include="bootstrap"></style>
         <style include="shared-styles">
-             :host {
+            :host {
                 display: block;
-                box-sizing: border-box!important;
+                box-sizing: border-box !important;
             }
 
             paper-card {
@@ -91,7 +91,17 @@
                                         <label for="example-search-input" class="col-12 col-form-label">Token</label>
                                         <div class="col-12">
                                             <!-- <input class="form-control" type="text" value="{{config.OAuth.token::input}}" id="example-search-input" placeholder="User Token"> -->
-                                            <textarea rows="4" class="form-control" type="text" value="{{config.OAuth.token::input}}" id="example-search-input" placeholder="User Token"></textarea>
+                                            <textarea rows="2" class="form-control" type="text" value="{{config.OAuth.token::input}}" id="example-search-input" placeholder="User Token"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="example-search-input" class="col-12 col-form-label">API Version</label>
+                                        <div class="col-12">
+                                            <select class="form-control"  value="{{config.api.version::input}}">
+                                                <option value="1">มากกว่าหรือเท่ากับ Version 1.2</option>
+                                                <option value="0">น้อยกว่า Version 1.2</option>
+                                            </select>
+
                                         </div>
                                     </div>
                                 </div>
@@ -163,15 +173,23 @@
             _savebt(ev) {
                 if (!store.get('api'))
                     store.set({ 'api': {} });
-                store.set({
+
+                let apiValue = {
                     'api.job': this.config.api.job,
                     'api.job_api': this.config.api.job + '/jobs',
                     'api.storages': this.config.api.storages,
                     'api.storages_api': this.config.api.storages + '/storage',
                     'api.storages_obj_api': this.config.api.storages + '/object',
-                    'OAuth.token':this.config.OAuth.token
-                });
+                    'OAuth.token': this.config.OAuth.token,
+                    'api.version':this.config.api.version
+                };
+
+                // console.log("api value = ",apiValue);
+
+                store.set(apiValue);
+
                 this.dispatchEvent(new CustomEvent('config-update'));
+                
                 this.$.toast.text = "Config saved";
                 this.$.toast.horizontalAlign = "right";
                 this.$.toast.verticalAlign = "top";

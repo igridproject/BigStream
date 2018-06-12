@@ -257,8 +257,16 @@
                 <h6>Token</h6>
                 <!-- <input class="form-control" type="text" value="{{config.OAuth.token::input}}" id="example-search-input" placeholder="User Token"> -->
                 <!-- <div class="form-control-feedback" hidden>Can't use space in job name</div> -->
-                <textarea rows="4" class="form-control" type="text" value="{{config.OAuth.token::input}}" id="example-search-input" placeholder="User Token"></textarea>
-                                     
+                <textarea rows="2" class="form-control" type="text" value="{{config.OAuth.token::input}}" id="example-search-input" placeholder="User Token"></textarea>
+
+            </div>
+
+            <div class="form-group">
+                <h6>API Version</h6>
+                <select class="form-control" value="{{config.api.version::input}}">
+                    <option value="1">มากกว่าหรือเท่ากับ Version 1.2</option>
+                    <option value="0">น้อยกว่า Version 1.2</option>
+                </select>
             </div>
 
             <!-- </div> -->
@@ -514,7 +522,9 @@
                         'api.storages': this.config.api.storages,
                         'api.storages_api': this.config.api.storages + '/storage',
                         'api.storages_obj_api': this.config.api.storages + '/object',
-                        'OAuth.token': this.config.OAuth.token
+                        'OAuth.token': this.config.OAuth.token,
+                        'OAuth.token': this.config.OAuth.token,
+                        'api.version': this.config.api.version
                     });
                     // this.dispatchEvent(new CustomEvent('config-update'));
 
