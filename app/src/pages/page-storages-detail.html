@@ -467,13 +467,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </paper-card>
         </div>
 
-  
+
         <br>
 
         <paper-toast autoFitOnAttach id="toast"></paper-toast>
         <paper-dialog id="imgview" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
             <h6 style="padding: 10px;background: #3e3e3e;margin: 0;color: azure;">ID : [[activeItem._id]]</h6>
-            <img src="[[storagesobjapi]]/[[routeData.storageid]][[strAPI]][[activeItem._id]]/data?datatype=jpg" alt="[[activeItem._id]]">
+            <template is="dom-if" if="[[isValidActiveItemID(activeItem._id)]]">
+                <img src="[[storagesobjapi]]/[[routeData.storageid]][[strAPI]][[activeItem._id]]/data?datatype=png" alt="[[activeItem._id]]">
+            </template>
             <iron-icon icon="icons:chevron-left" on-click="_preView"></iron-icon>
             <iron-icon icon="icons:chevron-right" style="right: 0;left: initial;" on-click="_nextView"></iron-icon>
         </paper-dialog>
@@ -539,10 +541,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     '_pageChanged(routeData.storageid)'
                 ];
             }
+
+
+            isValidActiveItemID(id) {
+                if (id){
+                    return true;
+                }
+                return false;
+            }
+
             ready() {
                 super.ready();
-
-
 
                 Polymer.RenderStatus.afterNextRender(this, function () {
                     this.$.imgview.addEventListener('keydown', (ev) => {
@@ -610,7 +619,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.$.grid.selectedItems = item ? [item] : [];
 
                 this.detailLoading = true;
-                if (item) {
+
+                if (item && this.$.grid.selectedItems.length > 0) {
+                    // console.log("_activeItemChanged 1");
                     this.$.jsonviewer.json = {};
                     $.getJSON(this.storagesobjapi + '/' + this.routeData.storageid + this.strAPI + item._id,
                         (res) => {
@@ -620,10 +631,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             item.data = res.data;
                             this.$.jsonviewer.json = item;
                             $(this.$.objDetail).attr('opened', '');
+                            // console.log("_activeItemChanged 11");
                         });
+
                 }
-                else
+                else {
+                    // console.log("_activeItemChanged 2");
                     this._closeObjDetail();
+                }
             }
 
             _isSelected(page, item) {
@@ -747,17 +762,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 return i;
             }
             _nextView() {
+
                 var nextimg = this._findIdToIndex(this.activeItem._id) + 1
                 if (nextimg < this.items.length) {
                     this.activeItem = this.items[nextimg]
-                    $(this.$.imgview).children('img').attr('src', `${this.storagesobjapi}/${this.routeData.storageid}.${this.items[nextimg]._id}/data?datatype=jpg`);
+                    $(this.$.imgview).children('img').attr('src', `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.items[nextimg]._id}/data?datatype=jpg`);
                 }
             }
             _preView() {
+
                 var preimg = this._findIdToIndex(this.activeItem._id) - 1
                 if (preimg >= 0) {
                     this.activeItem = this.items[preimg]
-                    $(this.$.imgview).children('img').attr('src', `${this.storagesobjapi}/${this.routeData.storageid}.${this.items[preimg]._id}/data?datatype=jpg`);
+                    $(this.$.imgview).children('img').attr('src', `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.items[preimg]._id}/data?datatype=jpg`);
                 }
             }
         }

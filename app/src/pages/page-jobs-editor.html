@@ -277,7 +277,7 @@
 
         <app-toolbar>
             <div main-title>
-                [[titlePage]]
+                [[titlePage]] 
                 <span style="color:#414e5d;display: block;font-size: 14px;">[[jsonResult.job_id]]</span>
             </div>
             <!-- hidden="[[!fileOpened]]" -->
@@ -312,7 +312,7 @@
             <div class="row no-gutters">
                 <vaadin-split-layout class="split">
                     <div id="joblist" style="width: 80%;    overflow: hidden;" file-opened$="[[fileOpened]]">
-                        <joblist-element id="joblistElement" jobapi={{config.api.job_api}}></joblist-element>
+                        <joblist-element id="joblistElement" jobapi={{config.api.job_api}} ></joblist-element>
                     </div>
                     <div id="code" style="min-width:140px;width: 20%;" file-opened$="[[fileOpened]]"></div>
                 </vaadin-split-layout>
@@ -351,6 +351,17 @@
                 <plugin-select id="data_out" maxplugin="1" config="[[config]]"></plugin-select>
             </div>
         </div>
+
+        <paper-dialog modal id="dialogError" style="z-index: 1110;">
+                <div class="form-group">
+                    <div>
+                        [[errorMessage]], Please go to Setting to set Your API Token
+                    </div>
+                </div>
+                <div class="buttons">
+                    <paper-button class="btn btn-danger" dialog-confirm>Ok</paper-button>
+                </div>
+        </paper-dialog>
 
     </template>
 
@@ -401,9 +412,25 @@
                         value: function () {
                             return document.body;
                         }
+                    },
+                    job_error:{
+                        type:Boolean,
+                        observer : '_observeErrorJob'
                     }
                 };
             }
+
+            _observeErrorJob(val){
+                if (val==false){
+                    // console.log("job error no");
+                    // this.$.dialogError.close();
+                }
+                else{
+                    // console.log("job error yes");
+                    // this.$.dialogError.open();
+                }
+            }
+
             constructor() {
                 super();
             }

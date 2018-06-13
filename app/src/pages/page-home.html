@@ -438,6 +438,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 .fail((jqXHR, textStatus, errorThrown) => {
                   // material.clearCache();
                   console.log("error = ", errorThrown);
+                  rej(errorThrown);
                 })
             }, this)
 

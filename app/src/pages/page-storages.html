@@ -12,7 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="/bower_components/vaadin-grid/all-imports.html">
 
 <link rel="import" href="/bower_components/paper-fab/paper-fab.html">
-
+<link rel="import" href="/bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../shared-styles.html">
 
 <dom-module id="page-storages">
@@ -177,7 +177,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </strong> to set other storages api
               </template>
               <template is="dom-if" if="[[!isJobError404]]">
-                <strong>Error !</strong> The request failed with status code: 401 (Unauthorized), Please go to
+                <!-- The request failed with status code: 401 (Unauthorized) -->
+                [[errorMessage]], Please go to
                 <strong>
                   <a style="color: #aa4644;" href="/setting">Setting</a>
                 </strong> to set Your API Token
@@ -189,6 +190,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </paper-card>
     </div>
     <paper-toast autoFitOnAttach id="toast"></paper-toast>
+
+    <paper-dialog modal id="dialogError" style="z-index: 210;">
+      <div class="form-group">
+          <!-- <h6>Error</h6> -->
+          <div>
+              [[errorMessage]], Please go to Setting to set Your API Token
+              <!-- <strong>
+                <a style="color: #aa4644;" href="/setting">Setting</a>
+              </strong> to set Your API Token -->
+          </div>
+
+      </div>
+      <div class="buttons">
+          <paper-button class="btn btn-danger" dialog-confirm>Ok</paper-button>
+      </div>
+  </paper-dialog>
+
+
   </template>
 
   <script>
@@ -212,6 +231,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           isJobError404: {
             type: Boolean
+          },
+          errorMessage: {
+            type: String
           }
         };
       }
@@ -256,8 +278,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         if (detail.indexOf("401") >= 0) {
           // console.log("error job_error 401");
+          this.errorMessage = detail;
           this.job_error_code = 401;
           this.isJobError404 = false;
+
+          // this.$.dialogError.open();
+
         }
         else {
           this.job_error_code = 404;
@@ -274,6 +300,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _refreshbt(ev) {
+
         let refreshbt = Polymer.dom(this.root).querySelector('iron-icon.refreshbt');
         refreshbt.classList.remove('active');
         refreshbt.classList.add('active');
