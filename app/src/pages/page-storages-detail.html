@@ -325,8 +325,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </style>
         <!-- Fetch an array of users to be shown in the grid -->
         <app-route route="[[route]]" pattern="/:storageid" data="{{routeData}}"></app-route>
-        <iron-ajax auto loading="{{loading}}" url="[[urlquery]]" handle-as="json" on-response="_loadStorageComplete" last-response="{{items}}"
-            id="updateStorageLists"></iron-ajax>
+        <iron-ajax auto loading="{{loading}}" url="[[urlquery]]" handle-as="json" on-error="_loadStorageComplete" on-response="_loadStorageComplete"
+            last-response="{{items}}" id="updateStorageLists"></iron-ajax>
 
         <app-toolbar>
             <div main-title>
@@ -400,6 +400,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                     <iron-icon icon="icons:search"></iron-icon>search</paper-button>
                             </div>
                         </div>
+
                     </iron-pages>
                 </div>
 
@@ -464,6 +465,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <!-- END OBJECT DETAIL -->
 
                 </div>
+
+
+                <template is="dom-if" if="[[job_error]]">
+                    <div style="padding: 85px 15px 0;position: absolute;top: 0;width:100%;height: 100%;background: rgba(239, 239, 239, 0.6);z-index: 112;">
+                        <div class="alert alert-danger" role="alert" style="width:100%">
+                            <template is="dom-if" if="[[isJobError404]]">
+                                <strong>Error !</strong> Can't GET [[storagesapi]], 404 (Not Found), Please go to
+                                <strong>
+                                    <a style="color: #aa4644;" href="/setting">Setting</a>
+                                </strong> to set other storages api
+                            </template>
+                            <template is="dom-if" if="[[!isJobError404]]">
+                                [[errorMessage]], Please go to
+                                <strong>
+                                    <a style="color: #aa4644;" href="/setting">Setting</a>
+                                </strong> to set Your API Token
+                            </template>
+                        </div>
+                    </div>
+                </template>
+
             </paper-card>
         </div>
 
@@ -474,7 +496,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-dialog id="imgview" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
             <h6 style="padding: 10px;background: #3e3e3e;margin: 0;color: azure;">ID : [[activeItem._id]]</h6>
             <template is="dom-if" if="[[isValidActiveItemID(activeItem._id)]]">
-                <img src="[[storagesobjapi]]/[[routeData.storageid]][[strAPI]][[activeItem._id]]/data?datatype=png" alt="[[activeItem._id]]">
+                <img src="[[storagesobjapi]]/[[routeData.storageid]][[strAPI]][[activeItem._id]]/data?datatype=jpg" alt="[[activeItem._id]]">
             </template>
             <iron-icon icon="icons:chevron-left" on-click="_preView"></iron-icon>
             <iron-icon icon="icons:chevron-right" style="right: 0;left: initial;" on-click="_nextView"></iron-icon>
@@ -532,6 +554,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     strAPI: {
                         type: String,
                         value: "."
+                    },
+                    job_error: {
+                        Boolean,
+                        value: false
+                    },
+                    job_error_code: {
+                        type: Number
+                    },
+                    isJobError404: {
+                        type: Boolean
+                    },
+                    errorMessage: {
+                        type: String
                     }
 
                 };
@@ -544,7 +579,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
             isValidActiveItemID(id) {
-                if (id){
+                if (id) {
                     return true;
                 }
                 return false;
@@ -581,7 +616,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
             }
-            _loadStorageComplete(ev) { }
+            _loadStorageComplete(event) {
+                let res = event.detail.response;
+                if (res) {
+                    this.job_error = false;
+                }
+                else {
+                    this.job_error = true;
+                    //error
+                    let detail = "" + event.detail.error;
+                    if (detail.indexOf("401") >= 0) {
+                        this.errorMessage = detail;
+                        this.job_error_code = 401;
+                        this.isJobError404 = false;
+                        console.log("error _loadStorageComplete = 401 authorize");
+                    }
+                    else {
+                        this.job_error_code = 404;
+                        this.isJobError404 = true;
+                        console.log("error _loadStorageComplete = 404 not found");
+                    }
+                }
+
+
+            }
 
             _onActiveItemChanged(e) {
                 // if (e.detail.value) {
@@ -600,6 +658,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.urlquery = this.mainurl + 'field=meta&last=100';
                 this.$.updateStorageLists.generateRequest();
                 this.$.grid.clearCache();
+                this.job_error = false;
 
                 // fetch stats of storageid
                 $.getJSON(this.storagesapi + '/' + this.routeData.storageid + '/stats', function (data) {
