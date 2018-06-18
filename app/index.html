@@ -410,17 +410,28 @@
       send = window.XMLHttpRequest.prototype.send;
 
     function openReplacement(method, url, async, user, password) {
+
       this._url = url;
       if (store.get('OAuth') && store.get('OAuth.token'))
-        if (url.match(/&+/)) url += '&token=' + store.get('OAuth.token');
-        else url += '?token=' + store.get('OAuth.token');
+        if (url.indexOf("?")>=0) {
+          url += '&token=' + store.get('OAuth.token');
+        }
+        else {
+          url += '?token=' + store.get('OAuth.token');
+        }
+      // if (url.match(/&+/)) url += '&token=' + store.get('OAuth.token');
+      // else url += '?token=' + store.get('OAuth.token');
+      // else url += '&token=' + store.get('OAuth.token');
       else {
         _logedinCheck();
       }
+
+      // console.log("request url = ",url);
       return open.apply(this, arguments);
     }
 
     function sendReplacement(data) {
+      
       if (this.onreadystatechange) {
         this._onreadystatechange = this.onreadystatechange;
       }

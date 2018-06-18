@@ -496,7 +496,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-dialog id="imgview" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
             <h6 style="padding: 10px;background: #3e3e3e;margin: 0;color: azure;">ID : [[activeItem._id]]</h6>
             <template is="dom-if" if="[[isValidActiveItemID(activeItem._id)]]">
-                <img src="[[storagesobjapi]]/[[routeData.storageid]][[strAPI]][[activeItem._id]]/data?datatype=jpg" alt="[[activeItem._id]]">
+                <img src="[[imgCurrent]]" alt="[[activeItem._id]]">
             </template>
             <iron-icon icon="icons:chevron-left" on-click="_preView"></iron-icon>
             <iron-icon icon="icons:chevron-right" style="right: 0;left: initial;" on-click="_nextView"></iron-icon>
@@ -578,12 +578,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
 
-            isValidActiveItemID(id) {
-                if (id) {
-                    return true;
-                }
-                return false;
-            }
+
 
             ready() {
                 super.ready();
@@ -655,7 +650,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _pageChanged(storageid) {
                 this.items = [];
                 this.mainurl = this.storagesapi + '/' + this.routeData.storageid + '/objects?';
-                this.urlquery = this.mainurl + 'field=meta&last=100';
+                this.urlquery = this.mainurl + 'field=meta&last=100'; 
                 this.$.updateStorageLists.generateRequest();
                 this.$.grid.clearCache();
                 this.job_error = false;
@@ -835,6 +830,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.activeItem = this.items[preimg]
                     $(this.$.imgview).children('img').attr('src', `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.items[preimg]._id}/data?datatype=jpg`);
                 }
+            }
+
+            isValidActiveItemID(id) {
+                // this.imgCurrent = this.storagesobjapi + "/" + this.routeData.storageid + this.strAPI + this.activeItem._id + "/data?datatype=jpg";
+                this.imgCurrent = "";
+                if (id) {
+                    this.imgCurrent = `${this.storagesapi}/${this.routeData.storageid}${this.strAPI}${this.activeItem._id}/data?datatype=jpg`;
+                    // console.log("isValidActiveItemID : ", this.imgCurrent);
+                    return true;
+                }
+                return false;
             }
         }
 

@@ -21,16 +21,19 @@
                 box-sizing: border-box;
                 padding-bottom: 0 !important;
             }
+
             .main-page {
                 padding: 0;
                 overflow: hidden;
             }
+
             .main-page,
             .main-page>div,
             vaadin-split-layout {
                 height: 100%;
                 width: 100%;
             }
+
             .split {
                 background: #fff;
                 --vaadin-split-layout-splitter: {
@@ -38,12 +41,15 @@
                 }
                 ;
             }
+
             .code>div {
                 height: 100%;
             }
+
             .code div.jsoneditor-menu {
                 background-color: var(--paper-blue-500);
             }
+
             .editor {
                 position: absolute;
                 top: 0;
@@ -54,26 +60,32 @@
                 border-left: #e0e0e0 solid 1px;
                 transition: all 0.3s ease;
             }
+
             .editor #data_out {
                 margin-bottom: 30px;
             }
+
             .editor[opened] {
                 right: 0;
                 box-shadow: 0 0 33px 0px rgba(0, 0, 0, 0.1)
             }
+
             .editor #jsoneditor {
                 height: 500px;
                 border: none;
             }
+
             .jsoneditor {
                 border: none !important;
             }
+
             .editor div.jsoneditor-menu,
             #code div.jsoneditor-menu {
                 background-color: #edeff5 !important;
                 border-bottom: 1px solid var(--google-grey-100) !important;
                 color: #444 !important
             }
+
             .editor div.jsoneditor-menu>button,
             .editor div.jsoneditor-menu>div.jsoneditor-modes>button,
             #code div.jsoneditor-menu>button,
@@ -81,24 +93,30 @@
                 background-color: #5093e1 !important;
                 cursor: pointer;
             }
+
             #code .ace-jsoneditor .ace_gutter {
                 background: #fbfbfb;
                 color: #6f6f6f;
             }
+
             #code .ace-jsoneditor.ace_editor {
                 font-size: 14px !important;
             }
+
             .editor div.jsoneditor-menu {
                 display: none;
             }
+
             .editor div.jsoneditor-outer {
                 margin: 0 !important;
                 padding: 0 !important;
             }
+
             div.editor>div {
                 padding: 10px 20px;
                 position: relative;
             }
+
             div.editor .jsonlabel {
                 color: #616161;
                 padding: 0 20px;
@@ -106,37 +124,47 @@
                 border-width: 1px 0 0 0px;
                 display: flex;
             }
+
             div.editor .jsonlabel:first-child {
                 border-top: 0;
             }
+
             div.jsoneditor-tree {
                 overflow: visible !important;
             }
+
             div.editor .jsonlabel h7 {
                 padding-top: 17px;
                 font-size: 14px;
             }
+
             div.editor {
                 background: #fff;
             }
+
             #code div.jsoneditor-menu a.jsoneditor-poweredBy {
                 display: none;
             }
+
             table.jsoneditor-tree>tbody>tr:first-child {
                 display: none;
             }
+
             .toggleEditor {
                 min-width: initial;
                 --iron-icon-width: 19px;
             }
+
             #joblist[file-opening],
             #code[file-opening] {
                 transition: all 0.3s ease;
             }
+
             #code,
             #joblist {
                 position: relative;
             }
+
             #code::before {
                 background: rgba(239, 239, 239, 0.79);
                 width: 100%;
@@ -146,6 +174,7 @@
                 top: 0;
                 z-index: 111;
             }
+
             #code::after {
                 content: "There is no job open";
                 margin: 0;
@@ -157,30 +186,38 @@
                 text-align: center;
                 color: #c5c5c5;
             }
+
             #code[file-opened]::after,
             #code[file-opened]::before {
                 display: none;
             }
+
             div[main-title] {
                 color: #448ee2;
             }
+
             paper-dialog {
                 border-radius: 5px;
             }
+
             #addJobDialog .buttons,
             .form-group {
                 padding: 15px;
             }
+
             #addJobDialog h6 {
                 margin-bottom: 10px;
             }
+
             #addJobFromFileDialog .buttons,
             .form-group {
                 padding: 15px;
             }
+
             #addJobFromFileDialog h6 {
                 margin-bottom: 10px;
             }
+
             #jobTreeDialog {
                 position: fixed;
                 width: 100%;
@@ -189,12 +226,14 @@
                 right: 0;
                 overflow: auto;
             }
+
             #jobTreeDialog>paper-fab {
                 position: fixed;
                 top: 70px;
                 right: 23px;
                 margin: 0;
             }
+
             .btn-import {
                 /* background: #dddddd !important; */
             }
@@ -237,13 +276,19 @@
         <!--START save as Job Dialog-->
         <paper-dialog modal id="saveasJobDialog">
             <div class="form-group">
-                <h6>Save as</h6>
+                <h6>Save</h6>
                 <input style="width: 300px" type="text" class="form-control input-saveas" value="{{newJobName::input}}" placeholder="" autofocus
                     on-keydown="checkForEnter">
                 <div class="form-control-feedback" hidden>Can't use space in job name</div>
+                <br>
+                <!-- <div> -->
+                <paper-checkbox checked="{{isReload}}">
+                    Reload
+                </paper-checkbox>
+                <!-- </div> -->
             </div>
             <div class="buttons">
-                <paper-button class="btn btn-success submitbt" on-click="_createNewJobBt">Save</paper-button>
+                <paper-button class="btn btn-success submitbt" on-click="_createSaveJobBt">Save</paper-button>
                 <paper-button class="btn btn-danger" dialog-confirm>cancel</paper-button>
             </div>
         </paper-dialog>
@@ -277,7 +322,7 @@
 
         <app-toolbar>
             <div main-title>
-                [[titlePage]] 
+                [[titlePage]]
                 <span style="color:#414e5d;display: block;font-size: 14px;">[[jsonResult.job_id]]</span>
             </div>
             <!-- hidden="[[!fileOpened]]" -->
@@ -295,7 +340,7 @@
             </paper-button> -->
             <paper-button class="btn btn-outline-info toggleEditor" on-click="_saveasJsonEditorDialogToggle" hidden$="[[!fileOpened]]"
                 title="Save as (ctrl+shift+s)">
-                <iron-icon icon="icons:content-copy"></iron-icon> Save as
+                <iron-icon icon="icons:content-copy"></iron-icon> Save
             </paper-button>
             <paper-button class="btn btn-outline-danger toggleEditor" on-click="_closeJsonEditor" hidden$="[[!fileOpened]]">
                 <iron-icon icon="icons:close"></iron-icon> Close
@@ -312,7 +357,7 @@
             <div class="row no-gutters">
                 <vaadin-split-layout class="split">
                     <div id="joblist" style="width: 80%;    overflow: hidden;" file-opened$="[[fileOpened]]">
-                        <joblist-element id="joblistElement" jobapi={{config.api.job_api}} ></joblist-element>
+                        <joblist-element id="joblistElement" jobapi={{config.api.job_api}}></joblist-element>
                     </div>
                     <div id="code" style="min-width:140px;width: 20%;" file-opened$="[[fileOpened]]"></div>
                 </vaadin-split-layout>
@@ -353,14 +398,14 @@
         </div>
 
         <paper-dialog modal id="dialogError" style="z-index: 1110;">
-                <div class="form-group">
-                    <div>
-                        [[errorMessage]], Please go to Setting to set Your API Token
-                    </div>
+            <div class="form-group">
+                <div>
+                    [[errorMessage]], Please go to Setting to set Your API Token
                 </div>
-                <div class="buttons">
-                    <paper-button class="btn btn-danger" dialog-confirm>Ok</paper-button>
-                </div>
+            </div>
+            <div class="buttons">
+                <paper-button class="btn btn-danger" dialog-confirm>Ok</paper-button>
+            </div>
         </paper-dialog>
 
     </template>
@@ -413,19 +458,23 @@
                             return document.body;
                         }
                     },
-                    job_error:{
-                        type:Boolean,
-                        observer : '_observeErrorJob'
+                    job_error: {
+                        type: Boolean,
+                        observer: '_observeErrorJob'
+                    },
+                    isReload: {
+                        type: Boolean,
+                        value: true
                     }
                 };
             }
 
-            _observeErrorJob(val){
-                if (val==false){
+            _observeErrorJob(val) {
+                if (val == false) {
                     // console.log("job error no");
                     // this.$.dialogError.close();
                 }
-                else{
+                else {
                     // console.log("job error yes");
                     // this.$.dialogError.open();
                 }
@@ -520,8 +569,10 @@
                                 setTimeout(() => {
                                     $(this.$.code).removeAttr('file-opening');
                                     $(this.$.joblist).removeAttr('file-opening');
-                                }, 800)
+                                }, 100)
                             });
+
+
                     }
                     this.$.joblistElement.addEventListener('selected-job-list', this._selectedJobList.bind(
                         this));
@@ -565,7 +616,16 @@
                 this.newJobName = "";
                 this.$.addJobDialog.open();
             }
+            _createSaveJobBt(ev) {
+                this.isCreateNewjob = false;
+                this._saveJob(ev);
+            }
             _createNewJobBt(ev) {
+                this.isCreateNewjob = true;
+                this._saveJob(ev);
+            }
+            _saveJob(ev) {
+                // console.log("isReload = ",this.isReload);
                 let dialogTarget = Polymer.dom(ev).rootTarget.parentNode.parentNode;
                 // if (this.newJobName.match('^[A-Za-z.0-9]+$')) {
                 if (this.newJobName && this.newJobName.length > 0) {
@@ -574,17 +634,26 @@
                         newJob = this.jsoneditor.code.get();
                     }
                     newJob.job_id = this.newJobName;
-                    console.log("creat");
-                    $.post(this.config.api.job_api, newJob, (data) => {
+                    let api = this.config.api.job_api;
+                    console.log("creat job api : ", api);
+                    $.post(api, newJob, (data) => {
                         if (data.response === 'OK')
                             console.log('added new job');
                         this.$.joblistElement._updateJoblist();
                         var ev_temp = {};
                         ev_temp.detail = {};
                         ev_temp.detail.job_id = newJob.job_id;
-                        this._saveJsonEditor();
+                        if (this.isCreateNewjob) {
+                            // this._saveJsonEditor();
+                        }
+                        else {//for save
+                            if (this.isReload) {
+                                this._saveJsonEditor();
+                            }
+                        }
+
                         this._selectedJobList(ev_temp);
-                        
+
                     }).fail(() => {
                         let msg = {
                             title: `Can't connect ${this.config.api.job_api} `,
@@ -606,6 +675,7 @@
                     $(dialogTarget.querySelector('.form-control-feedback')).removeAttr("hidden");
                 }
             }
+
             _saveasJsonEditorDialogToggle() {
                 // this.newJobName = `${this.jsonResult.job_id}.copy`;
                 let fileName = this.jsoneditor.code.get().job_id;//this.jsonResult.job_id + ".json";
@@ -636,15 +706,27 @@
             _saveJsonEditor() {
                 let json = this._getJson();
                 json.job_id = json.job_id.replace(/\s/g, '');
-                let url = this.config.api.job_api + '?reload=true';
-                // console.log("_saveJsonEditor call reload = ",url);
+                let url = "";
+
+                // // if (this.config.api.job_api.indexOf("token") >= 0) {
+                // if (store.get('OAuth') && store.get('OAuth.token')) {
+                //     url = this.config.api.job_api + '?reload=true';
+                //     // console.log("_saveJsonEditor call init1 = ", this.config.api.job_api);
+                // }
+                // else {
+                //     url = this.config.api.job_api + '?reload=true';
+                //     // console.log("_saveJsonEditor call init2 = ", this.config.api.job_api);
+                // }
+
+                url = this.config.api.job_api + '?reload=true';
+                // console.log("_saveJsonEditor call reload = ", url);
                 $.post(url, this._getJson(), (data, status, request) => {
                     // if (data.response === 'OK')
                     //     console.log('added');
                     // console.log("_saveJsonEditor response 1 = ",data.response);
                     this.$.joblistElement._updateJoblist();
                 }).fail(() => {
-                    console.log("_saveJsonEditor response 0 = ",this.config.api.job_api);
+                    // console.log("_saveJsonEditor response 0 = ", this.config.api.job_api);
                     let msg = {
                         title: `Can't connect ${this.config.api.job_api}`,
                         detail: "Please make sure your Job API is correct."

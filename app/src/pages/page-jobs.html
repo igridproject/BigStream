@@ -19,7 +19,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style include="bootstrap"></style>
     <style include="app-grid-style"></style>
     <style include="shared-styles">
-       :host {
+      :host {
         --app-grid-columns: 1;
         --app-grid-gutter: 15px;
         box-sizing: border-box;
@@ -75,7 +75,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </paper-input>
     </app-toolbar>
     <!-- Fetch an array of users to be shown in the grid -->
-    <iron-ajax auto loading="{{loading}}" url="[[jobapi]]" handle-as="json" last-response="{{jobs}}" on-error="_ajexerror" id="updateJobsList"
+    <!-- auto -->
+    <iron-ajax  loading="{{loading}}" url="[[jobapi]]" handle-as="json" last-response="{{jobs}}" on-error="_ajexerror" id="updateJobsList"
       on-response="_loadJobsComplete"></iron-ajax>
 
     <!-- The array is set as the <vaadin-grid>'s "items" property -->
@@ -162,6 +163,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         Polymer.RenderStatus.afterNextRender(this, function () {
           this._updateJobLists();
+
+          // let headers = {
+          //   // "Content-Type": "application/json; charset=utf-8",
+          //   "token": store.get('OAuth.token')
+          // }
+          
+          // this.$.updateJobsList.headers = headers;
+          this.$.updateJobsList.generateRequest();
+          // console.log("jobapi = ",this.jobapi);
+          // console.log("headers = ", headers);
+
+          // this.$.updateStorageLists.headers = '{"Content-Type": "application/json; charset=utf-8"}'
+
         });
 
       }
