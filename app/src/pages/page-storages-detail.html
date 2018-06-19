@@ -325,7 +325,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </style>
         <!-- Fetch an array of users to be shown in the grid -->
         <app-route route="[[route]]" pattern="/:storageid" data="{{routeData}}"></app-route>
-        <iron-ajax auto loading="{{loading}}" url="[[urlquery]]" handle-as="json" on-error="_loadStorageComplete" on-response="_loadStorageComplete"
+        <!-- auto -->
+        <iron-ajax loading="{{loading}}" url="[[urlquery]]" handle-as="json" on-error="_loadStorageComplete" on-response="_loadStorageComplete"
             last-response="{{items}}" id="updateStorageLists"></iron-ajax>
 
         <app-toolbar>
@@ -615,6 +616,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 let res = event.detail.response;
                 if (res) {
                     this.job_error = false;
+                    console.log("_loadStorageComplete = ", res);
                 }
                 else {
                     this.job_error = true;
@@ -632,8 +634,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         console.log("error _loadStorageComplete = 404 not found");
                     }
                 }
-
-
             }
 
             _onActiveItemChanged(e) {
@@ -650,7 +650,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _pageChanged(storageid) {
                 this.items = [];
                 this.mainurl = this.storagesapi + '/' + this.routeData.storageid + '/objects?';
-                this.urlquery = this.mainurl + 'field=meta&last=100'; 
+                this.urlquery = this.mainurl + 'field=meta&last=100';
                 this.$.updateStorageLists.generateRequest();
                 this.$.grid.clearCache();
                 this.job_error = false;
@@ -685,7 +685,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             item.data = res.data;
                             this.$.jsonviewer.json = item;
                             $(this.$.objDetail).attr('opened', '');
-                            // console.log("_activeItemChanged 11");
+
                         });
 
                 }
@@ -766,16 +766,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     title: 'Save a Data',
                     defaultPath: `${this.activeItem._id}.bin`
                 }
-
+                let ipc = require('electron').ipcRenderer;
                 var fs = require('fs');
                 // let content = new Buffer(this.activeItem.data.data, 'base64');
                 ipc.send('save-dialog', options);
 
                 ipc.on('saved-file', (event, path) => {
-
+                    // let url = this.storagesobjapi + '/' + this.routeData.storageid + '.' + this.activeItem._id + '/data';
+                    let url = this.storagesobjapi + '/' + this.routeData.storageid + this.strAPI + this.activeItem._id + '/data';
                     $.ajax({
                         type: 'GET',
-                        url: this.storagesobjapi + '/' + this.routeData.storageid + '.' + this.activeItem._id + '/data',
+                        url: url,
                         success: (data, textStatus, request) => {
                             var wstream = fs.createWriteStream(path);
                             if (request.getResponseHeader('Content-Type') === 'application/octet-stream') {
@@ -820,7 +821,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 var nextimg = this._findIdToIndex(this.activeItem._id) + 1
                 if (nextimg < this.items.length) {
                     this.activeItem = this.items[nextimg]
-                    $(this.$.imgview).children('img').attr('src', `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.items[nextimg]._id}/data?datatype=jpg`);
+                    let url = `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.items[nextimg]._id}/data?datatype=jpg`;
+                    console.log("_nextView = ", url);
+                    $(this.$.imgview).children('img').attr('src', url);
                 }
             }
             _preView() {
@@ -828,15 +831,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 var preimg = this._findIdToIndex(this.activeItem._id) - 1
                 if (preimg >= 0) {
                     this.activeItem = this.items[preimg]
-                    $(this.$.imgview).children('img').attr('src', `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.items[preimg]._id}/data?datatype=jpg`);
+                    let url = `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.items[preimg]._id}/data?datatype=jpg`;
+                    console.log("_preView = ", url);
+                    $(this.$.imgview).children('img').attr('src', url);
                 }
             }
 
             isValidActiveItemID(id) {
+
                 // this.imgCurrent = this.storagesobjapi + "/" + this.routeData.storageid + this.strAPI + this.activeItem._id + "/data?datatype=jpg";
                 this.imgCurrent = "";
                 if (id) {
-                    this.imgCurrent = `${this.storagesapi}/${this.routeData.storageid}${this.strAPI}${this.activeItem._id}/data?datatype=jpg`;
+                    this.imgCurrent = `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.activeItem._id}/data?datatype=jpg`;
                     // console.log("isValidActiveItemID : ", this.imgCurrent);
                     return true;
                 }

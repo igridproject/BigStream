@@ -410,7 +410,7 @@
       send = window.XMLHttpRequest.prototype.send;
 
     function openReplacement(method, url, async, user, password) {
-
+      // console.log("url = ",url);
       this._url = url;
       if (store.get('OAuth') && store.get('OAuth.token'))
         if (url.indexOf("?")>=0) {

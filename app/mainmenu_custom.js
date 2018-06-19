@@ -31,8 +31,9 @@ function callAppPort () {
         let port = data.responseJSON.port
         let appPort = port
         _newWindow(appPort)
+        // console.log('start app on port : ',port)
       } catch (error) {
-        console.log('error get app port')
+        console.log('error get app port mainmenu_custom')
       }
     }
   })

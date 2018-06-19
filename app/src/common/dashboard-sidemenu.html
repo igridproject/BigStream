@@ -448,6 +448,7 @@
                     //     // console.log("dashboard received event = ",e.detail);
                     //     this.showDialogNewWindow();
                     // })
+
                     this.getAppPort();
                 });
 
@@ -464,6 +465,7 @@
                             let port = data.responseJSON.port;
                             this.appPort = port;
                             // alert("port = "+port);
+                            // console.log("start at port = ",this.appPort);
                         } catch (error) {
                             console.log("error get app port");
                         }
