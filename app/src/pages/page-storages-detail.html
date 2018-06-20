@@ -648,25 +648,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _pageChanged(storageid) {
-                this.items = [];
-                this.mainurl = this.storagesapi + '/' + this.routeData.storageid + '/objects?';
-                this.urlquery = this.mainurl + 'field=meta&last=100';
-                this.$.updateStorageLists.generateRequest();
-                this.$.grid.clearCache();
-                this.job_error = false;
+                if (storageid) {
 
-                // fetch stats of storageid
-                $.getJSON(this.storagesapi + '/' + this.routeData.storageid + '/stats', function (data) {
-                    this.stats = data;
-                    // console.log(data);
-                }.bind(this))
-                this._closeObjDetail();
-                this.lastfilter = 100;
-                this.fromfilter = this.objidfilter = this.limitfilter = "";
+                    this.items = [];
+                    this.mainurl = this.storagesapi + '/' + this.routeData.storageid + '/objects?';
+                    this.urlquery = this.mainurl + 'field=meta&last=100';
+                    this.$.updateStorageLists.generateRequest();
+                    this.$.grid.clearCache();
+                    this.job_error = false;
 
-                let config = store.get();
-                this.strAPI = config.api.version == 1 ? "$" : ".";
-                // console.log("config storage details = ", config.api.version," so use ",this.strAPI);
+                    // fetch stats of storageid
+                    $.getJSON(this.storagesapi + '/' + this.routeData.storageid + '/stats', function (data) {
+                        this.stats = data;
+                        // console.log(data);
+                    }.bind(this))
+                    this._closeObjDetail();
+                    this.lastfilter = 100;
+                    this.fromfilter = this.objidfilter = this.limitfilter = "";
+
+                    let config = store.get();
+                    this.strAPI = config.api.version == 1 ? "$" : ".";
+                    // console.log("config storage details = ", config.api.version, " so use ", this.strAPI + " | storageid = ", storageid);
+
+                }
             }
 
             _activeItemChanged(item) {

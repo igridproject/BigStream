@@ -307,16 +307,23 @@
                 var material = this.$.material;
                 return new Promise((res, rej) => {
                     this.jobs.forEach(function (job, index) {
+                   
                         $.getJSON(`${this.jobapi}/${encodeURIComponent(job)}`, (data) => {
+                      
                             jobLists.push({
                                 "job_id": job,
                                 "active": (data.active === 'true' || data.active == true)
                             });
-                            if (index == this.jobs.length - 1) {
+                            // console.log("job = ",JSON.stringify(job)," | index = ",index);
+                            // if (index == this.jobs.length - 1) {
+                            if (jobLists.length-1 == this.jobs.length - 1) {
+                                // console.log("this.jobs.length = ",this.jobs.length+" | ",jobLists.length);
+                                // console.log("this.jobs.length = ",JSON.stringify(jobLists));
                                 material.clearCache();
                                 res(jobLists);
                             }
                         }).fail(function (jqXHR, textStatus, errorThrown) {
+                            // console.log("err = ",textStatus);
                             material.clearCache();
                             rej(errorThrown)
                         });
@@ -335,7 +342,7 @@
                         .then((res) => {
                             this.jobLists = res;
                             this.loading = false;
-                            // console.log("end joblist");
+                            // console.log("end joblist : ",res.length);
                         }).catch((er) => {
                             this.loading = false;
                             // console.log("cache joblist = ",res);

@@ -305,9 +305,12 @@
                         </template>
                     </dom-repeat>
                 </ul>
+                <!-- <div style="text-align: center">
+                    [[deleteJobList.length]] item(s)
+                </div> -->
             </div>
             <div class="buttons">
-                <paper-button class="btn btn-success" dialog-confirm on-click="_deleteJobConfirm">Delete</paper-button>
+                <paper-button class="btn btn-success" dialog-confirm on-click="_deleteJobConfirm">Delete [[deleteJobList.length]] item(s)</paper-button>
                 <paper-button class="btn btn-danger" dialog-confirm>cancel</paper-button>
             </div>
         </paper-dialog>
@@ -486,6 +489,7 @@
             ready() {
                 super.ready();
                 Polymer.RenderStatus.afterNextRender(this, function () {
+
                     var jsoneditor = this.jsoneditor;
                     $.getJSON("/src/config/jobPlugins.json", function (data) {
                         jsoneditor.jobPlugins = data;
@@ -583,6 +587,7 @@
                     this.$.joblistElement.addEventListener('delete-job', this._deleteJob.bind(this));
                     // Key shortcut
                     this.$.a11yCodeEditor.target = this.$.code;
+                    
                 });
             }
             _getJson() {
