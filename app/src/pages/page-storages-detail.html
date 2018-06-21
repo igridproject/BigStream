@@ -354,7 +354,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         <paper-tab>Last filter</paper-tab>
                         <paper-tab>From - limit filter</paper-tab>
                         <paper-tab>by ID</paper-tab>
-                        <paper-tab>Date</paper-tab>
+                        <paper-tab>by Key</paper-tab>
                     </paper-tabs>
                     <iron-pages selected="{{filterselected}}">
                         <div class="d-flex">
@@ -388,16 +388,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             </div>
                         </div>
                         <div class="d-flex">
-                            <div style="width: 100%;padding-bottom: 8px;">
+                            <!-- <div style="width: 100%;padding-bottom: 8px;">
                                 <vaadin-date-picker id="start" label="From">
                                 </vaadin-date-picker>
                             </div>
                             <div style="width: 100%;margin-left: 25px; padding-bottom: 8px;">
                                 <vaadin-date-picker id="end" label="To">
                                 </vaadin-date-picker>
+                            </div> -->
+                            <div style="width: 100%;">
+                                <paper-input always-float-label label="Object Key" value="{{objidfilter::input}}"></paper-input>
                             </div>
                             <div class="align-self-center">
-                                <paper-button class="submitfilter" on-click="_fromlimitSubmit">
+                                <paper-button class="submitfilter" on-click="_objKeyfilterSubmit">
                                     <iron-icon icon="icons:search"></iron-icon>search</paper-button>
                             </div>
                         </div>
@@ -594,20 +597,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             this.$.imgview.close();
                     });
 
-                    var start = this.$.start
-                    var end = this.$.end
-                    start.addEventListener('value-changed', function () {
-                        if (start.value) {
-                            // Open the end date picker with a delay to
-                            // make it less confusing.
-                            window.setTimeout(function () {
-                                end.value = start.value;
-                                end.min = start.value;
-                                start.close();
-                                end.open();
-                            }, 500);
-                        }
-                    });
+                    // var start = this.$.start
+                    // var end = this.$.end
+                    // start.addEventListener('value-changed', function () {
+                    //     if (start.value) {
+                    //         // Open the end date picker with a delay to
+                    //         // make it less confusing.
+                    //         window.setTimeout(function () {
+                    //             end.value = start.value;
+                    //             end.min = start.value;
+                    //             start.close();
+                    //             end.open();
+                    //         }, 500);
+                    //     }
+                    // });
                 });
 
 
@@ -742,19 +745,48 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _fromlimitSubmit() {
+
+                let url = this.mainurl + 'field=meta&from=' + this.fromfilter + '&limit=' + this.limitfilter;
                 this.loading = true;
-                $.getJSON(this.mainurl + 'field=meta&from=' + this.fromfilter + '&limit=' + this.limitfilter, (data) => {
+                $.getJSON(url, (data) => {
                     this.items = data;
                     this.loading = false;
                 })
             }
 
-            _objidfilterSubmit() {
+
+            _objKeyfilterSubmit() {
+                let url = this.storagesobjapi + '/' + this.routeData.storageid + this.strAPI + "{" + this.objidfilter + "}";
+                console.log("url = ",url );
+
                 this.loading = true;
-                $.getJSON(this.storagesobjapi + '/' + this.routeData.storageid + '.' + this.objidfilter, (data) => {
+                $.getJSON(url, (data) => {
                     this.items = [data];
                     this.loading = false;
+                }).fail((er) => {
+                    this.loading = false;
+                    this.showToast("ขออภัย! ไม่พบข้อมูล key ที่ค้นหา");
+                    // console.log("not found key : ", er);
                 })
+            }
+
+            _objidfilterSubmit() {
+                this.loading = true;
+                $.getJSON(this.storagesobjapi + '/' + this.routeData.storageid + this.strAPI + this.objidfilter, (data) => {
+                    this.items = [data];
+                    this.loading = false;
+                }).fail((er) => {
+                    this.loading = false;
+                    this.showToast("ขออภัย! ไม่พบข้อมูล ID ที่ค้นหา");
+                    // console.log("not found id : ", er);
+                })
+            }
+
+            showToast(msg) {
+                this.$.toast.text = msg;
+                this.$.toast.horizontalAlign = "right";
+                this.$.toast.verticalAlign = "top";
+                this.$.toast.open();
             }
 
             _isBinary(item) {
@@ -776,7 +808,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 ipc.send('save-dialog', options);
 
                 ipc.on('saved-file', (event, path) => {
-                    // let url = this.storagesobjapi + '/' + this.routeData.storageid + '.' + this.activeItem._id + '/data';
                     let url = this.storagesobjapi + '/' + this.routeData.storageid + this.strAPI + this.activeItem._id + '/data';
                     $.ajax({
                         type: 'GET',
