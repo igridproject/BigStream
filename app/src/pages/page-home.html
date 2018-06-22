@@ -95,6 +95,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         width: 100%;
         display: block;
       }
+
+      .container-fluid{
+        /* background: red !important; */
+        height: 100% !important;
+      }
+      .fullHeight{
+        height: 100% !important;
+      }
     </style>
     <iron-ajax loading="{{loading}}" url="[[config.api.job_api]]" handle-as="json" last-response="{{jobs}}" on-error="_ajexerror"
       id="updateJobsList" on-response="_responseJobs"></iron-ajax>
@@ -128,12 +136,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </paper-card>
         </div>
       </div>
-      <div class="row">
+      <div class="row fullHeight">
         <div class="col-sm-12">
-          <paper-card class="big-detail">
+          <paper-card class="big-detail" style="height: 100%">
             <div class="card-content" style="padding-right: 0;">
-              <div class="paper-header">Console message</div>
-              <div class="rate-name">Mac Miller</div>
+              <div class="paper-header">BigStream Dashboard</div>
+              <div class="rate-name">Status</div>
+             
+              <!-- <div class="rate-name">Mac Miller</div>
               <div class="row console no-gutters">
                 <div class="col-sm-6">
 
@@ -209,7 +219,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
 
-              </div>
+              </div> -->
             </div>
             <div class="card-actions">
             </div>
