@@ -296,6 +296,7 @@
     const Store = require('electron-store');
     store = new Store();
     // store.delete('OAuth');
+    // store.clear();  
 
   } else { //Web version
     const Store = class {
@@ -331,7 +332,7 @@
   });
 
   function defaultLogin() {
-
+    console.log("store.get('api') = ",store.get('api'));
     if (!store.get('api')) {
       store.set({
         'api.job': defaultConfig.api.job,
@@ -342,10 +343,10 @@
         'OAuth.token': "",
         'api.version': "1"
       });
-      // console.log("no default config");
+      console.log("no default config so use default");
     }
     else {
-      // console.log("already have default config");
+      console.log("already have default config");
     }
 
     _configSave();
@@ -368,18 +369,17 @@
 
   const _logedinCheck = () => {
 
-    // store.clear();  
 
     if (!store.get('OAuth') && !store.get('OAuth.token')) {
       document.getElementById('main').classList.add('not-logged');
       document.getElementById('login').classList.add('not-logged');
 
       defaultLogin();
-      // console.log("1store = ", store.get());
+      console.log("_logedinCheck1store = ", store.get());
     }
     else {
 
-      // console.log("2store = ");
+      console.log("_logedinCheck 2store = ",store);
     }
   }
   window.addEventListener('WebComponentsReady', function (e) {
