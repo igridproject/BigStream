@@ -332,8 +332,9 @@
   });
 
   function defaultLogin() {
-    console.log("store.get('api') = ",store.get('api'));
-    if (!store.get('api')) {
+    console.log("store.get('api') = ", store.get('api'));
+    let apiDefault = store.get('api');
+    if (!apiDefault || apiDefault.job == null || apiDefault.job.length == 0) {
       store.set({
         'api.job': defaultConfig.api.job,
         'api.job_api': defaultConfig.api.job + '/jobs',
@@ -379,7 +380,7 @@
     }
     else {
 
-      console.log("_logedinCheck 2store = ",store);
+      console.log("_logedinCheck 2store = ", store);
     }
   }
   window.addEventListener('WebComponentsReady', function (e) {
@@ -413,7 +414,7 @@
       // console.log("url = ",url);
       this._url = url;
       if (store.get('OAuth') && store.get('OAuth.token'))
-        if (url.indexOf("?")>=0) {
+        if (url.indexOf("?") >= 0) {
           url += '&token=' + store.get('OAuth.token');
         }
         else {
@@ -431,7 +432,7 @@
     }
 
     function sendReplacement(data) {
-      
+
       if (this.onreadystatechange) {
         this._onreadystatechange = this.onreadystatechange;
       }

@@ -273,10 +273,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             values: []
           },
           countInactive: {
-            type: Number
+            type: Number,
+            value: 0
           },
           countActive: {
-            type: Number
+            type: Number,
+            value: 0
           }
         }
       }
@@ -408,10 +410,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.countInactive = 0;
         let res = e.detail.response;
 
-        if (this.jo && this.job.length) {
+        if (this.jobs && this.jobs.length) {
           let count = await this.countDataInactive(this.jobs.length)
-          this.countInactive = count.countInactive;
+          // console.log("res of count = ",count);
           this.countActive = count.countActive;
+          this.countInactive = count.countInactive;
         }
 
       }
@@ -430,26 +433,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               let url = `${this.jobapi}/${encodeURIComponent(job)}`;
               // console.log("_countInactive : ", _countInactive);
               $.getJSON(url, function (data) {
-                  _jobLists.push({
-                    "job_id": job,
-                    "active": (data.active === 'true' || data.active == true)
-                  });
+                _jobLists.push({
+                  "job_id": job,
+                  "active": (data.active === 'true' || data.active == true)
+                });
 
-                  if (data.active === 'true' || data.active == true) {
-                    _countActive++;
-                    // console.log("countActive = ",self.countActive);
-                  } else {
-                    _countInactive++;
-                  }
-                  // console.log("data = ", data);
-                  if (index == len - 1) {
-                    // console.log("_countInactive : ", _countInactive);
-                    res({
-                      countInactive: _countInactive,
-                      countActive: _countActive
-                    });
-                  }
-                })
+                if (data.active === 'true' || data.active == true) {
+                  _countActive++;
+                  // console.log("countActive = ",self.countActive);
+                } else {
+                  _countInactive++;
+                }
+                // console.log("data = ", data);
+                if (index == len - 1) {
+                  // console.log("_countInactive : ", _countInactive);
+                  res({
+                    countInactive: _countInactive,
+                    countActive: _countActive
+                  });
+                }
+              })
                 .fail((jqXHR, textStatus, errorThrown) => {
                   // material.clearCache();
                   console.log("error = ", errorThrown);
