@@ -407,22 +407,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         this.countInactive = 0;
         let res = e.detail.response;
-        // console.log("job = ", this.jobs.length);
 
-        let count = await this.countDataInactive(this.jobs.length)
-        // .then((countInactive) => {
-        this.countInactive = count.countInactive;
-        this.countActive = count.countActive;
-        // });
+        if (this.jo && this.job.length) {
+          let count = await this.countDataInactive(this.jobs.length)
+          this.countInactive = count.countInactive;
+          this.countActive = count.countActive;
+        }
 
-        // this.jobLists.push({
-        //   data: "data" 
-        // });
-        // console.log("jobLists data1 = ", _jobLists);
-        // this.set("jobLists", _jobLists);
-        // console.log("jobLists data2 = ", this.jobLists);
-        // this.set("countInactive", _countInactive);
-        // console.log("countInactive = ", this.countInactive + " | ", _countInactive);
       }
 
       async countDataInactive(len) {
