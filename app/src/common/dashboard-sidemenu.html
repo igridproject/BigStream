@@ -135,7 +135,7 @@
             }
 
             .logo {
-                background: #2f323a;
+                /* background: #2f323a; */
                 padding: 19px 0 20px;
                 color: azure;
                 text-align: center;
@@ -207,6 +207,18 @@
                 /* height: 40%;; */
                 position: absolute;
                 bottom: 0;
+            }
+
+            .imgLogo {
+                /* padding: 14px; */
+                margin-top: 18px;
+                width: 180px;
+                /* height: 120px; */
+            }
+
+            .imgLogoSmall {
+                /* padding: 14px; */
+                width: 36px;
             }
         </style>
         <!--<style>
@@ -280,13 +292,22 @@
 
         <div iscollapse$="[[iscollapse]]" dark$="">
             <div class="logo" on-click="_togglemenu">
-                <span>
+                <!-- coll =  [[getIsCollapse(iscollapse)]] -->
+                <!-- <span>
                     <iron-icon icon="icons:cloud-download"></iron-icon>
                 </span>
                 <text>Bigstream</text>
                 <small>console
                     <div class="arrow-down"></div>
-                </small>
+                </small> -->
+                <!-- <img class="imgLogo" src="../../asset//images/bigstream.png"> -->
+
+                <template is="dom-if" if="[[getIsCollapse(iscollapse)]]">
+                    <img class="imgLogo" src="../../asset//images/bigstream.png">
+                </template>
+                <template is="dom-if" if="[[!getIsCollapse(iscollapse)]]">
+                    <img class="imgLogoSmall" src="../../asset//images/bigstream_logo_mini_1.png">
+                </template>
             </div>
 
             <simple-menu class="drawer-list" role="navigation">
@@ -349,6 +370,16 @@
 
             static get behaviors() {
                 return [SuperBehavior];
+            }
+
+            getIsCollapse(v) {
+                // console.log("iscollapse1 = ", this.iscollapse);
+                if (this.iscollapse || this.iscollapse == null) {
+                    return false;
+                }
+                else {
+                    return true;
+                }
             }
 
             static get properties() {
@@ -415,9 +446,18 @@
                     },
                     appPort: {
                         type: Number
+                    },
+                    iscollapse: {
+                        type: Object,
+                        observer: "observIsCollapse",
+                        value: false
                     }
                 };
             }
+
+            // observIsCollapse(e){
+            //     console.log("isCollapse der = ",e);
+            // }
 
             static get observers() {
                 return [];
