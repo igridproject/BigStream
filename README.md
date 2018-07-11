@@ -58,6 +58,6 @@ $ npm run create-installer-mac
 ```
 
 ## Download Release
-Mac : https://github.com/igridproject/bigstream-console/raw/dev/app/asset/Release/Mac/BigstreamConsole-darwin-x64.zip
+Mac : https://drive.google.com/open?id=1EbAmEOBvX2i-F_1UqZK29RlWjFrCxIE2
 
-Window : https://github.com/igridproject/bigstream-console/raw/dev/app/asset/Release/Window/bigstream-console-win32-x64.zip
+Window : https://drive.google.com/open?id=1qS38_ctQb5iUNKMCK2bXMGHxLsS-Jncp
