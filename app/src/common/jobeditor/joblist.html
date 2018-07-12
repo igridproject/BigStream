@@ -306,28 +306,35 @@
                 var jobLists = [];//this.jobLists;
                 var material = this.$.material;
                 return new Promise((res, rej) => {
-                    this.jobs.forEach(function (job, index) {
-                   
-                        $.getJSON(`${this.jobapi}/${encodeURIComponent(job)}`, (data) => {
-                      
-                            jobLists.push({
-                                "job_id": job,
-                                "active": (data.active === 'true' || data.active == true)
-                            });
-                            // console.log("job = ",JSON.stringify(job)," | index = ",index);
-                            // if (index == this.jobs.length - 1) {
-                            if (jobLists.length-1 == this.jobs.length - 1) {
-                                // console.log("this.jobs.length = ",this.jobs.length+" | ",jobLists.length);
-                                // console.log("this.jobs.length = ",JSON.stringify(jobLists));
+                    if (this.jobs && this.jobs.length) {
+                        console.log("fetchJob1 : ",this.jobs.length);
+                        this.jobs.forEach(function (job, index) {
+
+                            $.getJSON(`${this.jobapi}/${encodeURIComponent(job)}`, (data) => {
+
+                                jobLists.push({
+                                    "job_id": job,
+                                    "active": (data.active === 'true' || data.active == true)
+                                });
+                                // console.log("job = ",JSON.stringify(job)," | index = ",index);
+                                // if (index == this.jobs.length - 1) {
+                                if (jobLists.length - 1 == this.jobs.length - 1) {
+                                    // console.log("this.jobs.length = ",this.jobs.length+" | ",jobLists.length);
+                                    // console.log("this.jobs.length = ",JSON.stringify(jobLists));
+                                    material.clearCache();
+                                    res(jobLists);
+                                }
+                            }).fail(function (jqXHR, textStatus, errorThrown) {
+                                // console.log("err = ",textStatus);
                                 material.clearCache();
-                                res(jobLists);
-                            }
-                        }).fail(function (jqXHR, textStatus, errorThrown) {
-                            // console.log("err = ",textStatus);
-                            material.clearCache();
-                            rej(errorThrown)
-                        });
-                    }, this);
+                                rej(errorThrown)
+                            });
+                        }, this);
+                    }
+                    else {
+                        res([]);
+                        console.log("fetchJob2 : ",this.jobs);
+                    }
                 })
             }
             _loadJobsComplete(e) {
@@ -335,9 +342,9 @@
                 this.errorMessage = "";
                 this.job_error = false;
                 this.loading = true;
-                // console.log("start joblist");
-                if (this.jobs) {
 
+                if (this.jobs) {
+                    console.log("_loadJobsComplete have jobs");
                     this.fetchJob()
                         .then((res) => {
                             this.jobLists = res;
@@ -351,6 +358,10 @@
                     // console.log("_responseJobsEditor : ",this.jobs);
                     // console.log("_responseJobsEditor jobLists : ",this.jobLists);
                     //this.$.material.items = this.jobLists;
+                }
+                else {
+                    console.log("_loadJobsComplete no jobs");
+                    this.loading = true;
                 }
             }
             _selectJob(ev, item) {
@@ -366,8 +377,8 @@
 
                 let detail = "" + ev.detail.error;
 
-                console.log("error details = ",detail);
-                
+                console.log("error details = ", detail);
+
                 if (detail.indexOf("401") >= 0) {
                     console.log("error job 401 = ", detail);
                     this.errorMessage = detail;
