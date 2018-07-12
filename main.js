@@ -89,7 +89,7 @@ function createWindow () {
   // // Create the Application's main menu
   // const { app, Menu } = require("electron")
 
-  
+
   appInit.getPort()
     .then((port) => {
       startServer(port)
@@ -99,6 +99,7 @@ function createWindow () {
 function startServer (appPort) {
   appInit.startServer().then(res => {
     if (res) {
+      let icon = path.join(__dirname, 'assets/icons/win/bigstream_logo.png')
       // console.log("appPort listening = ", appPort)
       // Create the browser window.
       win = new BrowserWindow({
@@ -110,7 +111,8 @@ function startServer (appPort) {
         },
         minHeight: 600,
         minWidth: 1024,
-        autoHideMenuBar: false
+        autoHideMenuBar: false,
+        icon: icon
       })
       // and load the index.html of the app.
       // win.loadURL("http://localhost:3000")

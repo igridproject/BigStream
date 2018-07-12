@@ -12,9 +12,9 @@
   },
   "scripts": {
     "start": "electron .",
-    "package-win32": "electron-packager . --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --prune=true --out=release-builds bigstream-console  --version-string.ProductName='Bigstream Console'",
-    "package-win64": "electron-packager . --overwrite --asar=true --platform=win32 --arch=x64 --icon=assets/icons/win/icon.ico --prune=true --out=release-builds bigstream-console  --version-string.ProductName='Bigstream Console'",
-    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
+    "package-win32": "electron-packager . --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/bigstream_logo.png --prune=true --out=release-builds bigstream-console  --version-string.ProductName='Bigstream Console'",
+    "package-win64": "electron-packager . --overwrite --asar=true --platform=win32 --arch=x64 --icon=assets/icons/win/bigstream_logo.png --prune=true --out=release-builds bigstream-console  --version-string.ProductName='Bigstream Console'",
+    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/bigstream_logo_mini_1.icns --prune=true --out=release-builds",
     "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --icon=assets/icons/png/1080x1080.png --prune=true --out=release-builds",
     "create-installer-mac": "electron-installer-dmg ./release-builds/BigstreamConsole-darwin-x64/BigstreamConsole.app BigstreamConsole-app --out=./release-built-installers/ --overwrite --icon=assets/icons/mac/icon.icns",
     "create-installer-win": "node build-win"
