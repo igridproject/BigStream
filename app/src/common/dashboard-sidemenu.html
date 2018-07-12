@@ -544,6 +544,21 @@
                 }
             }
 
+
+            strAPI(ori, tail) {
+                let url = ori;
+                let lastStr = ori.charAt(ori.length - 1);
+                // console.log("last str = ", lastStr);
+                if (lastStr == "/") {
+                    url = ori + tail;
+                }
+                else {
+                    url = ori + "/" + tail;
+                }
+                // console.log("url = ",url);
+                return url;
+            }
+
             _onClickCreateNewWindow() {
 
                 this.$.dialogSettingNewWindow.close();
@@ -557,14 +572,13 @@
                         });
                     let api = {
                         'api.job': this.config.api.job,
-                        'api.job_api': this.config.api.job + 'jobs',
+                        'api.job_api': this.strAPI(this.config.api.job, "jobs"),
                         'api.storages': this.config.api.storages,
-                        'api.storages_api': this.config.api.storages + 'storage',
-                        'api.storages_obj_api': this.config.api.storages + 'object',
-                        'OAuth.token': this.config.OAuth.token,
+                        'api.storages_api': this.strAPI(this.config.api.storages, "storage"),
+                        'api.storages_obj_api': this.strAPI(this.config.api.storages, "object"),
                         'OAuth.token': this.config.OAuth.token,
                         'api.version': this.config.api.version
-                    }
+                    };
                     store.set(api);
 
                     // console.log("save api = ", api);
