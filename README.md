@@ -58,6 +58,6 @@ $ npm run create-installer-mac
 ```
 
 ## Download Release
-Mac : https://drive.google.com/open?id=1EbAmEOBvX2i-F_1UqZK29RlWjFrCxIE2
+Mac : https://drive.google.com/open?id=1qW3kng5hRwRLX1YwCBM45wY-DUaap6Qx
 
-Window : https://drive.google.com/open?id=1qS38_ctQb5iUNKMCK2bXMGHxLsS-Jncp
+Window : https://drive.google.com/open?id=12uRNlAiH-NzEP2f1dGTb_w5eKOf0gf_5
