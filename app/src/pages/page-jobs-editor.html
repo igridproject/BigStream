@@ -238,7 +238,7 @@
                 /* background: #dddddd !important; */
             }
 
-            .btOpenToggle[disabled]{
+            .btOpenToggle[disabled] {
                 background: #dddddd;
             }
         </style>
@@ -480,8 +480,7 @@
                 if (val == false) {
                     // console.log("job error no");
                     // this.$.dialogError.close();
-                }
-                else {
+                } else {
                     // console.log("job error yes");
                     // this.$.dialogError.open();
                 }
@@ -586,12 +585,13 @@
                         this));
                     this.$.joblistElement.addEventListener('toggle-add-job', this._addJobDialogToggle.bind(
                         this));
-                    this.$.joblistElement.addEventListener('toggle-open-job', this._openJobDialogToggle.bind(this)
+                    this.$.joblistElement.addEventListener('toggle-open-job', this._openJobDialogToggle
+                        .bind(this)
                     );
                     this.$.joblistElement.addEventListener('delete-job', this._deleteJob.bind(this));
                     // Key shortcut
                     this.$.a11yCodeEditor.target = this.$.code;
-                    
+
                 });
             }
             _getJson() {
@@ -654,8 +654,7 @@
                         ev_temp.detail.job_id = newJob.job_id;
                         if (this.isCreateNewjob) {
                             // this._saveJsonEditor();
-                        }
-                        else {//for save
+                        } else { //for save
                             if (this.isReload) {
                                 this._saveJsonEditor();
                             }
@@ -663,15 +662,29 @@
 
                         this._selectedJobList(ev_temp);
 
-                    }).fail(() => {
+                    }).fail((er) => {
+                        console.log("_save _saveJob response 0 = ", er);
                         let msg = {
-                            title: `Can't connect ${this.config.api.job_api} `,
-                            detail: "Please make sure your Job API is correct."
+                            title: "",
+                            detail: ""
+                        };
+                        if (er.status == 401) {
+                            msg.title = "Error";
+                            msg.detail = er.responseText;
+
+                        } else {
+                            msg.title = `Can't connect ${this.config.api.job_api} `;
+                            msg.detail = "Please make sure your Job API is correct.";
                         }
+                        // let msg = {
+                        //     title: `Can't connect ${this.config.api.job_api} `,
+                        //     detail: "Please make sure your Job API is correct."
+                        // }
+
                         if (typeof ipc !== "undefined")
                             ipc.send('open-error-dialog', msg)
                         else
-                            alert(msg.title + msg.detail)
+                            alert(msg.title +"\n"+ msg.detail)
                     });;
                     this.newJobName = "";
                     dialogTarget.toggle();
@@ -687,7 +700,7 @@
 
             _saveasJsonEditorDialogToggle() {
                 // this.newJobName = `${this.jsonResult.job_id}.copy`;
-                let fileName = this.jsoneditor.code.get().job_id;//this.jsonResult.job_id + ".json";
+                let fileName = this.jsoneditor.code.get().job_id; //this.jsonResult.job_id + ".json";
                 // if (this.jsonResult.job_id) {
                 //     this.newJobName = `${this.jsonResult.job_id}`;
                 // }
@@ -735,15 +748,27 @@
                     // console.log("_saveJsonEditor response 1 = ",data.response);
                     this.$.joblistElement._updateJoblist();
                 }).fail(() => {
-                    // console.log("_saveJsonEditor response 0 = ", this.config.api.job_api);
+                    console.log("_save JsonEditor response 0 = ", this.config.api.job_api);
                     let msg = {
-                        title: `Can't connect ${this.config.api.job_api}`,
-                        detail: "Please make sure your Job API is correct."
-                    }
+                            title: "",
+                            detail: ""
+                        };
+                        if (er.status == 401) {
+                            msg.title = "Error";
+                            msg.detail = er.responseText;
+
+                        } else {
+                            msg.title = `Can't connect ${this.config.api.job_api} `;
+                            msg.detail = "Please make sure your Job API is correct.";
+                        }
+                    // let msg = {
+                    //     title: `Can't connect ${this.config.api.job_api}`,
+                    //     detail: "Please make sure your Job API is correct."
+                    // }
                     if (typeof ipc !== "undefined")
                         ipc.send('open-error-dialog', msg)
                     else
-                        alert(msg.title + msg.detail)
+                        alert(msg.title +"\n"+ msg.detail)
                 });
             }
             _deleteJob(ev) {
@@ -757,8 +782,7 @@
                     $.ajax({
                         url: `${this.config.api.job_api}/${encodeURIComponent(this.deleteJobList[i].job_id)}`,
                         type: 'DELETE',
-                        success: function (dt, status, request) {
-                        }.bind(this)
+                        success: function (dt, status, request) {}.bind(this)
                     });
                     if (i == this.deleteJobList.length - 1)
                         this.$.joblistElement._updateJoblist();
@@ -810,8 +834,8 @@
                 }
                 navigator.clipboard.writeText(text)
                     .then(function () {
-                        console.log('Async: Copying to clipboard was successful!');
-                    },
+                            console.log('Async: Copying to clipboard was successful!');
+                        },
                         function (err) {
                             console.error('Async: Could not copy text: ', err);
                         });
@@ -859,11 +883,10 @@
                     // let fs = require('fs');
                     // let filepath = app.getPath("desktop");
                     // let filepath2 = path.basename("john");
-                    let fileName = this.jsoneditor.code.get().job_id;//this.jsonResult.job_id + ".json";
+                    let fileName = this.jsoneditor.code.get().job_id; //this.jsonResult.job_id + ".json";
                     if (fileName && fileName.length > 0) {
                         fileName = fileName + ".json";
-                    }
-                    else {
+                    } else {
                         fileName = "";
                     }
                     var toLocalPath = path.resolve(app.getPath("desktop"), path.basename(fileName)); //, path.basename(remoteUrl));
@@ -963,14 +986,27 @@
                         ev_temp.detail.job_id = newJob.job_id;
                         this._selectedJobList(ev_temp);
                     }).fail(() => {
+                        console.log("_save _createNewJobFromFile response 0 = ", this.config.api.job_api);
+                        // let msg = {
+                        //     title: `Can't connect ${this.config.api.job_api} `,
+                        //     detail: "Please make sure your Job API is correct."
+                        // }
                         let msg = {
-                            title: `Can't connect ${this.config.api.job_api} `,
-                            detail: "Please make sure your Job API is correct."
+                            title: "",
+                            detail: ""
+                        };
+                        if (er.status == 401) {
+                            msg.title = "Error";
+                            msg.detail = er.responseText;
+
+                        } else {
+                            msg.title = `Can't connect ${this.config.api.job_api} `;
+                            msg.detail = "Please make sure your Job API is correct.";
                         }
                         if (typeof ipc !== "undefined")
                             ipc.send('open-error-dialog', msg)
                         else
-                            alert(msg.title + msg.detail)
+                            alert(msg.title +"\n"+ msg.detail)
                     });;
                     this.newJobName = "";
                     this.$.addJobFromFileDialog.close();
