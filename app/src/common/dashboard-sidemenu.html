@@ -513,8 +513,6 @@
                 });
             }
 
-
-
             _togglemenu() {
                 this.dispatchEvent(new CustomEvent('collapsechange', {}));
             }
@@ -543,8 +541,6 @@
                 } catch (error) {
                     console.log("_newWindow error : ", error);
                 }
-
-
             }
 
             _onClickCreateNewWindow() {
@@ -558,16 +554,19 @@
                         store.set({
                             'api': {}
                         });
-                    store.set({
+                    let api = {
                         'api.job': this.config.api.job,
-                        'api.job_api': this.config.api.job + '/jobs',
+                        'api.job_api': this.config.api.job + 'jobs',
                         'api.storages': this.config.api.storages,
-                        'api.storages_api': this.config.api.storages + '/storage',
-                        'api.storages_obj_api': this.config.api.storages + '/object',
+                        'api.storages_api': this.config.api.storages + 'storage',
+                        'api.storages_obj_api': this.config.api.storages + 'object',
                         'OAuth.token': this.config.OAuth.token,
                         'OAuth.token': this.config.OAuth.token,
                         'api.version': this.config.api.version
-                    });
+                    }
+                    store.set(api);
+
+                    // console.log("save api = ", api);
                     // this.dispatchEvent(new CustomEvent('config-update'));
 
                     this._newWindow();
@@ -578,10 +577,6 @@
                 } else {
                     console.log("this is not electron");
                 }
-
-
-
-
             }
         }
 

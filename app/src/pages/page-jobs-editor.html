@@ -633,7 +633,20 @@
                 this.isCreateNewjob = true;
                 this._saveJob(ev);
             }
-            _saveJob(ev) {
+
+            async _saveJob(ev) {
+                try {
+                    await this.onSaveJob(ev);
+                    // this.newJobName = "";
+                } catch (error) {
+                    console.log("error save job = ", error);
+                }
+        
+                // this.$.saveasJobDialog.close();
+            }
+
+            async onSaveJob(ev) {
+                let isErr = false;
                 // console.log("isReload = ",this.isReload);
                 let dialogTarget = Polymer.dom(ev).rootTarget.parentNode.parentNode;
                 // if (this.newJobName.match('^[A-Za-z.0-9]+$')) {
@@ -644,58 +657,83 @@
                     }
                     newJob.job_id = this.newJobName;
                     let api = this.config.api.job_api;
-                    console.log("creat job api : ", api);
+
+                    console.log("create job api : ", api);
+
+                    try {
+                        await this.saveJobToServer(api, newJob);
+
+                        if (this.isCreateNewjob) {
+
+                        } else { //for save
+                            if (this.isReload) {
+                                await this._saveJsonEditor();//.bind(this);
+                            }
+                        }
+
+                        dialogTarget.toggle();
+                        $(dialogTarget.querySelector('input')).removeClass("form-control-danger");
+                        $(dialogTarget.querySelector('.form-group')).removeClass("has-danger");
+                        $(dialogTarget.querySelector('.form-control-feedback')).attr("hidden", '');
+
+                    } catch (error) {
+                        console.log("error save job to server = ", error);
+                        isErr = true;
+                    }
+
+                } else {
+                    $(dialogTarget.querySelector('input')).addClass("form-control-danger");
+                    $(dialogTarget.querySelector('.form-group')).addClass("has-danger");
+                    $(dialogTarget.querySelector('.form-control-feedback')).removeAttr("hidden");
+                }
+
+                return new Promise((res, rej) => {
+                    if (isErr){
+                        rej("found error");
+                    }
+                    else{
+                        res();
+                    }
+                })
+            }
+
+            async saveJobToServer(api, newJob) {
+                return new Promise((res,rej) => {
                     $.post(api, newJob, (data) => {
+                        // console.log("result creat job api : ", api, " | data = ", data);
                         if (data.response === 'OK')
                             console.log('added new job');
                         this.$.joblistElement._updateJoblist();
                         var ev_temp = {};
                         ev_temp.detail = {};
                         ev_temp.detail.job_id = newJob.job_id;
-                        if (this.isCreateNewjob) {
-                            // this._saveJsonEditor();
-                        } else { //for save
-                            if (this.isReload) {
-                                this._saveJsonEditor();
-                            }
-                        }
 
                         this._selectedJobList(ev_temp);
 
-                    }).fail((er) => {
-                        console.log("_save _saveJob response 0 = ", er);
-                        let msg = {
-                            title: "",
-                            detail: ""
-                        };
-                        if (er.status == 401) {
-                            msg.title = "Error";
-                            msg.detail = er.responseText;
+                        res(true)
+                    })
+                        .fail((er) => {
+                            console.log("_save _saveJob response 0 = ", er);
+                            let msg = {
+                                title: "",
+                                detail: ""
+                            };
+                            if (er.status == 401) {
+                                msg.title = "Error";
+                                msg.detail = er.responseText;
 
-                        } else {
-                            msg.title = `Can't connect ${this.config.api.job_api} `;
-                            msg.detail = "Please make sure your Job API is correct.";
-                        }
-                        // let msg = {
-                        //     title: `Can't connect ${this.config.api.job_api} `,
-                        //     detail: "Please make sure your Job API is correct."
-                        // }
+                            } else {
+                                msg.title = `Can't connect ${this.config.api.job_api} `;
+                                msg.detail = "Please make sure your Job API is correct.";
+                            }
+                            if (typeof ipc !== "undefined")
+                                ipc.send('open-error-dialog', msg)
+                            else
+                                alert(msg.title + "\n" + msg.detail)
 
-                        if (typeof ipc !== "undefined")
-                            ipc.send('open-error-dialog', msg)
-                        else
-                            alert(msg.title +"\n"+ msg.detail)
-                    });;
-                    this.newJobName = "";
-                    dialogTarget.toggle();
-                    $(dialogTarget.querySelector('input')).removeClass("form-control-danger");
-                    $(dialogTarget.querySelector('.form-group')).removeClass("has-danger");
-                    $(dialogTarget.querySelector('.form-control-feedback')).attr("hidden", '');
-                } else {
-                    $(dialogTarget.querySelector('input')).addClass("form-control-danger");
-                    $(dialogTarget.querySelector('.form-group')).addClass("has-danger");
-                    $(dialogTarget.querySelector('.form-control-feedback')).removeAttr("hidden");
-                }
+                            rej(er);
+                        });
+                })
             }
 
             _saveasJsonEditorDialogToggle() {
@@ -725,31 +763,35 @@
                     $(this.$.joblist).removeAttr('file-opening');
                 }, 800)
             }
-            _saveJsonEditor() {
-                let json = this._getJson();
-                json.job_id = json.job_id.replace(/\s/g, '');
-                let url = "";
+            async _saveJsonEditor() {
+                return new Promise((res, rej) => {
+                    let json = this._getJson();
+                    json.job_id = this.newJobName;//json.job_id.replace(/\s/g, '');
+                    let url = "";
 
-                // // if (this.config.api.job_api.indexOf("token") >= 0) {
-                // if (store.get('OAuth') && store.get('OAuth.token')) {
-                //     url = this.config.api.job_api + '?reload=true';
-                //     // console.log("_saveJsonEditor call init1 = ", this.config.api.job_api);
-                // }
-                // else {
-                //     url = this.config.api.job_api + '?reload=true';
-                //     // console.log("_saveJsonEditor call init2 = ", this.config.api.job_api);
-                // }
+                    // // if (this.config.api.job_api.indexOf("token") >= 0) {
+                    // if (store.get('OAuth') && store.get('OAuth.token')) {
+                    //     url = this.config.api.job_api + '?reload=true';
+                    //     // console.log("_saveJsonEditor call init1 = ", this.config.api.job_api);
+                    // }
+                    // else {
+                    //     url = this.config.api.job_api + '?reload=true';
+                    //     // console.log("_saveJsonEditor call init2 = ", this.config.api.job_api);
+                    // }
 
-                url = this.config.api.job_api + '?reload=true';
-                // console.log("_saveJsonEditor call reload = ", url);
-                $.post(url, this._getJson(), (data, status, request) => {
-                    // if (data.response === 'OK')
-                    //     console.log('added');
-                    // console.log("_saveJsonEditor response 1 = ",data.response);
-                    this.$.joblistElement._updateJoblist();
-                }).fail(() => {
-                    console.log("_save JsonEditor response 0 = ", this.config.api.job_api);
-                    let msg = {
+                    url = this.config.api.job_api + '?reload=true';
+                    // console.log("_saveJsonEditor call reload = ", url);
+                    // console.log("_saveJsonEditor call = ", json);
+
+                    $.post(url, json, (data, status, request) => {
+                        // if (data.response === 'OK')
+                        //     console.log('added');
+                        // console.log("_saveJsonEditor response 1 = ",data.response);
+                        this.$.joblistElement._updateJoblist();
+                        res(data);
+                    }).fail((er) => {
+                        console.log("_save JsonEditor response 0 = ", this.config.api.job_api);
+                        let msg = {
                             title: "",
                             detail: ""
                         };
@@ -761,15 +803,18 @@
                             msg.title = `Can't connect ${this.config.api.job_api} `;
                             msg.detail = "Please make sure your Job API is correct.";
                         }
-                    // let msg = {
-                    //     title: `Can't connect ${this.config.api.job_api}`,
-                    //     detail: "Please make sure your Job API is correct."
-                    // }
-                    if (typeof ipc !== "undefined")
-                        ipc.send('open-error-dialog', msg)
-                    else
-                        alert(msg.title +"\n"+ msg.detail)
-                });
+                        // let msg = {
+                        //     title: `Can't connect ${this.config.api.job_api}`,
+                        //     detail: "Please make sure your Job API is correct."
+                        // }
+                        if (typeof ipc !== "undefined")
+                            ipc.send('open-error-dialog', msg)
+                        else
+                            alert(msg.title + "\n" + msg.detail)
+
+                        rej(er);
+                    });
+                })
             }
             _deleteJob(ev) {
                 this.deleteJobList = ev.detail;
@@ -778,15 +823,31 @@
                 this.$.deleteConfirmDialog.open();
             }
             _deleteJobConfirm() {
+                console.log("this.deleteJobList = ", this.deleteJobList);
+                this.removeJobs();
+            }
+            async removeJobs() {
                 for (let i = 0; i < this.deleteJobList.length; i += 1) {
-                    $.ajax({
-                        url: `${this.config.api.job_api}/${encodeURIComponent(this.deleteJobList[i].job_id)}`,
-                        type: 'DELETE',
-                        success: function (dt, status, request) {}.bind(this)
-                    });
-                    if (i == this.deleteJobList.length - 1)
-                        this.$.joblistElement._updateJoblist();
+                    let res = await this.removeJobByID(this.deleteJobList[i].job_id);
+                    // if (i == this.deleteJobList.length - 1) {
+                    //     this.$.joblistElement._updateJoblist();
+                    // }
                 }
+                this.$.joblistElement._updateJoblist();
+            }
+            async removeJobByID(id) {
+                return new Promise((res, rej) => {
+                    $.ajax({
+                        url: `${this.config.api.job_api}/${encodeURIComponent(id)}`,
+                        type: 'DELETE',
+                        success: function (dt, status, request) {
+                            // console.log("dt = ",dt);
+                            // console.log("status = ",status);
+                            res(true);
+                        }
+                            .bind(this)
+                    });
+                })
             }
             _shortcutKeyHandler(ev) {
                 let keydown = ev.detail.keyboardEvent;
@@ -834,8 +895,8 @@
                 }
                 navigator.clipboard.writeText(text)
                     .then(function () {
-                            console.log('Async: Copying to clipboard was successful!');
-                        },
+                        console.log('Async: Copying to clipboard was successful!');
+                    },
                         function (err) {
                             console.error('Async: Could not copy text: ', err);
                         });
@@ -985,7 +1046,7 @@
                         ev_temp.detail = {};
                         ev_temp.detail.job_id = newJob.job_id;
                         this._selectedJobList(ev_temp);
-                    }).fail(() => {
+                    }).fail((er) => {
                         console.log("_save _createNewJobFromFile response 0 = ", this.config.api.job_api);
                         // let msg = {
                         //     title: `Can't connect ${this.config.api.job_api} `,
@@ -1006,7 +1067,7 @@
                         if (typeof ipc !== "undefined")
                             ipc.send('open-error-dialog', msg)
                         else
-                            alert(msg.title +"\n"+ msg.detail)
+                            alert(msg.title + "\n" + msg.detail)
                     });;
                     this.newJobName = "";
                     this.$.addJobFromFileDialog.close();
