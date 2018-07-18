@@ -159,7 +159,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               </vaadin-grid-sorter>
             </template>
             <template>
-                <!--  -->
+              <!--  -->
               <a href="/storages/detail/[[item._jid]]">
                 <div class="cell">[[item._jid]]</div>
               </a>
@@ -194,19 +194,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <paper-dialog modal id="dialogError" style="z-index: 210;">
       <div class="form-group">
-          <!-- <h6>Error</h6> -->
-          <div>
-              [[errorMessage]], Please go to Setting to set Your API Token
-              <!-- <strong>
+        <!-- <h6>Error</h6> -->
+        <div>
+          [[errorMessage]], Please go to Setting to set Your API Token
+          <!-- <strong>
                 <a style="color: #aa4644;" href="/setting">Setting</a>
               </strong> to set Your API Token -->
-          </div>
+        </div>
 
       </div>
       <div class="buttons">
-          <paper-button class="btn btn-danger" dialog-confirm>Ok</paper-button>
+        <paper-button class="btn btn-danger" dialog-confirm>Ok</paper-button>
       </div>
-  </paper-dialog>
+    </paper-dialog>
 
 
   </template>
@@ -251,27 +251,43 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
 
-      _loadStoragesComplete(event) {
+      async _loadStoragesComplete(event) {
         let res = event.detail.response;
         // console.log("_loadStoragesComplete = ", res);
         if (res) {
-          // console.log("_loadStoragesComplete complete = ",res);
+          console.log("_loadStoragesComplete complete = ", res);
         }
         else {
-          // console.log("_loadStoragesComplete error = ",event);
+          console.log("_loadStoragesComplete error = ", event);
         }
 
         this.job_error = false;
         this.storageLists = [];
         if (this.storages && this.storages.length)
-          this.storages.forEach(function (element) {
-            this.storageLists.push({
-              "_jid": element,
-            });
-          }, this);
+          this.storageLists = await this.getListJobID();
         else
           this.storageLists = [];
         this.$.material.clearCache();
+        // console.log("storageLists = ", this.storageLists);
+      }
+
+      async getListJobID() {
+        // this.storages.forEach(function (element) {
+        //     this.storageLists.push({
+        //       "_jid": element,
+        //     });
+        //   }, this);
+        return new Promise((res) => {
+          let items = [];
+          if (this.storages) {
+            for (let _jid of this.storages) {
+              items.push({
+                "_jid": _jid,
+              });
+            }
+          }
+          res(items);
+        })
       }
 
       _ajexerror(ev) {

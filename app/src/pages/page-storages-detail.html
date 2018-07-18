@@ -571,6 +571,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     },
                     errorMessage: {
                         type: String
+                    },
+                    userToken:{
+                        type:String
                     }
 
                 };
@@ -597,6 +600,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             this.$.imgview.close();
                     });
 
+                    let config = store.get();
+                    this.userToken = "&token="+config.OAuth.token;
+
                     // var start = this.$.start
                     // var end = this.$.end
                     // start.addEventListener('value-changed', function () {
@@ -619,7 +625,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 let res = event.detail.response;
                 if (res) {
                     this.job_error = false;
-                    console.log("_loadStorageComplete = ", res);
+                    // console.log("_loadStorageComplete = ", res);
                 }
                 else {
                     this.job_error = true;
@@ -792,6 +798,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _isBinary(item) {
                 return (item === 'binary')
             }
+
+             _viewImg() {
+                $(this.$.imgview).children('img').css('height', window.innerHeight - 100 + 'px');
+                this.$.imgview.open();
+
+            }
             // Object Detail panel
             _closeObjDetail(ev) {
                 $(this.$.objDetail).removeAttr('opened');
@@ -839,10 +851,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 })
             }
 
-            _viewImg() {
-                $(this.$.imgview).children('img').css('height', window.innerHeight - 100 + 'px');
-                this.$.imgview.open();
-            }
+           
             _findIdToIndex(idObj) {
                 var i = 0;
                 this.items.forEach(function (element, index) {
@@ -856,7 +865,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 var nextimg = this._findIdToIndex(this.activeItem._id) + 1
                 if (nextimg < this.items.length) {
                     this.activeItem = this.items[nextimg]
-                    let url = `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.items[nextimg]._id}/data?datatype=jpg`;
+                    let url = `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.items[nextimg]._id}/data?datatype=jpg${this.userToken}`;
                     console.log("_nextView = ", url);
                     $(this.$.imgview).children('img').attr('src', url);
                 }
@@ -866,8 +875,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 var preimg = this._findIdToIndex(this.activeItem._id) - 1
                 if (preimg >= 0) {
                     this.activeItem = this.items[preimg]
-                    let url = `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.items[preimg]._id}/data?datatype=jpg`;
-                    console.log("_preView = ", url);
+                    let url = `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.items[preimg]._id}/data?datatype=jpg${this.userToken}`;
+                    // console.log("_preView = ", url);
                     $(this.$.imgview).children('img').attr('src', url);
                 }
             }
@@ -877,8 +886,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 // this.imgCurrent = this.storagesobjapi + "/" + this.routeData.storageid + this.strAPI + this.activeItem._id + "/data?datatype=jpg";
                 this.imgCurrent = "";
                 if (id) {
-                    this.imgCurrent = `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.activeItem._id}/data?datatype=jpg`;
-                    // console.log("isValidActiveItemID : ", this.imgCurrent);
+                    this.imgCurrent = `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.activeItem._id}/data?datatype=jpg${this.userToken}`;
+                    console.log("isValidActiveItemID amd imgCurrentURL = ", this.imgCurrent);
                     return true;
                 }
                 return false;
