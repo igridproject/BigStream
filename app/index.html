@@ -289,7 +289,18 @@
     const electron = require('electron');
 
     // console.log("appMenu = ",mymenu);
-    Menu.setApplicationMenu(mymenu)
+    try {
+      if (Menu == undefined) {
+        // console.log("Menu1 = ");
+      }
+      else {
+        // console.log("Menu2 = ", Menu);
+        Menu.setApplicationMenu(mymenu)
+      }
+    } catch (error) {
+  
+    }
+  
 
     // Electron version
     // config
@@ -399,6 +410,7 @@
         });
 
       document.getElementById('loading').setAttribute("loaded", "");
+
     }, 900);
     //----------- end login check -----------
 
