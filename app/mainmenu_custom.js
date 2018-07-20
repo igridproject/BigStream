@@ -1,16 +1,11 @@
 'use strict'
-// const os = require('os')
-// const path = require('path')
-const electron = require('electron')
-// const {
-//   // app,
-//   // BrowserWindow,
-//   // Menu
-// } = electron
-// const config = require('./config')
-// const {sendAction} = require('./util')
 
-// const appName = app.getName()
+const electron = require('electron')
+
+const BUILD_CONFIG = {
+  VERSION: 1,
+  BUILD: 200720181358
+}
 
 function onClickNewWindow () {
   // console.log("new window click menu")
@@ -31,7 +26,7 @@ function callAppPort () {
         let port = data.responseJSON.port
         let appPort = port
         _newWindow(appPort)
-        // console.log('start app on port : ',port)
+      // console.log('start app on port : ',port)
       } catch (error) {
         console.log('error get app port mainmenu_custom')
       }
@@ -64,7 +59,7 @@ const template = [{
   submenu: [
     // { label: "About Application", selector: "orderFrontStandardAboutPanel:" },
     {
-      label: app.getName() + ' V. 1',
+      label: app.getName() + ' V. '+BUILD_CONFIG.VERSION+' Build '+BUILD_CONFIG.BUILD,
       selector: 'orderFrontStandardAboutPanel:'
     },
     // {
@@ -73,7 +68,7 @@ const template = [{
 
     //     // onClickNewWindow()
     //     // _newWindow()
-    //     callAppPort();
+    //     callAppPort()
     //   }
     // },
     {
@@ -152,15 +147,15 @@ const template = [{
       }
     ]
   },
-  {
-    role: 'help',
-    submenu: [{
-      label: 'Learn More',
-      click() {
-        require('electron').shell.openExternal('https://electron.atom.io')
-      }
-    }]
-  }
+// {
+//   role: 'help',
+//   submenu: [{
+//     label: 'Learn More',
+//     click() {
+//       require('electron').shell.openExternal('https://electron.atom.io')
+//     }
+//   }]
+// }
 ]
 
 if (process.platform === 'darwin') {} else {}
