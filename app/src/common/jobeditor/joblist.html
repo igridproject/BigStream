@@ -307,7 +307,7 @@
                 var material = this.$.material;
                 return new Promise((res, rej) => {
                     if (this.jobs && this.jobs.length) {
-                        console.log("fetchJob1 : ",this.jobs.length);
+                        console.log("fetchJob1 : ", this.jobs.length);
                         this.jobs.forEach(function (job, index) {
 
                             $.getJSON(`${this.jobapi}/${encodeURIComponent(job)}`, (data) => {
@@ -333,7 +333,7 @@
                     }
                     else {
                         res([]);
-                        console.log("fetchJob2 : ",this.jobs);
+                        console.log("fetchJob2 : ", this.jobs);
                     }
                 })
             }
@@ -409,6 +409,9 @@
                 this.$.updateJobsList.generateRequest();
             }
             _jobSelectedChanged(ev, item) {
+
+                console.log("_observeSelected item = ", this.$.material.selectedItems);
+
                 if (this.$.material.selectedItems.length >= 1)
                     this.haveSelect = true;
                 else

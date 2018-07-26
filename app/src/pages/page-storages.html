@@ -137,7 +137,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <template is="dom-if" if="[[loading]]">
           <paper-progress value="10" indeterminate="true" style="width:100%;position: absolute;z-index: 1;"></paper-progress>
         </template>
-        <vaadin-grid class="material" id="material" items="[[storageLists]]">
+        <vaadin-grid class="material" id="material" items="[[storageLists]]" on-active-item-changed="_selectStorage" on-selected-items-changed="_SelectedChanged"
+          selected-items="{{storageSelected}}">
 
           <vaadin-grid-column width="50px" flex-grow="0">
             <template class="header">#</template>
@@ -165,6 +166,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               </a>
             </template>
           </vaadin-grid-column>
+          <vaadin-grid-column width="160px" flex-grow="0">
+            <template class="header">
+              <div class="cell">
+                Action
+              </div>
+            </template>
+            <template>
+              <paper-checkbox aria-label="Select Row" checked="{{selected}}">
+              </paper-checkbox>
+            </template>
+          </vaadin-grid-column>
 
         </vaadin-grid>
 
@@ -186,10 +198,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               </template>
             </div>
           </div>
+
+
         </template>
 
+        <template is="dom-if" if="[[haveSelect]]">
+          <paper-button class="btn  btn-danger" on-click="_deleteSelected" style="margin-top:10px;float: right;">
+            <iron-icon icon="icons:delete"></iron-icon> Delete [[selectdItems.length]] item(s)
+          </paper-button>
+        </template>
       </paper-card>
     </div>
+
+    <paper-dialog modal id="deleteConfirmDialog">
+      <div class="form-group" style="margin-left: 15px">
+        <h6>Are you sure to delete storage?</h6>
+        <ul>
+          <dom-repeat is="dom-repeat" items="[[selectdItems]]" as="item">
+            <template>
+              <li style="font-size: 1.1em">- [[item._jid]]</li>
+            </template>
+          </dom-repeat>
+        </ul>
+      </div>
+      <div class="buttons">
+        <paper-button class="btn btn-success" dialog-confirm on-click="_deleteStorageConfirm">Delete [[selectdItems.length]] item(s)</paper-button>
+        <paper-button class="btn btn-danger" dialog-confirm>cancel</paper-button>
+      </div>
+    </paper-dialog>
+
+
     <paper-toast autoFitOnAttach id="toast"></paper-toast>
 
     <paper-dialog modal id="dialogError" style="z-index: 210;">
@@ -235,7 +273,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           errorMessage: {
             type: String
+          },
+          selectdItems: {
+            type: Array
+          },
+          haveSelect: {
+            type: Boolean
           }
+
         };
       }
       ready() {
@@ -246,13 +291,141 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
       }
+
+      static get observers() {
+        return [
+          '_jobListsChanged(storageSelected)'
+        ];
+      }
+
+      
+      _jobListsChanged() {
+        this.selectdItems = [];
+        if (this.$.material.selectedItems.length >= 1)
+          this.haveSelect = true;
+        else
+          this.haveSelect = false;
+      }
+
+
+      _SelectedChanged(ev, item) {
+        // console.log("_observeSelected = ", ev);
+        console.log("_observeSelected item = ", this.$.material.selectedItems);
+        if (this.$.material.selectedItems.length >= 1)
+          this.haveSelect = true;
+        else
+          this.haveSelect = false;
+
+        let jsonStr = JSON.stringify(this.$.material.selectedItems);
+        this.selectdItems = JSON.parse(jsonStr);
+      }
+
+      _selectStorage(ev, item) {
+        if (this.$.material.activeItem != null) {
+          // // this.dispatchEvent(new CustomEvent('selected-job-list', {
+          // //   "detail": item.value
+          // // }));
+          // console.log("selected storage = ", item.value + " | len = ", this.selectdItems.length);
+          // console.log("this.selectdItems = ", this.selectdItems);
+        }
+        this.$.material.activeItem = null;
+      }
+
+      _deleteSelected() {
+        // console.log("delete item = ", this.selectdItems);
+        this.$.deleteConfirmDialog.open();
+      }
+
       _updatestorageLists() {
         this.$.updateStorageLists.generateRequest();
       }
 
+      async _deleteStorageConfirm() {
+
+        if (this.selectdItems && this.selectdItems.length > 0) {
+          let length = this.selectdItems.length;
+          // console.log("selectdItems = ", this.selectdItems);
+          var gridItems = this.$.material.selectedItems;
+          for (let item of this.selectdItems) {
+            let pos = await this.findPositionOfItems(item._jid);
+            let isDelete = await this.ajaxDeleteByID(item._jid);
+            if (isDelete) {
+              this.splice("storageLists", pos, 1);
+              // console.log("delete success " + pos);
+              gridItems.shift();
+            }
+            else {
+              // console.log("delete failed " + pos);
+            }
+          }
+
+          this.showToast("Delete " + length + " item(s) success");
+        }
+        else {
+          this.showToast("No item(s) to delete");
+        }
+
+        this.clearStateDelete();
+        // Polymer.dom(this.root).querySelectorAll('iron-ajax').forEach((el) => {
+        //   el.generateRequest();
+        // })
+      }
+
+      showToast(msg) {
+        this.$.toast.text = msg;
+        this.$.toast.horizontalAlign = "center";//"right";
+        this.$.toast.verticalAlign = "bottom";//"top";
+        this.$.toast.open();
+      }
+
+      async findPositionOfItems(id) {
+        // console.log("id = " + id);
+        return new Promise((res) => {
+          let pos = this.storageLists.map(obj => obj._jid).indexOf(id);
+          res(pos);
+          // let i=0;
+          // let pos = -1;
+          // for (let item of this.storageLists) {
+          //   if (item._jid == id){
+          //     pos = i;
+          //     console.log("found item at = "+pos+" | "+id);
+          //   }
+          //   i++;
+          // }
+          // res(pos);
+        });
+      }
+
+      async ajaxDeleteByID(jid) {
+        return new Promise((resolve) => {
+          let urlDelete = "http://phayao.bs.igridproject.info/api/storage/" + jid;
+          $.ajax({
+            url: urlDelete,
+            type: 'DELETE',
+            complete: (data) => {
+              try {
+                let res = data.statusText;
+                if (res === "OK") {
+                  // console.log('DELETE STATUS SUCCESS')
+                  resolve(true);
+                }
+                else {
+                  // console.log('DELETE STATUS FAILED', data)
+                  resolve(false);
+                }
+              } catch (error) {
+                console.log('error : ', error)
+                resolve(false);
+              }
+            }
+          })
+        })
+        // console.log("confirm delete = ",jid);
+      }
+
 
       async _loadStoragesComplete(event) {
-        let res = event.detail.response;
+        let res = event.detail.response;;
         // console.log("_loadStoragesComplete = ", res);
         if (res) {
           console.log("_loadStoragesComplete complete = ", res);
@@ -263,12 +436,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         this.job_error = false;
         this.storageLists = [];
+
         if (this.storages && this.storages.length)
           this.storageLists = await this.getListJobID();
-        else
+        else {
           this.storageLists = [];
+        }
+          
         this.$.material.clearCache();
         // console.log("storageLists = ", this.storageLists);
+      }
+
+      clearStateDelete() {
+        this.storages = [];
+        this.selectdItems = [];
+        this.haveSelect = false;
+        this.$.material.clearCache();
+        // // this.$.material.activeItem = null;
+        // console.log("gridItems2 = ", this.$.material.activeItem);
+        // this.$.material.activeItem = null;
+        // console.log("clearStateDelete : ", this.$.material.activeItem);
       }
 
       async getListJobID() {
@@ -318,6 +505,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _refreshbt(ev) {
 
+        this.storages = [];
+
         let refreshbt = Polymer.dom(this.root).querySelector('iron-icon.refreshbt');
         refreshbt.classList.remove('active');
         refreshbt.classList.add('active');
@@ -327,6 +516,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         Polymer.dom(this.root).querySelectorAll('iron-ajax').forEach((el) => {
           el.generateRequest();
         })
+
+        this.clearStateDelete();
       }
     }
 
