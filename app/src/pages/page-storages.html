@@ -137,8 +137,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <template is="dom-if" if="[[loading]]">
           <paper-progress value="10" indeterminate="true" style="width:100%;position: absolute;z-index: 1;"></paper-progress>
         </template>
-        <vaadin-grid class="material" id="material" items="[[storageLists]]" on-active-item-changed="_selectStorage" on-selected-items-changed="_SelectedChanged"
-          selected-items="{{storageSelected}}">
+        <vaadin-grid class="material" id="material" items="[[storageLists]]" on-active-item-changed="_selectStorage" on-selected-items-changed="_SelectedChanged" selected-items="{{storageSelected}}">
 
           <vaadin-grid-column width="50px" flex-grow="0">
             <template class="header">#</template>
@@ -443,19 +442,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.storageLists = [];
         }
           
-        this.$.material.clearCache();
+        // this.$.material.clearCache();
         // console.log("storageLists = ", this.storageLists);
       }
 
       clearStateDelete() {
         this.storages = [];
+        this.storageLists = [];
+        this.set("storageLists",[]);
+        this.set("storages",[]);
         this.selectdItems = [];
         this.haveSelect = false;
         this.$.material.clearCache();
-        // // this.$.material.activeItem = null;
-        // console.log("gridItems2 = ", this.$.material.activeItem);
-        // this.$.material.activeItem = null;
-        // console.log("clearStateDelete : ", this.$.material.activeItem);
+        this.$.material.selectedItems = [];
+        console.log("clear data clearStateDelete : data = ",this.$.material.selectedItems);
       }
 
       async getListJobID() {
@@ -499,14 +499,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
         this.storageLists = [];
+        this.set("storageLists",[]);
         this.$.material.clearCache();
         this.job_error = true;
+
+       
       }
 
       _refreshbt(ev) {
 
         this.storages = [];
-
+        this.clearStateDelete();
         let refreshbt = Polymer.dom(this.root).querySelector('iron-icon.refreshbt');
         refreshbt.classList.remove('active');
         refreshbt.classList.add('active');
@@ -517,7 +520,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           el.generateRequest();
         })
 
-        this.clearStateDelete();
+
       }
     }
 
