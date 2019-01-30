@@ -397,7 +397,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       async ajaxDeleteByID(jid) {
         return new Promise((resolve) => {
-          let urlDelete = "http://phayao.bs.igridproject.info/api/storage/" + jid;
+          // let urlDelete = "http://phayao.bs.igridproject.info/api/storage/" + jid;
+          let urlDelete = this.storagesapi + "/"+ jid;
           $.ajax({
             url: urlDelete,
             type: 'DELETE',
