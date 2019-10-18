@@ -307,113 +307,112 @@
                         <template>
                             <li>[[item.job_id]]</li>
                         </template>
-                    </dom-repeat>
-                </ul>
-                <!-- <div style="text-align: center">
+    </dom-repeat>
+    </ul>
+    <!-- <div style="text-align: center">
                     [[deleteJobList.length]] item(s)
                 </div> -->
-            </div>
-            <div class="buttons">
-                <paper-button class="btn btn-success" dialog-confirm on-click="_deleteJobConfirm">Delete [[deleteJobList.length]] item(s)</paper-button>
-                <paper-button class="btn btn-danger" dialog-confirm>cancel</paper-button>
-            </div>
-        </paper-dialog>
-        <!--end delete Confirm Dialog-->
+    </div>
+    <div class="buttons">
+        <paper-button class="btn btn-success" dialog-confirm on-click="_deleteJobConfirm">Delete [[deleteJobList.length]] item(s)</paper-button>
+        <paper-button class="btn btn-danger" dialog-confirm>cancel</paper-button>
+    </div>
+    </paper-dialog>
+    <!--end delete Confirm Dialog-->
 
-        <!--START jobTree Dialog-->
-        <!-- <paper-dialog modal id="jobTreeDialog">
+    <!--START jobTree Dialog-->
+    <!-- <paper-dialog modal id="jobTreeDialog">
             <job-tree id="jobTree" config="[[config]]" job-id="[[jsonResult.job_id]]"></job-tree>
             <paper-fab icon="close" title="close" dialog-confirm></paper-fab>
         </paper-dialog> -->
-        <!--end jobTree Dialog-->
+    <!--end jobTree Dialog-->
 
-        <app-toolbar>
-            <div main-title>
-                [[titlePage]]
-                <span style="color:#414e5d;display: block;font-size: 14px;">[[jsonResult.job_id]]</span>
-            </div>
-            <!-- hidden="[[!fileOpened]]" -->
-            <!-- <paper-button class="btn btn-outline-info toggleEditor btn-import" on-click="_onOpenFile" title="Open file (ctrl+o)">
+    <app-toolbar>
+        <div main-title>
+            [[titlePage]]
+            <span style="color:#414e5d;display: block;font-size: 14px;">[[jsonResult.job_id]]</span>
+        </div>
+        <!-- hidden="[[!fileOpened]]" -->
+        <!-- <paper-button class="btn btn-outline-info toggleEditor btn-import" on-click="_onOpenFile" title="Open file (ctrl+o)">
                 <iron-icon icon="icons:folder-open"></iron-icon>
                 Open File
             </paper-button> -->
-            <paper-button class="btn btn-outline-success  toggleEditor btn-import" on-click="_onExportFile" hidden="[[!fileOpened]]"
-                title="Export to file (ctrl+e)">
-                <iron-icon icon="icons:folder-open"></iron-icon>
-                Export
-            </paper-button>
-            <!-- <paper-button class="btn btn-outline-success toggleEditor" on-click="_saveJsonEditor" hidden="[[!fileOpened]]" title="Save [[jsonResult.job_id]] (ctrl+s)">
+        <paper-button class="btn btn-outline-success  toggleEditor btn-import" on-click="_onExportFile" hidden="[[!fileOpened]]" title="Export to file (ctrl+e)">
+            <iron-icon icon="icons:folder-open"></iron-icon>
+            Export
+        </paper-button>
+        <!-- <paper-button class="btn btn-outline-success toggleEditor" on-click="_saveJsonEditor" hidden="[[!fileOpened]]" title="Save [[jsonResult.job_id]] (ctrl+s)">
                 <iron-icon icon="icons:save"></iron-icon> Save
             </paper-button> -->
-            <paper-button class="btn btn-outline-info toggleEditor" on-click="_saveasJsonEditorDialogToggle" hidden$="[[!fileOpened]]"
-                title="Save as (ctrl+shift+s)">
-                <iron-icon icon="icons:content-copy"></iron-icon> Save
-            </paper-button>
-            <paper-button class="btn btn-outline-danger toggleEditor" on-click="_closeJsonEditor" hidden$="[[!fileOpened]]">
-                <iron-icon icon="icons:close"></iron-icon> Close
-            </paper-button>
-            <!-- <paper-button class="btn btn-outline-warning toggleEditor" on-click="_jobTreeDialogToggle" hidden$="[[!fileOpened]]">
+        <paper-button class="btn btn-outline-info toggleEditor" on-click="_saveasJsonEditorDialogToggle" hidden$="[[!fileOpened]]" title="Save as (ctrl+shift+s)">
+            <iron-icon icon="icons:content-copy"></iron-icon> Save
+        </paper-button>
+        <paper-button class="btn btn-outline-danger toggleEditor" on-click="_closeJsonEditor" hidden$="[[!fileOpened]]">
+            <iron-icon icon="icons:close"></iron-icon> Close
+        </paper-button>
+        <!-- <paper-button class="btn btn-outline-warning toggleEditor" on-click="_jobTreeDialogToggle" hidden$="[[!fileOpened]]">
                 <iron-icon icon="hardware:device-hub"></iron-icon> Tree
             </paper-button> -->
-            <paper-button disabled="true" class="btn btn-secondary toggleEditor btOpenToggle" on-click="_toggleEditor" hidden$="[[!fileOpened]]">
-                <iron-icon icon="icons:menu"></iron-icon>
-            </paper-button>
+        <!-- disabled="true" -->
+        <paper-button class="btn btn-secondary toggleEditor btOpenToggle" on-click="_toggleEditor" hidden$="[[!fileOpened]]">
+            <iron-icon icon="icons:menu"></iron-icon>
+        </paper-button>
 
-        </app-toolbar>
-        <div class="container-fluid no-gutters main-page">
-            <div class="row no-gutters">
-                <vaadin-split-layout class="split">
-                    <div id="joblist" style="width: 80%;    overflow: hidden;" file-opened$="[[fileOpened]]">
-                        <joblist-element id="joblistElement" jobapi={{config.api.job_api}}></joblist-element>
-                    </div>
-                    <div id="code" style="min-width:140px;width: 20%;" file-opened$="[[fileOpened]]"></div>
-                </vaadin-split-layout>
+    </app-toolbar>
+    <div class="container-fluid no-gutters main-page">
+        <div class="row no-gutters">
+            <vaadin-split-layout class="split">
+                <div id="joblist" style="width: 80%;    overflow: hidden;" file-opened$="[[fileOpened]]">
+                    <joblist-element id="joblistElement" jobapi={{config.api.job_api}}></joblist-element>
+                </div>
+                <div id="code" style="min-width:140px;width: 20%;" file-opened$="[[fileOpened]]"></div>
+            </vaadin-split-layout>
+        </div>
+        <div class="editor" opened$="[[toggleEditor]]">
+            <div style="background: #5093e1;color: #eef2f7; padding-top: 34px; font-size: 24px;">Overview</div>
+            <!--General detail-->
+            <div class="jsonlabel">
+                <h7>General detail</h7>
             </div>
-            <div class="editor" opened$="[[toggleEditor]]">
-                <div style="background: #5093e1;color: #eef2f7; padding-top: 34px; font-size: 24px;">Overview</div>
-                <!--General detail-->
-                <div class="jsonlabel">
-                    <h7>General detail</h7>
-                </div>
-                <div id="jsonDetail"></div>
+            <div id="jsonDetail"></div>
 
-                <!--Trigger-->
-                <div class="jsonlabel">
-                    <h7>Trigger</h7>
-                    <paper-toggle-button checked="{{triggerToggle}}" on-change="_triggerToggle"></paper-toggle-button>
-                </div>
-                <plugin-select id="trigger" maxplugin="1" disabled="[[triggerToggle]]"></plugin-select>
+            <!--Trigger-->
+            <div class="jsonlabel">
+                <h7>Trigger</h7>
+                <paper-toggle-button checked="{{triggerToggle}}" on-change="_triggerToggle"></paper-toggle-button>
+            </div>
+            <plugin-select id="trigger" maxplugin="1" disabled="[[triggerToggle]]"></plugin-select>
 
-                <!--Data in-->
-                <div class="jsonlabel">
-                    <h7>Data in</h7>
-                </div>
-                <plugin-select id="data_in" maxplugin="1"></plugin-select>
+            <!--Data in-->
+            <div class="jsonlabel">
+                <h7>Data in</h7>
+            </div>
+            <plugin-select id="data_in" maxplugin="1"></plugin-select>
 
-                <!--Data transform-->
-                <div class="jsonlabel">
-                    <h7>Data transform</h7>
-                </div>
-                <plugin-select id="data_transform"></plugin-select>
+            <!--Data transform-->
+            <div class="jsonlabel">
+                <h7>Data transform</h7>
+            </div>
+            <plugin-select id="data_transform"></plugin-select>
 
-                <!--Data out-->
-                <div class="jsonlabel">
-                    <h7>Data out</h7>
-                </div>
-                <plugin-select id="data_out" maxplugin="1" config="[[config]]"></plugin-select>
+            <!--Data out-->
+            <div class="jsonlabel">
+                <h7>Data out</h7>
+            </div>
+            <plugin-select id="data_out" maxplugin="1" config="[[config]]"></plugin-select>
+        </div>
+    </div>
+
+    <paper-dialog modal id="dialogError" style="z-index: 1110;">
+        <div class="form-group">
+            <div>
+                [[errorMessage]], Please go to Setting to set Your API Token
             </div>
         </div>
-
-        <paper-dialog modal id="dialogError" style="z-index: 1110;">
-            <div class="form-group">
-                <div>
-                    [[errorMessage]], Please go to Setting to set Your API Token
-                </div>
-            </div>
-            <div class="buttons">
-                <paper-button class="btn btn-danger" dialog-confirm>Ok</paper-button>
-            </div>
-        </paper-dialog>
+        <div class="buttons">
+            <paper-button class="btn btn-danger" dialog-confirm>Ok</paper-button>
+        </div>
+    </paper-dialog>
 
     </template>
 
@@ -461,7 +460,7 @@
                     JobFromFile: {},
                     shortcutKeytarget: {
                         type: Object,
-                        value: function () {
+                        value: function() {
                             return document.body;
                         }
                     },
@@ -491,10 +490,10 @@
             }
             ready() {
                 super.ready();
-                Polymer.RenderStatus.afterNextRender(this, function () {
+                Polymer.RenderStatus.afterNextRender(this, function() {
 
                     var jsoneditor = this.jsoneditor;
-                    $.getJSON("/src/config/jobPlugins.json", function (data) {
+                    $.getJSON("/src/config/jobPlugins.json", function(data) {
                         jsoneditor.jobPlugins = data;
                         var detail = {
                             "job_id": "example",
@@ -537,7 +536,7 @@
                         jsoneditor.code = new JSONEditor(this.$.code, options, {});
                         jsoneditor.jsonDetail.setMode('tree');
                     }.bind(this));
-                    var _codeJSONchange = function (ev) {
+                    var _codeJSONchange = function(ev) {
                         var newjson = this.jsoneditor.code.get();
                         var detail = {
                             "job_id": newjson.job_id,
@@ -554,12 +553,12 @@
                         this.jsoneditor.jsonDetail.set(detail);
                         this.jsonResult = newjson;
                     }.bind(this);
-                    var _jsonDetailChange = function () {
+                    var _jsonDetailChange = function() {
                         this.jsonResult.job_id = this.jsoneditor.jsonDetail.get().job_id;
                         this.jsonResult.active = this.jsoneditor.jsonDetail.get().active;
                         this.jsoneditor.code.set(this.jsonResult);
                     }.bind(this);
-                    var pluginSelectChange = function (ev) {
+                    var pluginSelectChange = function(ev) {
                         this.jsonResult[ev.detail.id] = ev.detail.json;
                         this.jsoneditor.code.set(this.jsonResult);
                     }.bind(this);
@@ -641,7 +640,7 @@
                 } catch (error) {
                     console.log("error save job = ", error);
                 }
-        
+
                 // this.$.saveasJobDialog.close();
             }
 
@@ -667,7 +666,7 @@
 
                         } else { //for save
                             if (this.isReload) {
-                                await this._saveJsonEditor();//.bind(this);
+                                await this._saveJsonEditor(); //.bind(this);
                             }
                         }
 
@@ -688,30 +687,29 @@
                 }
 
                 return new Promise((res, rej) => {
-                    if (isErr){
+                    if (isErr) {
                         rej("found error");
-                    }
-                    else{
+                    } else {
                         res();
                     }
                 })
             }
 
             async saveJobToServer(api, newJob) {
-                return new Promise((res,rej) => {
+                return new Promise((res, rej) => {
                     $.post(api, newJob, (data) => {
-                        // console.log("result creat job api : ", api, " | data = ", data);
-                        if (data.response === 'OK')
-                            console.log('added new job');
-                        this.$.joblistElement._updateJoblist();
-                        var ev_temp = {};
-                        ev_temp.detail = {};
-                        ev_temp.detail.job_id = newJob.job_id;
+                            // console.log("result creat job api : ", api, " | data = ", data);
+                            if (data.response === 'OK')
+                                console.log('added new job');
+                            this.$.joblistElement._updateJoblist();
+                            var ev_temp = {};
+                            ev_temp.detail = {};
+                            ev_temp.detail.job_id = newJob.job_id;
 
-                        this._selectedJobList(ev_temp);
+                            this._selectedJobList(ev_temp);
 
-                        res(true)
-                    })
+                            res(true)
+                        })
                         .fail((er) => {
                             console.log("_save _saveJob response 0 = ", er);
                             let msg = {
@@ -766,7 +764,7 @@
             async _saveJsonEditor() {
                 return new Promise((res, rej) => {
                     let json = this._getJson();
-                    json.job_id = this.newJobName;//json.job_id.replace(/\s/g, '');
+                    json.job_id = this.newJobName; //json.job_id.replace(/\s/g, '');
                     let url = "";
 
                     // // if (this.config.api.job_api.indexOf("token") >= 0) {
@@ -840,11 +838,11 @@
                     $.ajax({
                         url: `${this.config.api.job_api}/${encodeURIComponent(id)}`,
                         type: 'DELETE',
-                        success: function (dt, status, request) {
-                            // console.log("dt = ",dt);
-                            // console.log("status = ",status);
-                            res(true);
-                        }
+                        success: function(dt, status, request) {
+                                // console.log("dt = ",dt);
+                                // console.log("status = ",status);
+                                res(true);
+                            }
                             .bind(this)
                     });
                 })
@@ -864,17 +862,17 @@
                     this._onClipboard();
             }
             checkForEnter(e) {
-                // check if 'enter' was pressed
-                if (e.keyCode === 13) {
-                    Polymer.dom(e).rootTarget.parentNode.parentNode.querySelector('.submitbt').click();
+                    // check if 'enter' was pressed
+                    if (e.keyCode === 13) {
+                        Polymer.dom(e).rootTarget.parentNode.parentNode.querySelector('.submitbt').click();
+                    }
                 }
-            }
-            // _jobTreeDialogToggle() {
-            //     this.$.jobTreeDialog.open();
-            //     setTimeout(function () {
-            //         this.$.jobTree._openning();
-            //     }.bind(this), 50);
-            // }
+                // _jobTreeDialogToggle() {
+                //     this.$.jobTreeDialog.open();
+                //     setTimeout(function () {
+                //         this.$.jobTree._openning();
+                //     }.bind(this), 50);
+                // }
             showToast(msg) {
                 this.$.toast.text = msg;
                 this.$.toast.horizontalAlign = "right";
@@ -894,40 +892,40 @@
                     return;
                 }
                 navigator.clipboard.writeText(text)
-                    .then(function () {
-                        console.log('Async: Copying to clipboard was successful!');
-                    },
-                        function (err) {
+                    .then(function() {
+                            console.log('Async: Copying to clipboard was successful!');
+                        },
+                        function(err) {
                             console.error('Async: Could not copy text: ', err);
                         });
             }
             fallbackCopyTextToClipboard(text) {
-                // e.clipboardData.setData('text/plain', content);
-                // e.preventDefault();
-                // document.removeEventListener('copy');
-                var pretty = JSON.stringify(this.jsonResult, undefined, 2);
-                var textArea = document.createElement("textarea");
-                // textArea.value = text;
-                textArea.value = pretty;
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                try {
-                    var successful = document.execCommand('copy');
-                    var msg = successful ? 'successful' : 'unsuccessful';
-                    // console.log('Fallback: Copying text command was ' + msg);
-                } catch (err) {
-                    // console.error('Fallback: Oops, unable to copy', err);
+                    // e.clipboardData.setData('text/plain', content);
+                    // e.preventDefault();
+                    // document.removeEventListener('copy');
+                    var pretty = JSON.stringify(this.jsonResult, undefined, 2);
+                    var textArea = document.createElement("textarea");
+                    // textArea.value = text;
+                    textArea.value = pretty;
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    try {
+                        var successful = document.execCommand('copy');
+                        var msg = successful ? 'successful' : 'unsuccessful';
+                        // console.log('Fallback: Copying text command was ' + msg);
+                    } catch (err) {
+                        // console.error('Fallback: Oops, unable to copy', err);
+                    }
+                    document.body.removeChild(textArea);
                 }
-                document.body.removeChild(textArea);
-            }
-            // async testAsync(time) {
-            //     return new Promise((res, rej) => {
-            //         setTimeout(() => {
-            //             res("Hello World in : " + time)
-            //         }, time);
-            //     })
-            // }
+                // async testAsync(time) {
+                //     return new Promise((res, rej) => {
+                //         setTimeout(() => {
+                //             res("Hello World in : " + time)
+                //         }, time);
+                //     })
+                // }
             async _onExportFile() {
                 // console.log("_onExportFile");
                 try {
@@ -941,9 +939,9 @@
                     const {
                         dialog
                     } = require('electron').remote
-                    // let fs = require('fs');
-                    // let filepath = app.getPath("desktop");
-                    // let filepath2 = path.basename("john");
+                        // let fs = require('fs');
+                        // let filepath = app.getPath("desktop");
+                        // let filepath2 = path.basename("john");
                     let fileName = this.jsoneditor.code.get().job_id; //this.jsonResult.job_id + ".json";
                     if (fileName && fileName.length > 0) {
                         fileName = fileName + ".json";
@@ -1082,7 +1080,7 @@
                 try {
                     var fs = require('fs');
                     var stream = fs.createWriteStream(filename);
-                    stream.once('open', function (fd) {
+                    stream.once('open', function(fd) {
                         stream.write(data);
                         stream.end();
                     });
