@@ -138,7 +138,9 @@
     <script>
         class pluginCall extends Polymer.Element {
 
-            static get is() { return 'plugin-call'; }
+            static get is() {
+                return 'plugin-call';
+            }
 
             static get properties() {
                 return {
@@ -163,13 +165,25 @@
             ready() {
                 super.ready();
 
-                Polymer.RenderStatus.afterNextRender(this, function () {
-                    this.json.param.to.forEach((item, index) => {
-                        let temp = {};
-                        this._addJob(temp, { value: item });
-                        // if (index == this.json.param.to.length - 1)
-                        //     this.editting = false;
-                    }, this);
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    try {
+
+                        // console.log("this.json.param.to = ", this.json.param.to)
+                        let data = this.json.param.to
+                        let isArray = Array.isArray(data);
+                        if (isArray) {
+                            this.json.param.to.forEach((item, index) => {
+                                let temp = {};
+                                this._addJob(temp, {
+                                    value: item
+                                });
+                                // if (index == this.json.param.to.length - 1)
+                                //     this.editting = false;
+                            }, this);
+                        }
+                    } catch (error) {
+                        console.log("errorthis.json.param.to.forEach = ", error)
+                    }
 
                     // this._jobChanged();
                 });
@@ -182,7 +196,7 @@
             _modalToggle() {
                 this.$.modal.open();
                 this.$.updateJobsList.generateRequest();
-                setTimeout(function () {
+                setTimeout(function() {
                     $(this.$.modal).css('top', '130px');
                     $(this.$.modal).css('max-height', 'none');
                 }.bind(this), 50)
@@ -251,7 +265,7 @@
             _jobChanged() {
                 this.json.param.to = [];
 
-                Polymer.dom(this.$['job-items']).querySelectorAll('li span.job-name').forEach(function (element) {
+                Polymer.dom(this.$['job-items']).querySelectorAll('li span.job-name').forEach(function(element) {
                     this.json.param.to.push(element.textContent);
                 }, this);
                 if (Polymer.dom(this.$['job-items']).querySelectorAll('li span').length == 0)
@@ -262,7 +276,7 @@
             _closeModal(ev) {
                 $(this.$.modal).css('top', '100%');
                 $(this.$.modal).css('max-height', 'none');
-                setTimeout(function () {
+                setTimeout(function() {
                     this.$.modal.toggle();
                 }.bind(this), 100)
             }

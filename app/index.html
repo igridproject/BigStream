@@ -2,277 +2,275 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-  <title>bigstream-console</title>
-  <meta name="description" content="bigstream-console description">
+    <title>bigstream-console</title>
+    <meta name="description" content="bigstream-console description">
 
-  <!-- See https://goo.gl/OOhYW5 -->
-  <link rel="manifest" href="/manifest.json">
+    <!-- See https://goo.gl/OOhYW5 -->
+    <link rel="manifest" href="/manifest.json">
 
-  <script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
-  <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-reboot.min.css">
+    <script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-reboot.min.css">
 
-  <link rel="import" href="/src/dashboard-app.html">
-  <link rel="import" href="/src/login.html">
+    <link rel="import" href="/src/dashboard-app.html">
+    <link rel="import" href="/src/login.html">
 
-  <style>
-    html {
-      height: 100%;
-      background: #f5f5f5;
-    }
-
-    body {
-      height: 100%;
-    }
-
-    #loading {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      z-index: 999;
-      width: 100%;
-      height: 100%;
-      background: #fff;
-      visibility: visible;
-    }
-
-    #loading[loaded] {
-      animation-duration: 0.5s;
-      animation-name: fadeAndScale;
-      animation-timing-function: cubic-bezier(.71, .55, .62, 1.57);
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    .cssload-box-loading {
-      width: 49px;
-      height: 49px;
-      margin: auto;
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0;
-    }
-
-    .cssload-box-loading:before {
-      content: '';
-      width: 49px;
-      height: 5px;
-      background: rgb(0, 0, 0);
-      opacity: 0.1;
-      position: absolute;
-      top: 58px;
-      left: 0;
-      border-radius: 50%;
-      animation: shadow 0.58s linear infinite;
-      -o-animation: shadow 0.58s linear infinite;
-      -ms-animation: shadow 0.58s linear infinite;
-      -webkit-animation: shadow 0.58s linear infinite;
-      -moz-animation: shadow 0.58s linear infinite;
-    }
-
-    .cssload-box-loading:after {
-      content: '';
-      width: 49px;
-      height: 49px;
-      background: rgb(26, 54, 104);
-      position: absolute;
-      top: 0;
-      left: 0;
-      border-radius: 3px;
-      animation: cssload-animate 0.58s linear infinite;
-      -o-animation: cssload-animate 0.58s linear infinite;
-      -ms-animation: cssload-animate 0.58s linear infinite;
-      -webkit-animation: cssload-animate 0.58s linear infinite;
-      -moz-animation: cssload-animate 0.58s linear infinite;
-    }
-
-
-    @keyframes cssload-animate {
-      17% {
-        border-bottom-right-radius: 3px;
-      }
-      25% {
-        transform: translateY(9px) rotate(22.5deg);
-      }
-      50% {
-        transform: translateY(18px) scale(1, 0.9) rotate(45deg);
-        border-bottom-right-radius: 39px;
-      }
-      75% {
-        transform: translateY(9px) rotate(67.5deg);
-      }
-      100% {
-        transform: translateY(0) rotate(90deg);
-      }
-    }
-
-    @-o-keyframes cssload-animate {
-      17% {
-        border-bottom-right-radius: 3px;
-      }
-      25% {
-        -o-transform: translateY(9px) rotate(22.5deg);
-      }
-      50% {
-        -o-transform: translateY(18px) scale(1, 0.9) rotate(45deg);
-        border-bottom-right-radius: 39px;
-      }
-      75% {
-        -o-transform: translateY(9px) rotate(67.5deg);
-      }
-      100% {
-        -o-transform: translateY(0) rotate(90deg);
-      }
-    }
-
-    @-ms-keyframes cssload-animate {
-      17% {
-        border-bottom-right-radius: 3px;
-      }
-      25% {
-        -ms-transform: translateY(9px) rotate(22.5deg);
-      }
-      50% {
-        -ms-transform: translateY(18px) scale(1, 0.9) rotate(45deg);
-        border-bottom-right-radius: 39px;
-      }
-      75% {
-        -ms-transform: translateY(9px) rotate(67.5deg);
-      }
-      100% {
-        -ms-transform: translateY(0) rotate(90deg);
-      }
-    }
-
-    @-webkit-keyframes cssload-animate {
-      17% {
-        border-bottom-right-radius: 3px;
-      }
-      25% {
-        -webkit-transform: translateY(9px) rotate(22.5deg);
-      }
-      50% {
-        -webkit-transform: translateY(18px) scale(1, 0.9) rotate(45deg);
-        border-bottom-right-radius: 39px;
-      }
-      75% {
-        -webkit-transform: translateY(9px) rotate(67.5deg);
-      }
-      100% {
-        -webkit-transform: translateY(0) rotate(90deg);
-      }
-    }
-
-    @-moz-keyframes cssload-animate {
-      17% {
-        border-bottom-right-radius: 3px;
-      }
-      25% {
-        -moz-transform: translateY(9px) rotate(22.5deg);
-      }
-      50% {
-        -moz-transform: translateY(18px) scale(1, 0.9) rotate(45deg);
-        border-bottom-right-radius: 39px;
-      }
-      75% {
-        -moz-transform: translateY(9px) rotate(67.5deg);
-      }
-      100% {
-        -moz-transform: translateY(0) rotate(90deg);
-      }
-    }
-
-    @keyframes shadow {
-      0%,
-      100% {
-        transform: scale(1, 1);
-      }
-      50% {
-        transform: scale(1.2, 1);
-      }
-    }
-
-    @-o-keyframes shadow {
-      0%,
-      100% {
-        -o-transform: scale(1, 1);
-      }
-      50% {
-        -o-transform: scale(1.2, 1);
-      }
-    }
-
-    @-ms-keyframes shadow {
-      0%,
-      100% {
-        -ms-transform: scale(1, 1);
-      }
-      50% {
-        -ms-transform: scale(1.2, 1);
-      }
-    }
-
-    @-webkit-keyframes shadow {
-      0%,
-      100% {
-        -webkit-transform: scale(1, 1);
-      }
-      50% {
-        -webkit-transform: scale(1.2, 1);
-      }
-    }
-
-    @-moz-keyframes shadow {
-      0%,
-      100% {
-        -moz-transform: scale(1, 1);
-      }
-      50% {
-        -moz-transform: scale(1.2, 1);
-      }
-    }
-
-
-    @keyframes fadeAndScale {
-      from {
-        opacity: 1;
-        transform: scale(1, 1);
-        visibility: visible;
-      }
-      to {
-        opacity: 0;
-        transform: scale(1.3, 1.3);
-        visibility: hidden;
-      }
-    }
-
-    dashboard-app {
-      transition: filter 0.5s ease-in;
-    }
-
-    dashboard-app.not-logged {
-      filter: blur(10px);
-    }
-
-    login-element {
-      transition: all 0.6s ease-in;
-      visibility: hidden;
-      opacity: 0;
-      z-index: -1;
-    }
-
-    login-element.not-logged {
-      visibility: visible;
-      opacity: 1;
-      z-index: 1;
-    }
-  </style>
+    <style>
+        html {
+            height: 100%;
+            background: #f5f5f5;
+        }
+        
+        body {
+            height: 100%;
+        }
+        
+        #loading {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 999;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            visibility: visible;
+        }
+        
+        #loading[loaded] {
+            animation-duration: 0.5s;
+            animation-name: fadeAndScale;
+            animation-timing-function: cubic-bezier(.71, .55, .62, 1.57);
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .cssload-box-loading {
+            width: 49px;
+            height: 49px;
+            margin: auto;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+        
+        .cssload-box-loading:before {
+            content: '';
+            width: 49px;
+            height: 5px;
+            background: rgb(0, 0, 0);
+            opacity: 0.1;
+            position: absolute;
+            top: 58px;
+            left: 0;
+            border-radius: 50%;
+            animation: shadow 0.58s linear infinite;
+            -o-animation: shadow 0.58s linear infinite;
+            -ms-animation: shadow 0.58s linear infinite;
+            -webkit-animation: shadow 0.58s linear infinite;
+            -moz-animation: shadow 0.58s linear infinite;
+        }
+        
+        .cssload-box-loading:after {
+            content: '';
+            width: 49px;
+            height: 49px;
+            background: rgb(26, 54, 104);
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 3px;
+            animation: cssload-animate 0.58s linear infinite;
+            -o-animation: cssload-animate 0.58s linear infinite;
+            -ms-animation: cssload-animate 0.58s linear infinite;
+            -webkit-animation: cssload-animate 0.58s linear infinite;
+            -moz-animation: cssload-animate 0.58s linear infinite;
+        }
+        
+        @keyframes cssload-animate {
+            17% {
+                border-bottom-right-radius: 3px;
+            }
+            25% {
+                transform: translateY(9px) rotate(22.5deg);
+            }
+            50% {
+                transform: translateY(18px) scale(1, 0.9) rotate(45deg);
+                border-bottom-right-radius: 39px;
+            }
+            75% {
+                transform: translateY(9px) rotate(67.5deg);
+            }
+            100% {
+                transform: translateY(0) rotate(90deg);
+            }
+        }
+        
+        @-o-keyframes cssload-animate {
+            17% {
+                border-bottom-right-radius: 3px;
+            }
+            25% {
+                -o-transform: translateY(9px) rotate(22.5deg);
+            }
+            50% {
+                -o-transform: translateY(18px) scale(1, 0.9) rotate(45deg);
+                border-bottom-right-radius: 39px;
+            }
+            75% {
+                -o-transform: translateY(9px) rotate(67.5deg);
+            }
+            100% {
+                -o-transform: translateY(0) rotate(90deg);
+            }
+        }
+        
+        @-ms-keyframes cssload-animate {
+            17% {
+                border-bottom-right-radius: 3px;
+            }
+            25% {
+                -ms-transform: translateY(9px) rotate(22.5deg);
+            }
+            50% {
+                -ms-transform: translateY(18px) scale(1, 0.9) rotate(45deg);
+                border-bottom-right-radius: 39px;
+            }
+            75% {
+                -ms-transform: translateY(9px) rotate(67.5deg);
+            }
+            100% {
+                -ms-transform: translateY(0) rotate(90deg);
+            }
+        }
+        
+        @-webkit-keyframes cssload-animate {
+            17% {
+                border-bottom-right-radius: 3px;
+            }
+            25% {
+                -webkit-transform: translateY(9px) rotate(22.5deg);
+            }
+            50% {
+                -webkit-transform: translateY(18px) scale(1, 0.9) rotate(45deg);
+                border-bottom-right-radius: 39px;
+            }
+            75% {
+                -webkit-transform: translateY(9px) rotate(67.5deg);
+            }
+            100% {
+                -webkit-transform: translateY(0) rotate(90deg);
+            }
+        }
+        
+        @-moz-keyframes cssload-animate {
+            17% {
+                border-bottom-right-radius: 3px;
+            }
+            25% {
+                -moz-transform: translateY(9px) rotate(22.5deg);
+            }
+            50% {
+                -moz-transform: translateY(18px) scale(1, 0.9) rotate(45deg);
+                border-bottom-right-radius: 39px;
+            }
+            75% {
+                -moz-transform: translateY(9px) rotate(67.5deg);
+            }
+            100% {
+                -moz-transform: translateY(0) rotate(90deg);
+            }
+        }
+        
+        @keyframes shadow {
+            0%,
+            100% {
+                transform: scale(1, 1);
+            }
+            50% {
+                transform: scale(1.2, 1);
+            }
+        }
+        
+        @-o-keyframes shadow {
+            0%,
+            100% {
+                -o-transform: scale(1, 1);
+            }
+            50% {
+                -o-transform: scale(1.2, 1);
+            }
+        }
+        
+        @-ms-keyframes shadow {
+            0%,
+            100% {
+                -ms-transform: scale(1, 1);
+            }
+            50% {
+                -ms-transform: scale(1.2, 1);
+            }
+        }
+        
+        @-webkit-keyframes shadow {
+            0%,
+            100% {
+                -webkit-transform: scale(1, 1);
+            }
+            50% {
+                -webkit-transform: scale(1.2, 1);
+            }
+        }
+        
+        @-moz-keyframes shadow {
+            0%,
+            100% {
+                -moz-transform: scale(1, 1);
+            }
+            50% {
+                -moz-transform: scale(1.2, 1);
+            }
+        }
+        
+        @keyframes fadeAndScale {
+            from {
+                opacity: 1;
+                transform: scale(1, 1);
+                visibility: visible;
+            }
+            to {
+                opacity: 0;
+                transform: scale(1.3, 1.3);
+                visibility: hidden;
+            }
+        }
+        
+        dashboard-app {
+            transition: filter 0.5s ease-in;
+        }
+        
+        dashboard-app.not-logged {
+            filter: blur(10px);
+        }
+        
+        login-element {
+            transition: all 0.6s ease-in;
+            visibility: hidden;
+            opacity: 0;
+            z-index: -1;
+        }
+        
+        login-element.not-logged {
+            visibility: visible;
+            opacity: 1;
+            z-index: 1;
+        }
+    </style>
 </head>
 
 <script src="/bower_components/jquery/dist/jquery.min.js"></script>
@@ -280,274 +278,270 @@
 <script src="./mainmenu_custom.js"></script>
 <!-- <script src="./electron-default-menu/index.js"></script> -->
 <script>
-  var store;
-  // let platform = process.platform;
-  // console.log("platform = ",platform);
-  if (typeof require !== 'undefined') {
-    // Electron IPC
-    const ipc = require('electron').ipcRenderer;
-    const electron = require('electron');
+    var store;
+    // let platform = process.platform;
+    // console.log("platform = ",platform);
+    if (typeof require !== 'undefined') {
+        // Electron IPC
+        const ipc = require('electron').ipcRenderer;
+        const electron = require('electron');
 
-    // console.log("appMenu = ",mymenu);
-    try {
-      if (Menu == undefined) {
-        // console.log("Menu1 = ");
-      }
-      else {
-        // console.log("Menu2 = ", Menu);
-        Menu.setApplicationMenu(mymenu)
-      }
-    } catch (error) {
-  
+        // console.log("appMenu = ",mymenu);
+        try {
+            if (Menu == undefined) {
+                // console.log("Menu1 = ");
+            } else {
+                // console.log("Menu2 = ", Menu);
+                Menu.setApplicationMenu(mymenu)
+            }
+        } catch (error) {
+
+        }
+
+
+        // Electron version
+        // config
+        const Store = require('electron-store');
+        store = new Store();
+        // store.delete('OAuth');
+        // store.clear();  
+
+    } else { //Web version
+        const Store = class {
+            constructor() {
+                this.value = $.getJSON('/config.json');
+            }
+            get(str) {
+                return this.value.responseJSON
+            }
+            set() {
+                console.log("this isn't feature on web client");
+            }
+        }
+        var store = new Store();
     }
-  
-
-    // Electron version
-    // config
-    const Store = require('electron-store');
-    store = new Store();
-    // store.delete('OAuth');
-    // store.clear();  
-
-  } else { //Web version
-    const Store = class {
-      constructor() {
-        this.value = $.getJSON('/config.json');
-      }
-      get(str) {
-        return this.value.responseJSON
-      }
-      set() {
-        console.log("this isn't feature on web client");
-      }
-    }
-    var store = new Store();
-  }
-  // console.log( $.getJSON('/config.json'))
+    // console.log( $.getJSON('/config.json'))
 </script>
 
 <body>
-  <dashboard-app id="main"></dashboard-app>
-  <login-element id="login"></login-element>
-  <div id="loading">
-    <div class="cssload-box-loading">
+    <dashboard-app id="main"></dashboard-app>
+    <login-element id="login"></login-element>
+    <div id="loading">
+        <div class="cssload-box-loading">
+        </div>
     </div>
-  </div>
 </body>
 
 <script>
-  let defaultConfig = null;
-  $.getJSON('/config.json', (data) => {
-    defaultConfig = data;
-    // console.log("default config = ",data)
-  });
+    let defaultConfig = null;
+    $.getJSON('/config.json', (data) => {
+        defaultConfig = data;
+        // console.log("default config = ",data)
+    });
 
-  function defaultLogin() {
-    console.log("store.get('api') = ", store.get('api'));
-    let apiDefault = store.get('api');
-    if (!apiDefault || apiDefault.job == null || apiDefault.job.length == 0) {
-      store.set({
-        'api.job': defaultConfig.api.job,
-        'api.job_api': defaultConfig.api.job + '/jobs',
-        'api.storages': defaultConfig.api.storages,
-        'api.storages_api': defaultConfig.api.storages + '/storage',
-        'api.storages_obj_api': defaultConfig.api.storages + '/object',
-        'OAuth.token': "",
-        'api.version': "1"
-      });
-      console.log("no default config so use default");
-    }
-    else {
-      console.log("already have default config");
-    }
-
-    _configSave();
-    _loggedIn();
-  }
-
-  function _configSave() {
-    document.getElementById('main')._updateConfig();
-  }
-
-  function _loggedIn() {
-    document.getElementById('main').classList.remove('not-logged');
-    document.getElementById('login').classList.remove('not-logged');
-    if (store.get('api.job') === '' || store.get('api.storages') === '') {
-      window.history.pushState({}, null, '/setting');
-      window.dispatchEvent(new CustomEvent('location-changed'));
-    }
-    console.log('logged-in');
-  }
-
-  const _logedinCheck = () => {
-
-
-    if (!store.get('OAuth') && !store.get('OAuth.token')) {
-      document.getElementById('main').classList.add('not-logged');
-      document.getElementById('login').classList.add('not-logged');
-
-      defaultLogin();
-      // console.log("_logedinCheck1store = ", store.get());
-    }
-    else {
-
-      // console.log("_logedinCheck 2store = ", store);
-    }
-  }
-  window.addEventListener('WebComponentsReady', function (e) {
-    setTimeout(function () {
-      // onAppReady();
-      //----------- start login check -----------
-      _logedinCheck();
-
-      document.getElementById('login')
-        .addEventListener('logged-in', () => {
-          _loggedIn();
-        });
-      document.getElementById('login')
-        .addEventListener('config-saved', (ev) => {
-          _configSave();
-        });
-
-      document.getElementById('loading').setAttribute("loaded", "");
-
-    }, 900);
-    //----------- end login check -----------
-
-    //################# start no login //#################
-
-    //################# end no login //#################
-
-    // TOKEN injecting
-    var open = window.XMLHttpRequest.prototype.open,
-      send = window.XMLHttpRequest.prototype.send;
-
-    function openReplacement(method, url, async, user, password) {
-      // console.log("url = ",url);
-      this._url = url;
-      if (store.get('OAuth') && store.get('OAuth.token'))
-        if (url.indexOf("?") >= 0) {
-          url += '&token=' + store.get('OAuth.token');
+    function defaultLogin() {
+        console.log("store.get('api') = ", store.get('api'));
+        let apiDefault = store.get('api');
+        if (!apiDefault || apiDefault.job == null || apiDefault.job.length == 0) {
+            store.set({
+                'api.job': defaultConfig.api.job,
+                'api.job_api': defaultConfig.api.job + '/jobs',
+                'api.storages': defaultConfig.api.storages,
+                'api.storages_api': defaultConfig.api.storages + '/storage',
+                'api.storages_obj_api': defaultConfig.api.storages + '/object',
+                'OAuth.token': "",
+                'api.version': "1"
+            });
+            console.log("no default config so use default");
+        } else {
+            console.log("already have default config");
         }
-        else {
-          url += '?token=' + store.get('OAuth.token');
+
+        _configSave();
+        _loggedIn();
+    }
+
+    function _configSave() {
+        document.getElementById('main')._updateConfig();
+    }
+
+    function _loggedIn() {
+        document.getElementById('main').classList.remove('not-logged');
+        document.getElementById('login').classList.remove('not-logged');
+        if (store.get('api.job') === '' || store.get('api.storages') === '') {
+            window.history.pushState({}, null, '/setting');
+            window.dispatchEvent(new CustomEvent('location-changed'));
         }
-      // if (url.match(/&+/)) url += '&token=' + store.get('OAuth.token');
-      // else url += '?token=' + store.get('OAuth.token');
-      // else url += '&token=' + store.get('OAuth.token');
-      else {
-        _logedinCheck();
-      }
-
-      // console.log("request url = ",url);
-      return open.apply(this, arguments);
+        console.log('logged-in');
     }
 
-    function sendReplacement(data) {
-
-      if (this.onreadystatechange) {
-        this._onreadystatechange = this.onreadystatechange;
-      }
-      /**
-       * PLACE HERE YOUR CODE WHEN REQUEST IS SENT  
-       */
-      this.onreadystatechange = onReadyStateChangeReplacement;
-      return send.apply(this, arguments);
-    }
-
-    function onReadyStateChangeReplacement() {
-      /**
-       * PLACE HERE YOUR CODE FOR READYSTATECHANGE
-       */
-      if (this.responseURL.match(store.get('api.job')) && this.response && this.response.status ===
-        'unauthorization') {
-        store.delete('OAuth');
-        _logedinCheck();
-      }
-      if (this._onreadystatechange) {
-        return this._onreadystatechange.apply(this, arguments);
-      }
-    }
-
-    window.XMLHttpRequest.prototype.open = openReplacement;
-    window.XMLHttpRequest.prototype.send = sendReplacement;
-    // (function (send) {
-    //   XMLHttpRequest.prototype.send = function (data) {
-
-    //     // if (store.get('OAuth') && store.get('OAuth.token')) this.setRequestHeader('Authorization', store.get('OAuth.token'));
-    //     // else {
-    //     //   _logedinCheck();
-    //     // }
-    //     // When this Response
-    //     this.onreadystatechange = () => {
-    //       //  Check token is here
-    //       if (this.responseURL.match(store.get('api.job')) && this.response && this.response.status === 'unauthorization') {
-    //         store.delete('OAuth');
-    //         _logedinCheck();
-    //       }
-    //       console.log(this.getAllResponseHeaders())
-    //     };
-    //     console.log(this)
-    //     send.call(this, data);
-    //   };
-    // })(XMLHttpRequest.prototype.send);
+    const _logedinCheck = () => {
 
 
-    // LOG file
-    (function () {
+        if (!store.get('OAuth') && !store.get('OAuth.token')) {
+            document.getElementById('main').classList.add('not-logged');
+            document.getElementById('login').classList.add('not-logged');
 
-      var console = window.console
-      if (!console) return
+            defaultLogin();
+            // console.log("_logedinCheck1store = ", store.get());
+        } else {
 
-      function intercept(method) {
-
-        var original = console[method]
-        console[method] = function () {
-          // Do this for normal browsers
-          if (typeof ipc !== 'undefined') ipc.send('log', {
-            method: method,
-            text: arguments
-          })
-          if (original.apply) {
-            original.apply(console, arguments)
-          }
+            // console.log("_logedinCheck 2store = ", store);
         }
-      }
-      var methods = ['log', 'warn', 'error']
-      for (var i = 0; i < methods.length; i++)
-        intercept(methods[i])
-    })();
+    }
+    window.addEventListener('WebComponentsReady', function(e) {
+        setTimeout(function() {
+            // onAppReady();
+            //----------- start login check -----------
+            _logedinCheck();
 
-  });
+            document.getElementById('login')
+                .addEventListener('logged-in', () => {
+                    _loggedIn();
+                });
+            document.getElementById('login')
+                .addEventListener('config-saved', (ev) => {
+                    _configSave();
+                });
 
-  //fortest
-  // document.querySelector("dashboard-app").addEventListener('openFileIndex', function (e) {
-  //   // const {dialog} = require('electron').remote
+            document.getElementById('loading').setAttribute("loaded", "");
 
-  //   // let fs = require('fs');
+        }, 900);
+        //----------- end login check -----------
 
-  //   // dialog.showOpenDialog(function (fileNames) {
-  //   //   if (fileNames === undefined) return;
-  //   //   var fileName = fileNames[0];
-  //   //   fs.readFile(fileName, 'utf-8', function (err, data) {
-  //   //     // document.getElementById("editor").value = data;
-  //   //     if (err){
-  //   //       return
-  //   //     }
-  //   //     this.dispatchEvent()
-  //   //     // console.log("data = ", data);
-  //   //   });
+        //################# start no login //#################
 
-  //   // });
-  //   // console.log("openfile index => ", e);
-  //   // console.log("received text = ",e.detail);
-  //   // this.dispatchEvent(new CustomEvent('openFile', {
-  //   //   detail: {
-  //   //     word:"open hello world success"
-  //   //   }
-  //   // }));
+        //################# end no login //#################
 
-  // })
+        // TOKEN injecting
+        var open = window.XMLHttpRequest.prototype.open,
+            send = window.XMLHttpRequest.prototype.send;
+
+        function openReplacement(method, url, async, user, password) {
+            // console.log("url = ",url);
+            this._url = url;
+            if (store.get('OAuth') && store.get('OAuth.token'))
+                if (url.indexOf("?") >= 0) {
+                    url += '&token=' + store.get('OAuth.token');
+                } else {
+                    url += '?token=' + store.get('OAuth.token');
+                }
+                // if (url.match(/&+/)) url += '&token=' + store.get('OAuth.token');
+                // else url += '?token=' + store.get('OAuth.token');
+                // else url += '&token=' + store.get('OAuth.token');
+            else {
+                _logedinCheck();
+            }
+
+            // console.log("request url = ",url);
+            return open.apply(this, arguments);
+        }
+
+        function sendReplacement(data) {
+
+            if (this.onreadystatechange) {
+                this._onreadystatechange = this.onreadystatechange;
+            }
+            /**
+             * PLACE HERE YOUR CODE WHEN REQUEST IS SENT  
+             */
+            this.onreadystatechange = onReadyStateChangeReplacement;
+            return send.apply(this, arguments);
+        }
+
+        function onReadyStateChangeReplacement() {
+            /**
+             * PLACE HERE YOUR CODE FOR READYSTATECHANGE
+             */
+            if (this.responseURL.match(store.get('api.job')) && this.response && this.response.status ===
+                'unauthorization') {
+                store.delete('OAuth');
+                _logedinCheck();
+            }
+            if (this._onreadystatechange) {
+                return this._onreadystatechange.apply(this, arguments);
+            }
+        }
+
+        window.XMLHttpRequest.prototype.open = openReplacement;
+        window.XMLHttpRequest.prototype.send = sendReplacement;
+        // (function (send) {
+        //   XMLHttpRequest.prototype.send = function (data) {
+
+        //     // if (store.get('OAuth') && store.get('OAuth.token')) this.setRequestHeader('Authorization', store.get('OAuth.token'));
+        //     // else {
+        //     //   _logedinCheck();
+        //     // }
+        //     // When this Response
+        //     this.onreadystatechange = () => {
+        //       //  Check token is here
+        //       if (this.responseURL.match(store.get('api.job')) && this.response && this.response.status === 'unauthorization') {
+        //         store.delete('OAuth');
+        //         _logedinCheck();
+        //       }
+        //       console.log(this.getAllResponseHeaders())
+        //     };
+        //     console.log(this)
+        //     send.call(this, data);
+        //   };
+        // })(XMLHttpRequest.prototype.send);
+
+
+        // LOG file
+        (function() {
+
+            var console = window.console
+            if (!console) return
+
+            function intercept(method) {
+
+                var original = console[method]
+                console[method] = function() {
+                    // Do this for normal browsers
+                    if (typeof ipc !== 'undefined') ipc.send('log', {
+                        method: method,
+                        text: arguments
+                    })
+                    if (original.apply) {
+                        original.apply(console, arguments)
+                    }
+                }
+            }
+            var methods = ['log', 'warn', 'error']
+            for (var i = 0; i < methods.length; i++)
+                intercept(methods[i])
+        })();
+
+    });
+
+    //fortest
+    // document.querySelector("dashboard-app").addEventListener('openFileIndex', function (e) {
+    //   // const {dialog} = require('electron').remote
+
+    //   // let fs = require('fs');
+
+    //   // dialog.showOpenDialog(function (fileNames) {
+    //   //   if (fileNames === undefined) return;
+    //   //   var fileName = fileNames[0];
+    //   //   fs.readFile(fileName, 'utf-8', function (err, data) {
+    //   //     // document.getElementById("editor").value = data;
+    //   //     if (err){
+    //   //       return
+    //   //     }
+    //   //     this.dispatchEvent()
+    //   //     // console.log("data = ", data);
+    //   //   });
+
+    //   // });
+    //   // console.log("openfile index => ", e);
+    //   // console.log("received text = ",e.detail);
+    //   // this.dispatchEvent(new CustomEvent('openFile', {
+    //   //   detail: {
+    //   //     word:"open hello world success"
+    //   //   }
+    //   // }));
+
+    // })
 </script>
 
 </html>
