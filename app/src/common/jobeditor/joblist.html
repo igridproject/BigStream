@@ -175,18 +175,17 @@
         <template is="dom-if" if="[[loading]]">
             <paper-progress value="10" indeterminate="true" style="width:100%;position: absolute;z-index: 1;"></paper-progress>
         </template>
-        <!-- <paper-fab mini icon="icons:add" title="Create job" class="createJobFab" on-click="_addJobBt" have-select$="[[haveSelect]]"></paper-fab> -->
+    <!-- <paper-fab mini icon="icons:add" title="Create job" class="createJobFab" on-click="_addJobBt" have-select$="[[haveSelect]]"></paper-fab> -->
 
-        <!-- <paper-fab mini icon="icons:folder-open" title="Open File" class="OpenJobFab" on-click="_OpenJobBt"></paper-fab> -->
+    <!-- <paper-fab mini icon="icons:folder-open" title="Open File" class="OpenJobFab" on-click="_OpenJobBt"></paper-fab> -->
 
 
 
-        <x-array-data-provider items="{{jobLists}}"></x-array-data-provider>
-        <vaadin-grid class="material joblist" id="material" items="[[jobLists]]" on-active-item-changed="_selectJob" on-selected-items-changed="_jobSelectedChanged"
-            selected-items="{{jobSelected}}">
+    <x-array-data-provider items="{{jobLists}}"></x-array-data-provider>
+    <vaadin-grid class="material joblist" id="material" items="[[jobLists]]" on-active-item-changed="_selectJob" on-selected-items-changed="_jobSelectedChanged" selected-items="{{jobSelected}}">
 
-            <vaadin-grid-column flex="0">
-                <template class="header">
+        <vaadin-grid-column flex="0">
+            <template class="header">
                     <vaadin-grid-filter aria-label="Job Name" path="job_id" value="[[_filterJobName]]">
                         <input slot="filter" type="text" hidden>
                     </vaadin-grid-filter>
@@ -196,15 +195,15 @@
                         </vaadin-grid-sorter>
                     </div>
                 </template>
-                <template>
+            <template>
                     <div class="cell">
                         <span class="active-status" active$="[[item.active]]">&#9679</span>
                         <span class="jobname">[[item.job_id]]</span>
                     </div>
                 </template>
-            </vaadin-grid-column>
-            <vaadin-grid-column width="160px" flex-grow="0">
-                <template class="header">
+        </vaadin-grid-column>
+        <vaadin-grid-column width="160px" flex-grow="0">
+            <template class="header">
                     <div class="cell">
                         <div class="input-group addjobbt job-search-input">
                             <div class="input-group-addon">
@@ -215,25 +214,25 @@
                         <iron-icon icon="icons:refresh" class="refreshbt" on-click="_refreshbt"></iron-icon>
                     </div>
                 </template>
-                <template>
+            <template>
                     <paper-checkbox aria-label="Select Row" checked="{{selected}}">
                     </paper-checkbox>
                 </template>
-            </vaadin-grid-column>
-        </vaadin-grid>
+        </vaadin-grid-column>
+    </vaadin-grid>
 
-        <paper-fab-speed-dial id="fabSpeedDial" icon="icons:more-vert" have-select$="[[haveSelect]]">
-            <paper-fab-speed-dial-action icon="icons:folder-open" style="margin-top: 20px;" on-click="_OpenJobBt">
-                <!-- <span  style="border: 1px solid green;margin-right:-10px;padding: 10px;border-radius: 10px;margin-top: 15px;">Open File</span> -->
-            </paper-fab-speed-dial-action>
-            <paper-fab-speed-dial-action icon="icons:add" on-click="_addJobBt">
-                <!-- <span  style="border: 1px solid green;margin-right:-10px;padding: 10px;border-radius: 10px;margin-top: 15px;">
+    <paper-fab-speed-dial id="fabSpeedDial" icon="icons:more-vert" have-select$="[[haveSelect]]">
+        <paper-fab-speed-dial-action icon="icons:folder-open" style="margin-top: 20px;" on-click="_OpenJobBt">
+            <!-- <span  style="border: 1px solid green;margin-right:-10px;padding: 10px;border-radius: 10px;margin-top: 15px;">Open File</span> -->
+        </paper-fab-speed-dial-action>
+        <paper-fab-speed-dial-action icon="icons:add" on-click="_addJobBt">
+            <!-- <span  style="border: 1px solid green;margin-right:-10px;padding: 10px;border-radius: 10px;margin-top: 15px;">
                     Create Job
                     </span> -->
-            </paper-fab-speed-dial-action>
-        </paper-fab-speed-dial>
+        </paper-fab-speed-dial-action>
+    </paper-fab-speed-dial>
 
-        <template is="dom-if" if="[[job_error]]">
+    <template is="dom-if" if="[[job_error]]">
             <div style="margin-top:55px;padding: 85px 15px 0;position: absolute;top: 0;width:100%;height: 100%;background: rgba(239, 239, 239, 0.79);    z-index: 112;">
 
                 <div class="alert alert-danger" role="alert" style="width:100%">
@@ -243,20 +242,20 @@
                             <a style="color: #aa4644;" href="/setting">Setting</a>
                         </strong> to set other storages api
                     </template>
-                    <template is="dom-if" if="[[!isJobError404]]">
+    <template is="dom-if" if="[[!isJobError404]]">
                         [[errorMessage]], Please go to
                         <strong>
                             <a style="color: #aa4644;" href="/setting">Setting</a>
                         </strong> to set Your API Token
                     </template>
-                </div>
+    </div>
 
 
-            </div>
-        </template>
-        <div id="toolbarSelect" have-select$="[[haveSelect]]">
-            <paper-button type="button" class="btn btn-danger" on-click="_deleteBt">Delete (selected [[jobSelected.length]] items)</paper-button>
-        </div>
+    </div>
+    </template>
+    <div id="toolbarSelect" have-select$="[[haveSelect]]">
+        <paper-button type="button" class="btn btn-danger" on-click="_deleteBt">Delete (selected [[jobSelected.length]] items)</paper-button>
+    </div>
 
 
 
@@ -264,7 +263,9 @@
 
     <script>
         class joblistElement extends Polymer.Element {
-            static get is() { return 'joblist-element'; }
+            static get is() {
+                return 'joblist-element';
+            }
             static get properties() {
                 return {
                     jobLists: {
@@ -296,19 +297,18 @@
             }
             ready() {
                 super.ready();
-                Polymer.RenderStatus.afterNextRender(this, function () {
-                });
+                Polymer.RenderStatus.afterNextRender(this, function() {});
             }
 
 
             async fetchJob() {
                 this.jobLists = [];
-                var jobLists = [];//this.jobLists;
+                var jobLists = []; //this.jobLists;
                 var material = this.$.material;
                 return new Promise((res, rej) => {
                     if (this.jobs && this.jobs.length) {
                         console.log("fetchJob1 : ", this.jobs.length);
-                        this.jobs.forEach(function (job, index) {
+                        this.jobs.forEach(function(job, index) {
 
                             $.getJSON(`${this.jobapi}/${encodeURIComponent(job)}`, (data) => {
 
@@ -324,14 +324,13 @@
                                     material.clearCache();
                                     res(jobLists);
                                 }
-                            }).fail(function (jqXHR, textStatus, errorThrown) {
+                            }).fail(function(jqXHR, textStatus, errorThrown) {
                                 // console.log("err = ",textStatus);
                                 material.clearCache();
                                 rej(errorThrown)
                             });
                         }, this);
-                    }
-                    else {
+                    } else {
                         res([]);
                         console.log("fetchJob2 : ", this.jobs);
                     }
@@ -358,15 +357,15 @@
                     // console.log("_responseJobsEditor : ",this.jobs);
                     // console.log("_responseJobsEditor jobLists : ",this.jobLists);
                     //this.$.material.items = this.jobLists;
-                }
-                else {
+                } else {
                     console.log("_loadJobsComplete no jobs");
                     this.loading = true;
                 }
             }
             _selectJob(ev, item) {
                 if (this.$.material.activeItem != null) {
-                    // this.$.material.selectedItems = this.$.material.activeItem ? [this.$.material.activeItem] : [];
+                    console.log("item.value = ", item.value)
+                        // this.$.material.selectedItems = this.$.material.activeItem ? [this.$.material.activeItem] : [];
                     this.dispatchEvent(new CustomEvent('selected-job-list', {
                         "detail": item.value
                     }));
@@ -386,8 +385,7 @@
                     this.isJobError404 = false;
 
                     // this.$.dialogError.open();
-                }
-                else {
+                } else {
                     this.job_error_code = 404;
                     this.isJobError404 = true;
                     console.log("error job 404 =", detail);

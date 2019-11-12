@@ -36,9 +36,11 @@
 
             .split {
                 background: #fff;
+
                 --vaadin-split-layout-splitter: {
                     background: var(--paper-grey-200);
                 }
+
                 ;
             }
 
@@ -243,10 +245,12 @@
             }
         </style>
 
+        <iron-ajax handle-as="json" on-error="_ajexError" id="ajax" content-type="application/json" on-response="_ajaxSuccess"></iron-ajax>
 
-
-        <iron-a11y-keys id="a11y" keys="ctrl+n" target="[[shortcutKeytarget]]" on-keys-pressed="_shortcutKeyHandler"></iron-a11y-keys>
-        <iron-a11y-keys id="a11yCodeEditor" keys="ctrl+s ctrl+shift+s ctrl+c" on-keys-pressed="_shortcutKeyEditorHandler"></iron-a11y-keys>
+        <iron-a11y-keys id="a11y" keys="ctrl+n" target="[[shortcutKeytarget]]" on-keys-pressed="_shortcutKeyHandler">
+        </iron-a11y-keys>
+        <iron-a11y-keys id="a11yCodeEditor" keys="ctrl+s ctrl+shift+s ctrl+c"
+            on-keys-pressed="_shortcutKeyEditorHandler"></iron-a11y-keys>
 
         <paper-toast autoFitOnAttach id="toast" duration="1000"></paper-toast>
 
@@ -254,7 +258,8 @@
         <paper-dialog modal id="addJobDialog">
             <div class="form-group">
                 <h6>Job Name</h6>
-                <input type="text" class="form-control" value="{{newJobName::input}}" placeholder="" autofocus on-keydown="checkForEnter">
+                <input type="text" class="form-control" value="{{newJobName::input}}" placeholder="" autofocus
+                    on-keydown="checkForEnter">
                 <div class="form-control-feedback" hidden>Can't use space in job name</div>
             </div>
             <div class="buttons">
@@ -267,11 +272,13 @@
         <paper-dialog modal id="addJobFromFileDialog">
             <div class="form-group">
                 <h6>Set Job Name</h6>
-                <input type="text" class="form-control" value="{{newJobName::input}}" placeholder="" autofocus on-keydown="checkForEnter">
+                <input type="text" class="form-control" value="{{newJobName::input}}" placeholder="" autofocus
+                    on-keydown="checkForEnter">
                 <div class="form-control-feedback" hidden>Can't use space in job name</div>
             </div>
             <div class="buttons">
-                <paper-button class="btn btn-success submitbt" on-click="_createNewJobFromFileBt">create job From File</paper-button>
+                <paper-button class="btn btn-success submitbt" on-click="_createNewJobFromFileBt">create job From File
+                </paper-button>
                 <paper-button class="btn btn-danger" dialog-confirm>cancel</paper-button>
             </div>
         </paper-dialog>
@@ -281,8 +288,8 @@
         <paper-dialog modal id="saveasJobDialog">
             <div class="form-group">
                 <h6>Save</h6>
-                <input style="width: 300px" type="text" class="form-control input-saveas" value="{{newJobName::input}}" placeholder="" autofocus
-                    on-keydown="checkForEnter">
+                <input style="width: 300px" type="text" class="form-control input-saveas" value="{{newJobName::input}}"
+                    placeholder="" autofocus on-keydown="checkForEnter">
                 <div class="form-control-feedback" hidden>Can't use space in job name</div>
                 <br>
                 <!-- <div> -->
@@ -417,6 +424,8 @@
     </template>
 
     <script>
+        let ajaxCallback;
+
         class PageJobsEditor extends Polymer.Element {
             static get is() {
                 return 'page-jobs-editor';
@@ -537,21 +546,28 @@
                         jsoneditor.jsonDetail.setMode('tree');
                     }.bind(this));
                     var _codeJSONchange = function(ev) {
-                        var newjson = this.jsoneditor.code.get();
-                        var detail = {
-                            "job_id": newjson.job_id,
-                            "active": (newjson.active === 'true' || newjson.active == true)
-                        };
-                        if (newjson.trigger != this.$.trigger.get() || !newjson.trigger) this.$.trigger
-                            .set(newjson.trigger);
-                        if (newjson.data_in != this.$.data_in.get() || !newjson.data_in) this.$.data_in
-                            .set(newjson.data_in);
-                        if (newjson.data_transform != this.$.data_transform.get() || !newjson.data_transform)
-                            this.$.data_transform.set(newjson.data_transform);
-                        if (newjson.data_out != this.$.data_out.get() || !newjson.data_out) this.$.data_out
-                            .set(newjson.data_out);
-                        this.jsoneditor.jsonDetail.set(detail);
-                        this.jsonResult = newjson;
+                        try {
+                            var newjson = this.jsoneditor.code.get();
+                            var detail = {
+                                "job_id": newjson.job_id,
+                                "active": (newjson.active === 'true' || newjson.active == true)
+                            };
+                            if (newjson.trigger != this.$.trigger.get() || !newjson.trigger) this.$.trigger
+                                .set(newjson.trigger);
+                            if (newjson.data_in != this.$.data_in.get() || !newjson.data_in) this.$.data_in
+                                .set(newjson.data_in);
+                            if (newjson.data_transform != this.$.data_transform.get() || !newjson.data_transform)
+                                this.$.data_transform.set(newjson.data_transform);
+                            if (newjson.data_out != this.$.data_out.get() || !newjson.data_out) this.$.data_out
+                                .set(newjson.data_out);
+                            this.jsoneditor.jsonDetail.set(detail);
+                            this.jsonResult = newjson;
+                            // console.log("_codeJSONchange jsoneditor.code.get = ", this.jsoneditor.code.get())
+                            // console.log("_codeJSONchange newjson = ", newjson)
+                            //     // console.log("_codeJSONchange detail = ", detail)
+                        } catch (error) {
+                            console.error("_codeJSONchange error = ", error)
+                        }
                     }.bind(this);
                     var _jsonDetailChange = function() {
                         this.jsonResult.job_id = this.jsoneditor.jsonDetail.get().job_id;
@@ -570,6 +586,9 @@
                                 $(this.$.joblist).css('width', '20%');
                                 $(this.$.code).attr('file-opening', '');
                                 $(this.$.joblist).attr('file-opening', '');
+                                // let url = this.config.api.job_api + encodeURIComponent(ev.detail.job_id)
+                                // console.log("_selectedJobList url = ", url)
+                                // console.log("_selectedJobList = ", data)
                                 this.jsoneditor.code.set(data);
                                 _codeJSONchange();
                                 setTimeout(() => {
@@ -695,12 +714,39 @@
                 })
             }
 
+
+            async callServiceIronAjax(url, headers, method, body, callback) {
+
+                ajaxCallback = callback;
+
+                let ajax = this.$.ajax;
+                ajax.url = url;
+                ajax.contentType = "application/json;charset=UTF-8";
+                ajax.method = method;
+                ajax.headers = headers;
+                if (body) {
+                    ajax.body = JSON.stringify(body);
+                }
+                ajax.generateRequest();
+
+                // console.log("callServiceIronAjax url = ", url, " | method = ", method, " | headers = ", headers, " | body = ", JSON.stringify(body));
+
+            }
+
             async saveJobToServer(api, newJob) {
                 return new Promise((res, rej) => {
-                    $.post(api, newJob, (data) => {
-                            // console.log("result creat job api : ", api, " | data = ", data);
-                            if (data.response === 'OK')
-                                console.log('added new job');
+                    // console.log("saveJobToServer url = ", api)
+                    // console.log("saveJobToServer newJob = ", newJob)
+                    //     // this.$.ajax.url = api
+                    //     // this.$.ajax.method = "POST"
+                    //     // this.$.ajax.body = newJob
+                    //     // this.$.ajax.generateRequest()
+
+                    this.callServiceIronAjax(api, {
+                        "Content-Type": "application/json"
+                    }, "POST", newJob, (cb) => {
+                        if (cb.response.response == "OK") {
+                            // console.log('added new job');
                             this.$.joblistElement._updateJoblist();
                             var ev_temp = {};
                             ev_temp.detail = {};
@@ -709,16 +755,16 @@
                             this._selectedJobList(ev_temp);
 
                             res(true)
-                        })
-                        .fail((er) => {
-                            console.log("_save _saveJob response 0 = ", er);
+                        } else {
+                            let er = cb.response
+                            console.error("_save _saveJob response 0 = ", er);
                             let msg = {
                                 title: "",
                                 detail: ""
                             };
                             if (er.status == 401) {
                                 msg.title = "Error";
-                                msg.detail = er.responseText;
+                                msg.detail = er //.responseText;
 
                             } else {
                                 msg.title = `Can't connect ${this.config.api.job_api} `;
@@ -730,7 +776,43 @@
                                 alert(msg.title + "\n" + msg.detail)
 
                             rej(er);
-                        });
+                        }
+                    })
+
+                    // $.post(api, newJob, (data) => {
+                    //         // console.log("result creat job api : ", api, " | data = ", data);
+                    //         if (data.response === 'OK')
+                    //             console.log('added new job');
+                    //         this.$.joblistElement._updateJoblist();
+                    //         var ev_temp = {};
+                    //         ev_temp.detail = {};
+                    //         ev_temp.detail.job_id = newJob.job_id;
+
+                    //         this._selectedJobList(ev_temp);
+
+                    //         res(true)
+                    //     })
+                    //     .fail((er) => {
+                    //         console.log("_save _saveJob response 0 = ", er);
+                    //         let msg = {
+                    //             title: "",
+                    //             detail: ""
+                    //         };
+                    //         if (er.status == 401) {
+                    //             msg.title = "Error";
+                    //             msg.detail = er.responseText;
+
+                    //         } else {
+                    //             msg.title = `Can't connect ${this.config.api.job_api} `;
+                    //             msg.detail = "Please make sure your Job API is correct.";
+                    //         }
+                    //         if (typeof ipc !== "undefined")
+                    //             ipc.send('open-error-dialog', msg)
+                    //         else
+                    //             alert(msg.title + "\n" + msg.detail)
+
+                    //         rej(er);
+                    //     });
                 })
             }
 
@@ -779,39 +861,74 @@
 
                     url = this.config.api.job_api + '?reload=true';
                     // console.log("_saveJsonEditor call reload = ", url);
-                    // console.log("_saveJsonEditor call = ", json);
+                    // console.log("_saveJsonEditor call url = ", url);
+                    // console.log("_saveJsonEditor call json = ", JSON.stringify(json));
 
-                    $.post(url, json, (data, status, request) => {
-                        // if (data.response === 'OK')
-                        //     console.log('added');
-                        // console.log("_saveJsonEditor response 1 = ",data.response);
-                        this.$.joblistElement._updateJoblist();
-                        res(data);
-                    }).fail((er) => {
-                        console.log("_save JsonEditor response 0 = ", this.config.api.job_api);
-                        let msg = {
-                            title: "",
-                            detail: ""
-                        };
-                        if (er.status == 401) {
-                            msg.title = "Error";
-                            msg.detail = er.responseText;
-
+                    this.callServiceIronAjax(url, {
+                        "Content-Type": "application/json"
+                    }, "POST", json, (cb) => {
+                        if (cb.response.response == "OK") {
+                            this.$.joblistElement._updateJoblist();
+                            // console.log("cb.response.response = ", cb.response.response)
+                            res(cb.response.response);
                         } else {
-                            msg.title = `Can't connect ${this.config.api.job_api} `;
-                            msg.detail = "Please make sure your Job API is correct.";
-                        }
-                        // let msg = {
-                        //     title: `Can't connect ${this.config.api.job_api}`,
-                        //     detail: "Please make sure your Job API is correct."
-                        // }
-                        if (typeof ipc !== "undefined")
-                            ipc.send('open-error-dialog', msg)
-                        else
-                            alert(msg.title + "\n" + msg.detail)
+                            console.error("_save JsonEditor response 0 = ", this.config.api.job_api);
+                            let msg = {
+                                title: "",
+                                detail: ""
+                            };
+                            if (er.status == 401) {
+                                msg.title = "Error";
+                                msg.detail = er.responseText;
 
-                        rej(er);
-                    });
+                            } else {
+                                msg.title = `Can't connect ${this.config.api.job_api} `;
+                                msg.detail = "Please make sure your Job API is correct.";
+                            }
+                            // let msg = {
+                            //     title: `Can't connect ${this.config.api.job_api}`,
+                            //     detail: "Please make sure your Job API is correct."
+                            // }
+                            if (typeof ipc !== "undefined")
+                                ipc.send('open-error-dialog', msg)
+                            else
+                                alert(msg.title + "\n" + msg.detail)
+
+                            rej(er);
+                        }
+                    })
+
+                    // $.post(url, json, (data, status, request) => {
+                    //     // if (data.response === 'OK')
+                    //     //     console.log('added');
+                    //     // console.log("_saveJsonEditor response 1 = ", data.response);
+                    //     this.$.joblistElement._updateJoblist();
+                    //     res(data);
+                    // }).fail((er) => {
+                    //     console.log("_save JsonEditor response 0 = ", this.config.api.job_api);
+                    //     let msg = {
+                    //         title: "",
+                    //         detail: ""
+                    //     };
+                    //     if (er.status == 401) {
+                    //         msg.title = "Error";
+                    //         msg.detail = er.responseText;
+
+                    //     } else {
+                    //         msg.title = `Can't connect ${this.config.api.job_api} `;
+                    //         msg.detail = "Please make sure your Job API is correct.";
+                    //     }
+                    //     // let msg = {
+                    //     //     title: `Can't connect ${this.config.api.job_api}`,
+                    //     //     detail: "Please make sure your Job API is correct."
+                    //     // }
+                    //     if (typeof ipc !== "undefined")
+                    //         ipc.send('open-error-dialog', msg)
+                    //     else
+                    //         alert(msg.title + "\n" + msg.detail)
+
+                    //     rej(er);
+                    // });
                 })
             }
             _deleteJob(ev) {
@@ -852,10 +969,10 @@
                 if (keydown.code === 'KeyN' && this.classList.value === 'iron-selected')
                     this._addJobDialogToggle();
             }
-            _shortcutKeyEditorHandler(ev) {
+            async _shortcutKeyEditorHandler(ev) {
                 let keydown = ev.detail.keyboardEvent;
                 if (keydown.code === 'KeyS' && keydown.key == 's')
-                    this._saveJsonEditor();
+                    await this._saveJsonEditor();
                 else if (keydown.code === 'KeyS' && keydown.key == 'S')
                     this._saveasJsonEditorDialogToggle();
                 else if (keydown.code === 'KeyC' && keydown.key == 'C')
@@ -1088,7 +1205,30 @@
                     console.log("_exportDataToFile : ", error);
                 }
             }
+
+
+            _ajexError(event) {
+                console.log("_ajexError er = ", event)
+                ajaxCallback({
+                    status: "ERROR",
+                    response: event.detail.error
+                })
+
+            }
+
+            _ajaxSuccess(res) {
+                let response = res.detail.response
+                    // console.log("_ajaxSuccess res = ", response)
+                ajaxCallback({
+                    status: "OK",
+                    response: response
+                });
+
+            }
+
+
         }
+
         window.customElements.define(PageJobsEditor.is, PageJobsEditor);
     </script>
 </dom-module>

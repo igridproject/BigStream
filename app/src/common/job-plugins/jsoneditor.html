@@ -47,7 +47,7 @@
                 return {
                     "editorchange": {
                         "type": Event,
-                        "value": function () {
+                        "value": function() {
                             return new CustomEvent('editorchange', {
                                 detail: {
                                     json: this.json
@@ -65,13 +65,13 @@
             ready() {
                 super.ready();
 
-                Polymer.RenderStatus.afterNextRender(this, function () {
+                Polymer.RenderStatus.afterNextRender(this, function() {
                     var options = {
                         mode: 'tree',
-                        onError: function (err) {
+                        onError: function(err) {
                             alert(err.toString());
                         },
-                        onChange: function (ev) {
+                        onChange: function(ev) {
                             this.json = this.jsoneditor.get();
                             this.dispatchEvent(this.editorchange);
                         }.bind(this)
