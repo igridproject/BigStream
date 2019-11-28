@@ -3,14 +3,11 @@
 <link rel="import" href="/bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="/bower_components/iron-a11y-keys/iron-a11y-keys.html">
 
-
 <link rel="import" href="../common/plugin-select.html">
 <link rel="import" href="../common/jobeditor/joblist.html">
 <link rel="import" href="../common/jobeditor/job-tree.html">
-<!--
-`<Name>` is Description
-@element Name
--->
+<!-- `<Name>` is Description
+@element Name -->
 <dom-module id="page-jobs-editor">
     <template>
         <link href="../../asset/jsoneditor/jsoneditor.css" rel="stylesheet" type="text/css">
@@ -245,68 +242,159 @@
             }
         </style>
 
-        <iron-ajax handle-as="json" on-error="_ajexError" id="ajax" content-type="application/json" on-response="_ajaxSuccess"></iron-ajax>
+        <iron-ajax
+            handle-as="json"
+            on-error="_ajexError"
+            id="ajax"
+            content-type="application/json"
+            on-response="_ajaxSuccess"
+        ></iron-ajax>
 
-        <iron-a11y-keys id="a11y" keys="ctrl+n" target="[[shortcutKeytarget]]" on-keys-pressed="_shortcutKeyHandler">
+        <iron-a11y-keys
+            id="a11y"
+            keys="ctrl+n"
+            target="[[shortcutKeytarget]]"
+            on-keys-pressed="_shortcutKeyHandler"
+        >
         </iron-a11y-keys>
-        <iron-a11y-keys id="a11yCodeEditor" keys="ctrl+s ctrl+shift+s ctrl+c"
-            on-keys-pressed="_shortcutKeyEditorHandler"></iron-a11y-keys>
+        <iron-a11y-keys
+            id="a11yCodeEditor"
+            keys="ctrl+s ctrl+shift+s ctrl+c"
+            on-keys-pressed="_shortcutKeyEditorHandler"
+        ></iron-a11y-keys>
 
-        <paper-toast autoFitOnAttach id="toast" duration="1000"></paper-toast>
+        <paper-toast
+            autoFitOnAttach
+            id="toast"
+            duration="1000"
+        ></paper-toast>
 
-        <!--START add Job Dialog-->
-        <paper-dialog modal id="addJobDialog">
+        <!-- START add Job Dialog -->
+        <paper-dialog
+            modal
+            id="addJobDialog"
+        >
             <div class="form-group">
                 <h6>Job Name</h6>
-                <input type="text" class="form-control" value="{{newJobName::input}}" placeholder="" autofocus
-                    on-keydown="checkForEnter">
-                <div class="form-control-feedback" hidden>Can't use space in job name</div>
+                <input
+                    type="text"
+                    class="form-control"
+                    value="{{newJobName::input}}"
+                    placeholder
+                    autofocus
+                    on-keydown="checkForEnter"
+                >
+                <div
+                    class="form-control-feedback"
+                    hidden
+                >
+                    Can't use space in job name
+                </div>
             </div>
             <div class="buttons">
-                <paper-button class="btn btn-success submitbt" on-click="_createNewJobBt">create job</paper-button>
+                <paper-button
+                    class="btn btn-success submitbt"
+                    on-click="_createNewJobBt"
+                >
+                    create job
+                </paper-button>
                 <!-- <paper-button class="btn btn-info submitbt" on-click="_onOpenFile">Open File</paper-button> -->
-                <paper-button class="btn btn-danger" dialog-confirm>cancel</paper-button>
+                <paper-button
+                    class="btn btn-danger"
+                    dialog-confirm
+                >
+                    cancel
+                </paper-button>
             </div>
         </paper-dialog>
 
-        <paper-dialog modal id="addJobFromFileDialog">
+        <paper-dialog
+            modal
+            id="addJobFromFileDialog"
+        >
             <div class="form-group">
                 <h6>Set Job Name</h6>
-                <input type="text" class="form-control" value="{{newJobName::input}}" placeholder="" autofocus
-                    on-keydown="checkForEnter">
-                <div class="form-control-feedback" hidden>Can't use space in job name</div>
+                <input
+                    type="text"
+                    class="form-control"
+                    value="{{newJobName::input}}"
+                    placeholder
+                    autofocus
+                    on-keydown="checkForEnter"
+                >
+                <div
+                    class="form-control-feedback"
+                    hidden
+                >
+                    Can't use space in job name
+                </div>
             </div>
             <div class="buttons">
-                <paper-button class="btn btn-success submitbt" on-click="_createNewJobFromFileBt">create job From File
+                <paper-button
+                    class="btn btn-success submitbt"
+                    on-click="_createNewJobFromFileBt"
+                >
+                    create job From File
                 </paper-button>
-                <paper-button class="btn btn-danger" dialog-confirm>cancel</paper-button>
+                <paper-button
+                    class="btn btn-danger"
+                    dialog-confirm
+                >
+                    cancel
+                </paper-button>
             </div>
         </paper-dialog>
-        <!--end add Job Dialog-->
+        <!-- end add Job Dialog -->
 
-        <!--START save as Job Dialog-->
-        <paper-dialog modal id="saveasJobDialog">
+        <!-- START save as Job Dialog -->
+        <paper-dialog
+            modal
+            id="saveasJobDialog"
+        >
             <div class="form-group">
                 <h6>Save</h6>
-                <input style="width: 300px" type="text" class="form-control input-saveas" value="{{newJobName::input}}"
-                    placeholder="" autofocus on-keydown="checkForEnter">
-                <div class="form-control-feedback" hidden>Can't use space in job name</div>
+                <input
+                    style="width: 300px"
+                    type="text"
+                    class="form-control input-saveas"
+                    value="{{newJobName::input}}"
+                    placeholder
+                    autofocus
+                    on-keydown="checkForEnter"
+                >
+                <div
+                    class="form-control-feedback"
+                    hidden
+                >
+                    Can't use space in job name
+                </div>
                 <br>
                 <!-- <div> -->
-                <paper-checkbox checked="{{isReload}}">
-                    Reload
-                </paper-checkbox>
+                <paper-checkbox checked="{{isReload}}">Reload</paper-checkbox>
                 <!-- </div> -->
             </div>
             <div class="buttons">
-                <paper-button class="btn btn-success submitbt" on-click="_createSaveJobBt">Save</paper-button>
-                <paper-button class="btn btn-danger" dialog-confirm>cancel</paper-button>
+                <paper-button
+                    class="btn btn-success submitbt"
+                    on-click="_createSaveJobBt"
+                >
+                    Save
+                </paper-button>
+                <paper-button
+                    class="btn btn-danger"
+                    dialog-confirm
+                >
+                    cancel
+                </paper-button>
             </div>
         </paper-dialog>
-        <!--end save as Job Dialog-->
+        <!-- end save as Job Dialog -->
 
-        <!--START delete Confirm Dialog-->
-        <paper-dialog modal id="deleteConfirmDialog">
+        <!-- START delete Confirm Dialog -->
+        <paper-dialog
+            modal
+            id="deleteConfirmDialog"
+        >
             <div class="form-group">
                 <h6>Are you sure to delete job?</h6>
                 <ul>
@@ -314,112 +402,181 @@
                         <template>
                             <li>[[item.job_id]]</li>
                         </template>
-    </dom-repeat>
-    </ul>
-    <!-- <div style="text-align: center">
+                    </dom-repeat>
+                </ul>
+                <!-- <div style="text-align: center">
                     [[deleteJobList.length]] item(s)
                 </div> -->
-    </div>
-    <div class="buttons">
-        <paper-button class="btn btn-success" dialog-confirm on-click="_deleteJobConfirm">Delete [[deleteJobList.length]] item(s)</paper-button>
-        <paper-button class="btn btn-danger" dialog-confirm>cancel</paper-button>
-    </div>
-    </paper-dialog>
-    <!--end delete Confirm Dialog-->
+            </div>
+            <div class="buttons">
+                <paper-button
+                    class="btn btn-success"
+                    dialog-confirm
+                    on-click="_deleteJobConfirm"
+                >
+                    Delete [[deleteJobList.length]] item(s)
+                </paper-button>
+                <paper-button
+                    class="btn btn-danger"
+                    dialog-confirm
+                >
+                    cancel
+                </paper-button>
+            </div>
+        </paper-dialog>
+        <!-- end delete Confirm Dialog -->
 
-    <!--START jobTree Dialog-->
-    <!-- <paper-dialog modal id="jobTreeDialog">
+        <!-- START jobTree Dialog -->
+        <!-- <paper-dialog modal id="jobTreeDialog">
             <job-tree id="jobTree" config="[[config]]" job-id="[[jsonResult.job_id]]"></job-tree>
             <paper-fab icon="close" title="close" dialog-confirm></paper-fab>
         </paper-dialog> -->
-    <!--end jobTree Dialog-->
+        <!-- end jobTree Dialog -->
 
-    <app-toolbar>
-        <div main-title>
-            [[titlePage]]
-            <span style="color:#414e5d;display: block;font-size: 14px;">[[jsonResult.job_id]]</span>
-        </div>
-        <!-- hidden="[[!fileOpened]]" -->
-        <!-- <paper-button class="btn btn-outline-info toggleEditor btn-import" on-click="_onOpenFile" title="Open file (ctrl+o)">
+        <app-toolbar>
+            <div main-title>
+                [[titlePage]]
+                <span style="color:#414e5d;display: block;font-size: 14px;">[[jsonResult.job_id]]</span>
+            </div>
+            <!-- hidden="[[!fileOpened]]" -->
+            <!-- <paper-button class="btn btn-outline-info toggleEditor btn-import" on-click="_onOpenFile" title="Open file (ctrl+o)">
                 <iron-icon icon="icons:folder-open"></iron-icon>
                 Open File
             </paper-button> -->
-        <paper-button class="btn btn-outline-success  toggleEditor btn-import" on-click="_onExportFile" hidden="[[!fileOpened]]" title="Export to file (ctrl+e)">
-            <iron-icon icon="icons:folder-open"></iron-icon>
-            Export
-        </paper-button>
-        <!-- <paper-button class="btn btn-outline-success toggleEditor" on-click="_saveJsonEditor" hidden="[[!fileOpened]]" title="Save [[jsonResult.job_id]] (ctrl+s)">
+            <paper-button
+                class="btn btn-outline-success  toggleEditor btn-import"
+                on-click="_onExportFile"
+                hidden="[[!fileOpened]]"
+                title="Export to file (ctrl+e)"
+            >
+                <iron-icon icon="icons:folder-open"></iron-icon>
+                Export
+            </paper-button>
+            <!-- <paper-button class="btn btn-outline-success toggleEditor" on-click="_saveJsonEditor" hidden="[[!fileOpened]]" title="Save [[jsonResult.job_id]] (ctrl+s)">
                 <iron-icon icon="icons:save"></iron-icon> Save
             </paper-button> -->
-        <paper-button class="btn btn-outline-info toggleEditor" on-click="_saveasJsonEditorDialogToggle" hidden$="[[!fileOpened]]" title="Save as (ctrl+shift+s)">
-            <iron-icon icon="icons:content-copy"></iron-icon> Save
-        </paper-button>
-        <paper-button class="btn btn-outline-danger toggleEditor" on-click="_closeJsonEditor" hidden$="[[!fileOpened]]">
-            <iron-icon icon="icons:close"></iron-icon> Close
-        </paper-button>
-        <!-- <paper-button class="btn btn-outline-warning toggleEditor" on-click="_jobTreeDialogToggle" hidden$="[[!fileOpened]]">
+            <paper-button
+                class="btn btn-outline-info toggleEditor"
+                on-click="_saveasJsonEditorDialogToggle"
+                hidden$="[[!fileOpened]]"
+                title="Save as (ctrl+shift+s)"
+            >
+                <iron-icon icon="icons:content-copy"></iron-icon>
+                Save
+            </paper-button>
+            <paper-button
+                class="btn btn-outline-danger toggleEditor"
+                on-click="_closeJsonEditor"
+                hidden$="[[!fileOpened]]"
+            >
+                <iron-icon icon="icons:close"></iron-icon>
+                Close
+            </paper-button>
+            <!-- <paper-button class="btn btn-outline-warning toggleEditor" on-click="_jobTreeDialogToggle" hidden$="[[!fileOpened]]">
                 <iron-icon icon="hardware:device-hub"></iron-icon> Tree
             </paper-button> -->
-        <!-- disabled="true" -->
-        <paper-button disabled="true" class="btn btn-secondary toggleEditor btOpenToggle" on-click="_toggleEditor" hidden$="[[!fileOpened]]">
-            <iron-icon icon="icons:menu"></iron-icon>
-        </paper-button>
+            <!-- disabled="true" -->
+            <paper-button
+                disabled="true"
+                class="btn btn-secondary toggleEditor btOpenToggle"
+                on-click="_toggleEditor"
+                hidden$="[[!fileOpened]]"
+            >
+                <iron-icon icon="icons:menu"></iron-icon>
+            </paper-button>
 
-    </app-toolbar>
-    <div class="container-fluid no-gutters main-page">
-        <div class="row no-gutters">
-            <vaadin-split-layout class="split">
-                <div id="joblist" style="width: 80%;    overflow: hidden;" file-opened$="[[fileOpened]]">
-                    <joblist-element id="joblistElement" jobapi={{config.api.job_api}}></joblist-element>
+        </app-toolbar>
+        <div class="container-fluid no-gutters main-page">
+            <div class="row no-gutters">
+                <vaadin-split-layout class="split">
+                    <div
+                        id="joblist"
+                        style="width: 80%;    overflow: hidden;"
+                        file-opened$="[[fileOpened]]"
+                    >
+                        <joblist-element
+                            id="joblistElement"
+                            jobapi={{config.api.job_api}}
+                        ></joblist-element>
+                    </div>
+                    <div
+                        id="code"
+                        style="min-width:140px;width: 20%;"
+                        file-opened$="[[fileOpened]]"
+                    ></div>
+                </vaadin-split-layout>
+            </div>
+            <div
+                class="editor"
+                opened$="[[toggleEditor]]"
+            >
+                <div style="background: #5093e1;color: #eef2f7; padding-top: 34px; font-size: 24px;">Overview</div>
+                <!-- General detail -->
+                <div class="jsonlabel">
+                    <h7>General detail</h7>
                 </div>
-                <div id="code" style="min-width:140px;width: 20%;" file-opened$="[[fileOpened]]"></div>
-            </vaadin-split-layout>
-        </div>
-        <div class="editor" opened$="[[toggleEditor]]">
-            <div style="background: #5093e1;color: #eef2f7; padding-top: 34px; font-size: 24px;">Overview</div>
-            <!--General detail-->
-            <div class="jsonlabel">
-                <h7>General detail</h7>
-            </div>
-            <div id="jsonDetail"></div>
+                <div id="jsonDetail"></div>
 
-            <!--Trigger-->
-            <div class="jsonlabel">
-                <h7>Trigger</h7>
-                <paper-toggle-button checked="{{triggerToggle}}" on-change="_triggerToggle"></paper-toggle-button>
-            </div>
-            <plugin-select id="trigger" maxplugin="1" disabled="[[triggerToggle]]"></plugin-select>
+                <!-- Trigger -->
+                <div class="jsonlabel">
+                    <h7>Trigger</h7>
+                    <paper-toggle-button
+                        checked="{{triggerToggle}}"
+                        on-change="_triggerToggle"
+                    ></paper-toggle-button>
+                </div>
+                <plugin-select
+                    id="trigger"
+                    maxplugin="1"
+                    disabled="[[triggerToggle]]"
+                ></plugin-select>
 
-            <!--Data in-->
-            <div class="jsonlabel">
-                <h7>Data in</h7>
-            </div>
-            <plugin-select id="data_in" maxplugin="1"></plugin-select>
+                <!-- Data in -->
+                <div class="jsonlabel">
+                    <h7>Data in</h7>
+                </div>
+                <plugin-select
+                    id="data_in"
+                    maxplugin="1"
+                ></plugin-select>
 
-            <!--Data transform-->
-            <div class="jsonlabel">
-                <h7>Data transform</h7>
-            </div>
-            <plugin-select id="data_transform"></plugin-select>
+                <!-- Data transform -->
+                <div class="jsonlabel">
+                    <h7>Data transform</h7>
+                </div>
+                <plugin-select id="data_transform"></plugin-select>
 
-            <!--Data out-->
-            <div class="jsonlabel">
-                <h7>Data out</h7>
-            </div>
-            <plugin-select id="data_out" maxplugin="1" config="[[config]]"></plugin-select>
-        </div>
-    </div>
-
-    <paper-dialog modal id="dialogError" style="z-index: 1110;">
-        <div class="form-group">
-            <div>
-                [[errorMessage]], Please go to Setting to set Your API Token
+                <!-- Data out -->
+                <div class="jsonlabel">
+                    <h7>Data out</h7>
+                </div>
+                <plugin-select
+                    id="data_out"
+                    maxplugin="1"
+                    config="[[config]]"
+                ></plugin-select>
             </div>
         </div>
-        <div class="buttons">
-            <paper-button class="btn btn-danger" dialog-confirm>Ok</paper-button>
-        </div>
-    </paper-dialog>
+
+        <paper-dialog
+            modal
+            id="dialogError"
+            style="z-index: 1110;"
+        >
+            <div class="form-group">
+                <div>
+                    [[errorMessage]], Please go to Setting to set Your API Token
+                </div>
+            </div>
+            <div class="buttons">
+                <paper-button
+                    class="btn btn-danger"
+                    dialog-confirm
+                >
+                    Ok
+                </paper-button>
+            </div>
+        </paper-dialog>
 
     </template>
 
@@ -733,18 +890,41 @@
 
             }
 
+             isEmpty(obj) {
+                if (obj==true || obj==false)
+                return false;
+                for(var key in obj) {
+                    if(obj.hasOwnProperty(key))
+                        return false;
+                }
+                return true;
+            }
+
+           
+
             async saveJobToServer(api, newJob) {
                 return new Promise((res, rej) => {
                     // console.log("saveJobToServer url = ", api)
-                    // console.log("saveJobToServer newJob = ", newJob)
-                    //     // this.$.ajax.url = api
-                    //     // this.$.ajax.method = "POST"
-                    //     // this.$.ajax.body = newJob
-                    //     // this.$.ajax.generateRequest()
+                    // console.log("saveJobToServer newJob = ", JSON.stringify(newJob))
+                        // this.$.ajax.url = api
+                        // this.$.ajax.method = "POST"
+                        // this.$.ajax.body = newJob
+                        // this.$.ajax.generateRequest()
+
+                    Object.keys(newJob).forEach((item)=>{
+                        if (this.isEmpty(newJob[item])){
+                            delete newJob[item]
+                        }
+                    })
+              
+                    // console.log("saveJobToServer newJob2 = ", JSON.stringify(newJob))
 
                     this.callServiceIronAjax(api, {
                         "Content-Type": "application/json"
                     }, "POST", newJob, (cb) => {
+
+                        console.log("response = ",cb)
+
                         if (cb.response.response == "OK") {
                             // console.log('added new job');
                             this.$.joblistElement._updateJoblist();
