@@ -302,30 +302,26 @@
 
 
             async fetchJob() {
-                this.jobLists = [];
+                // this.jobLists = [];
                 var jobLists = []; //this.jobLists;
                 var material = this.$.material;
+                let count=0
                 return new Promise((res, rej) => {
                     if (this.jobs && this.jobs.length) {
                         console.log("fetchJob1 : ", this.jobs.length);
-                        this.jobs.forEach(function(job, index) {
+                        this.jobs.forEach((job, index)=> {
 
                             $.getJSON(`${this.jobapi}/${encodeURIComponent(job)}`, (data) => {
 
-                                jobLists.push({
-                                    "job_id": job,
-                                    "active": (data.active === 'true' || data.active == true)
-                                });
-                                // console.log("job = ",JSON.stringify(job)," | index = ",index);
-                                // if (index == this.jobs.length - 1) {
-                                if (jobLists.length - 1 == this.jobs.length - 1) {
-                                    // console.log("this.jobs.length = ",this.jobs.length+" | ",jobLists.length);
-                                    // console.log("this.jobs.length = ",JSON.stringify(jobLists));
-                                    material.clearCache();
-                                    res(jobLists);
+                                if ( (data.active === 'false' || !data.active)){
+                                    this.jobLists[index].active =  false
                                 }
+                                    if (count == this.jobs.length -1) {
+                                    material.clearCache();
+                                    res();
+                                }
+                                count++;
                             }).fail(function(jqXHR, textStatus, errorThrown) {
-                                // console.log("err = ",textStatus);
                                 material.clearCache();
                                 rej(errorThrown)
                             });
@@ -343,20 +339,20 @@
                 this.loading = true;
 
                 if (this.jobs) {
+                    this.jobLists = this.jobs.map((item)=>{
+                        return {
+                            job_id:item,
+                            active :true
+                        }
+                    })
                     console.log("_loadJobsComplete have jobs");
                     this.fetchJob()
                         .then((res) => {
-                            this.jobLists = res;
                             this.loading = false;
-                            // console.log("end joblist : ",res.length);
                         }).catch((er) => {
                             this.loading = false;
-                            // console.log("cache joblist = ",res);
                         });
 
-                    // console.log("_responseJobsEditor : ",this.jobs);
-                    // console.log("_responseJobsEditor jobLists : ",this.jobLists);
-                    //this.$.material.items = this.jobLists;
                 } else {
                     console.log("_loadJobsComplete no jobs");
                     this.loading = true;
@@ -365,7 +361,6 @@
             _selectJob(ev, item) {
                 if (this.$.material.activeItem != null) {
                     console.log("item.value = ", item.value)
-                        // this.$.material.selectedItems = this.$.material.activeItem ? [this.$.material.activeItem] : [];
                     this.dispatchEvent(new CustomEvent('selected-job-list', {
                         "detail": item.value
                     }));
@@ -428,6 +423,7 @@
                     this.haveSelect = false;
             }
             _refreshbt(ev) {
+                this.jobLists = []
                 this.job_error = false;
                 let refreshbt = Polymer.dom(this.root).querySelector('iron-icon.refreshbt');
                 refreshbt.classList.remove('active');
