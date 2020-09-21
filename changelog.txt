@@ -1,0 +1,16 @@
+# Changelog
+## [version 1.2] 2020-09-21
+### Fixed
+ - Use JWT Token without xhr override 
+ Affect : Ajax and JQuery call every page that call BS API
+ Detail : Change xhr override method "add token to end of any url reqeust" to headers auth.   
+ - fix many duplicated API call
+ Affect : joblist, job-detail, job-editor, page-storage, home
+ Detail : remove 10+ duplicated API call  
+
+### Added
+ - Profile Management and multi-windows profile support
+ Affect : page-setting, dashboard-app and dashboard-sidemenu
+ Detail : add profile name in setting, support up to 10 profiles
+          add profile name on every page.
+          change new windows UI (still need someone to tweak it)
