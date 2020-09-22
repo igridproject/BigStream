@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -274,8 +274,8 @@
 </head>
 
 <script src="/bower_components/jquery/dist/jquery.min.js"></script>
-<script src="./rightclickmenu.js"></script>
-<script src="./mainmenu_custom.js"></script>
+<script type="text/javascript" src="/rightclickmenu.js"></script>
+<script type="text/javascript" src="/mainmenu_custom.js"></script>
 <!-- <script src="./electron-default-menu/index.js"></script> -->
 <script>
     var store;
@@ -298,12 +298,11 @@
 
         }
 
-
         // Electron version
         // config
         const Store = require('electron-store');
         store = new Store();
-        // store.delete('OAuth');
+        
         // store.clear();  
 
     } else { //Web version
@@ -333,23 +332,27 @@
 </body>
 
 <script>
+
     let defaultConfig = null;
+
     $.getJSON('/config.json', (data) => {
         defaultConfig = data;
         // console.log("default config = ",data)
     });
 
     function defaultLogin() {
-        console.log("store.get('api') = ", store.get('api'));
+        
         let apiDefault = store.get('api');
+        
         if (!apiDefault || apiDefault.job == null || apiDefault.job.length == 0) {
             store.set({
+                'api.name': defaultConfig.api.name,
                 'api.job': defaultConfig.api.job,
                 'api.job_api': defaultConfig.api.job + '/jobs',
                 'api.storages': defaultConfig.api.storages,
                 'api.storages_api': defaultConfig.api.storages + '/storage',
                 'api.storages_obj_api': defaultConfig.api.storages + '/object',
-                'OAuth.token': "",
+                'api.token': "",
                 'api.version': "1"
             });
             console.log("no default config so use default");
@@ -376,9 +379,7 @@
     }
 
     const _logedinCheck = () => {
-
-
-        if (!store.get('OAuth') && !store.get('OAuth.token')) {
+        if (!store.get('api') && !store.get('api.token')) {
             document.getElementById('main').classList.add('not-logged');
             document.getElementById('login').classList.add('not-logged');
 
@@ -394,7 +395,7 @@
             // onAppReady();
             //----------- start login check -----------
             _logedinCheck();
-
+            
             document.getElementById('login')
                 .addEventListener('logged-in', () => {
                     _loggedIn();
@@ -414,77 +415,58 @@
         //################# end no login //#################
 
         // TOKEN injecting
-        var open = window.XMLHttpRequest.prototype.open,
-            send = window.XMLHttpRequest.prototype.send;
+        // var open = window.XMLHttpRequest.prototype.open,
+        //     send = window.XMLHttpRequest.prototype.send;
 
-        function openReplacement(method, url, async, user, password) {
-            // console.log("url = ",url);
-            this._url = url;
-            if (store.get('OAuth') && store.get('OAuth.token'))
-                if (url.indexOf("?") >= 0) {
-                    url += '&token=' + store.get('OAuth.token');
-                } else {
-                    url += '?token=' + store.get('OAuth.token');
-                }
-                // if (url.match(/&+/)) url += '&token=' + store.get('OAuth.token');
-                // else url += '?token=' + store.get('OAuth.token');
-                // else url += '&token=' + store.get('OAuth.token');
-            else {
-                _logedinCheck();
-            }
-
-            // console.log("request url = ",url);
-            return open.apply(this, arguments);
-        }
-
-        function sendReplacement(data) {
-
-            if (this.onreadystatechange) {
-                this._onreadystatechange = this.onreadystatechange;
-            }
-            /**
-             * PLACE HERE YOUR CODE WHEN REQUEST IS SENT  
-             */
-            this.onreadystatechange = onReadyStateChangeReplacement;
-            return send.apply(this, arguments);
-        }
-
-        function onReadyStateChangeReplacement() {
-            /**
-             * PLACE HERE YOUR CODE FOR READYSTATECHANGE
-             */
-            if (this.responseURL.match(store.get('api.job')) && this.response && this.response.status ===
-                'unauthorization') {
-                store.delete('OAuth');
-                _logedinCheck();
-            }
-            if (this._onreadystatechange) {
-                return this._onreadystatechange.apply(this, arguments);
-            }
-        }
-
-        window.XMLHttpRequest.prototype.open = openReplacement;
-        window.XMLHttpRequest.prototype.send = sendReplacement;
-        // (function (send) {
-        //   XMLHttpRequest.prototype.send = function (data) {
-
-        //     // if (store.get('OAuth') && store.get('OAuth.token')) this.setRequestHeader('Authorization', store.get('OAuth.token'));
-        //     // else {
-        //     //   _logedinCheck();
-        //     // }
-        //     // When this Response
-        //     this.onreadystatechange = () => {
-        //       //  Check token is here
-        //       if (this.responseURL.match(store.get('api.job')) && this.response && this.response.status === 'unauthorization') {
-        //         store.delete('OAuth');
+        // function openReplacement(method, url, async, user, password) {
+        //     // console.log("url = ",url);
+        //     this._url = url;
+            
+        //     // Old config version
+        //     if (store.get('api') && store.get('api.token'))
+        //         if (url.indexOf("?") >= 0) {
+        //             url += '&token=' + store.get('api.token');
+        //         } else {
+        //             url += '?token=' + store.get('api.token');
+        //         }
+            
+        //     else {
         //         _logedinCheck();
-        //       }
-        //       console.log(this.getAllResponseHeaders())
-        //     };
-        //     console.log(this)
-        //     send.call(this, data);
-        //   };
-        // })(XMLHttpRequest.prototype.send);
+        //     }
+
+        //     // console.log("request url = ",url);
+        //     return open.apply(this, arguments);
+        // }
+
+        // function sendReplacement(data) {
+
+        //     if (this.onreadystatechange) {
+        //         this._onreadystatechange = this.onreadystatechange;
+        //     }
+        //     /**
+        //      * PLACE HERE YOUR CODE WHEN REQUEST IS SENT  
+        //      */
+        //     this.onreadystatechange = onReadyStateChangeReplacement;
+        //     return send.apply(this, arguments);
+        // }
+
+        // function onReadyStateChangeReplacement() {
+        //     /**
+        //      * PLACE HERE YOUR CODE FOR READYSTATECHANGE
+        //      */
+        //     if (this.responseURL.match(store.get('api.job')) &&
+        //         this.response && this.response.status ===
+        //         'unauthorization') {
+        //         store.delete('api.token');
+        //         _logedinCheck();
+        //     }
+        //     if (this._onreadystatechange) {
+        //         return this._onreadystatechange.apply(this, arguments);
+        //     }
+        // }
+
+        // window.XMLHttpRequest.prototype.open = openReplacement;
+        // window.XMLHttpRequest.prototype.send = sendReplacement;       
 
 
         // LOG file

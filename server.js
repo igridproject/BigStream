@@ -1,7 +1,10 @@
 "use strict";
 var express = require("express");
 var server = express();
+
+// Add cors support
 var path = require("path");
+
 server.use("/", express.static(path.join(__dirname, "app")));
 server.use(
   "/bower_components",

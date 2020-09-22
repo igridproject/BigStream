@@ -267,7 +267,7 @@
                             this.$.incorrect.classList.remove('has-danger');
                             this.loading = false;
                             // THISISFACKTOKEN
-                            store.set({ 'OAuth': { 'token': '' } });
+                            store.set({ 'api': { 'token': '' } });
                             this.dispatchEvent(new CustomEvent('logged-in', {
                                 "detail": {
                                     token: ""

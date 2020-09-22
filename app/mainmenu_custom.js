@@ -1,10 +1,8 @@
-'use strict'
-
 const electron = require('electron')
 
 const BUILD_CONFIG = {
-  VERSION: 1,
-  BUILD: 121120191412
+  VERSION: 1.1,
+  BUILD: 210920201639
 }
 
 function onClickNewWindow () {

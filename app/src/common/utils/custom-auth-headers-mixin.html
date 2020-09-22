@@ -1,0 +1,22 @@
+<!-- custom-auth-headers-mixin.html -->
+<script>
+  const CustomMixin = superclass => class extends superclass {
+
+    static get properties() {
+      return {};
+    }
+
+    // Add auth header if token exists
+    addAuthHeaders(headers = {}, token) {
+      let authHeaders = {
+        "Authorization": ""
+      }
+      if(token && token !== ""){
+        authHeaders.Authorization = "Bearer "+token
+        Object.assign(headers, authHeaders);
+        console.log("Computed Headers: ",headers);
+      }
+      return headers;
+    }
+  };
+</script>

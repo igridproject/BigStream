@@ -13,7 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <script src="/bower_components/chart.js/dist/Chart.js"></script>
 
 <dom-module id="page-home">
-    <template>
+  <template>
     <style include="bootstrap"></style>
     <style include="shared-styles">
       :host {
@@ -107,10 +107,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
 
-    <iron-ajax loading="{{loading}}" url="[[config.api.job_api]]" handle-as="json" last-response="{{jobs}}" on-error="_responseJobs"
-      id="updateJobsList" on-response="_responseJobs" auto></iron-ajax>
-    <iron-ajax url="[[config.api.storages_api]]" loading="{{loading}}" handle-as="json" last-response="{{storages}}" id="updateStorageLists"
-      on-response="_responseStorage" on-error="_responseStorage" auto></iron-ajax>
+    <iron-ajax loading="{{loading}}" url="[[jobapi]]" headers="[[headers]]" handle-as="json" last-response="{{jobs}}"
+      on-error="_responseJobs" id="updateJobsList" on-response="_responseJobs" auto></iron-ajax>
+    <iron-ajax loading="{{loading}}" url="[[storagesapi]]" headers="[[headers]]" handle-as="json"
+      last-response="{{storages}}" id="updateStorageLists" on-response="_responseStorage" on-error="_responseStorage"
+      auto></iron-ajax>
 
     <div class="container-fluid">
       <div class="row">
@@ -118,7 +119,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-card class="lite-detail" style="--paper-card-background-color: var(--paper-cyan-a700)">
             <div class="card-content">
               <div class="paper-header">
-                <iron-icon icon="device:storage"></iron-icon> [[countStorage]] storages</div>
+                <iron-icon icon="device:storage"></iron-icon> [[countStorage]] storages
+              </div>
             </div>
           </paper-card>
         </div>
@@ -126,7 +128,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-card class="lite-detail" style="--paper-card-background-color: var(--google-green-500);">
             <div class="card-content">
               <div class="paper-header">
-                <iron-icon icon="icons:check-circle"></iron-icon> [[countActive]] Active jobs</div>
+                <iron-icon icon="icons:check-circle"></iron-icon> [[countActive]] Active jobs
+              </div>
             </div>
           </paper-card>
         </div>
@@ -134,7 +137,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-card class="lite-detail" style="--paper-card-background-color: var(--google-red-500);">
             <div class="card-content">
               <div class="paper-header">
-                <iron-icon icon="icons:cancel"></iron-icon> [[countInactive]] Inactive jobs</div>
+                <iron-icon icon="icons:cancel"></iron-icon> [[countInactive]] Inactive jobs
+              </div>
             </div>
           </paper-card>
         </div>
@@ -143,7 +147,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="col-sm-12">
           <paper-card class="big-detail" style="height: 100%">
             <div class="card-content" style="padding-right: 0;">
-              <div class="paper-header">BigStream Dashboard</div>
+              <div class="paper-header">BigStream Dashboard : [[profilename]]</div>
               <div class="rate-name">Status</div>
 
             </div>
@@ -156,130 +160,95 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </div>
   </template>
 
-    <script>
-        class PageHome extends Polymer.Element {
-            static get is() {
-                return 'page-home';
-            }
+  <script>
+    class PageHome extends Polymer.Element {
+      static get is() {
+        return 'page-home';
+      }
 
-            static get properties() {
-                return {
-                    jobapi: {
-                        type: String
-                    },
-                    config: {
-                        type: Object
-                    },
-                    jobLists: {
-                        type: Array,
-                        values: []
-                    },
-                    countInactive: {
-                        type: Number,
-                        value: 0
-                    },
-                    countActive: {
-                        type: Number,
-                        value: 0
-                    },
-                    countStorage: {
-                        type: Number,
-                        value: 0
-                    }
-                }
-            }
-
-            ready() {
-                super.ready();
-
-                Polymer.RenderStatus.afterNextRender(this, () => {
-
-                    // this.$.updateJobsList.generateRequest();
-                    // this.config = store.get();
-
-                })
-            }
-
-            _responseStorage(e) {
-                this.countStorage = 0;
-                let res = e.detail.response;
-                if (res) {
-                    this.countStorage = this.storages.length;
-                }
-            }
-
-            async _responseJobs(e) {
-
-                this.countActive = 0;
-                this.countInactive = 0;
-
-                this.config = store.get();
-                this.jobapi = this.config.api.job_api; //this.config.get('api.job_api');
-                // console.log("config = ",this.config);
-                // console.log("_responseJobs jobapi= ", this.jobapi);
-
-                this.countInactive = 0;
-                let res = e.detail.response;
-
-                if (res) {
-                    if (this.jobs && this.jobs.length) {
-                        let countResult = await this.countDataInactive(this.jobs.length);
-                        // this.countActive = countResult.countActive;
-                        // this.countInactive = countResult.countInactive;
-                    }
-                } else {
-                    // console.log("error call api");
-                }
-            }
-
-            async countDataInactive(len) {
-
-                let countActive = 0;
-                let countInactive = 0;
-
-                if (len > 0) {
-                    let _jobLists = [];
-
-                    for (let i = 0; i < this.jobs.length; i++) {
-                        let data = this.jobs[i];
-
-                        let url = `${this.jobapi}/${encodeURIComponent(data)}`;
-                        let result = await this.getResult(url, data);
-
-                        _jobLists.push(result);
-                        // console.log("getResult : ", result);
-                        if (result.active) {
-                            this.countActive++;
-                        } else {
-                            this.countInactive++;
-                        }
-                    };
-                }
-
-                return new Promise((res) => {
-                    res({
-                        countActive: countActive,
-                        countInactive: countInactive
-                    })
-                })
-            }
-
-            async getResult(url, jobID) {
-                return new Promise((res, rej) => {
-
-                    $.getJSON(url, function(data) {
-                        res({
-                            "job_id": jobID,
-                            "active": (data.active === 'true' || data.active == true)
-                        });
-                    });
-                });
-            }
+      static get properties() {
+        return {
+          countInactive: {
+            type: Number,
+            value: 0
+          },
+          countActive: {
+            type: Number,
+            value: 0
+          },
+          countStorage: {
+            type: Number,
+            value: 0
+          }
         }
+      }
+
+      ready() {
+        super.ready();
+
+        Polymer.RenderStatus.afterNextRender(this, () => {
+
+          // this.$.updateJobsList.generateRequest();
+          // this.config = store.get();
+
+        })
+      }
+
+      _responseStorage(e) {
+        this.countStorage = 0;
+        let res = e.detail.response;
+        if (res) {
+          this.countStorage = this.storages.length;
+        }
+      }
+
+      async _responseJobs(e) {
+        this.countActive = 0;
+        this.countInactive = 0;
+        this.countInactive = 0;
+        let res = e.detail.response;
+
+        if (res) {
+          if (this.jobs && this.jobs.length) {
+            let len = this.jobs.length;
+
+            if (len > 0) {
+
+              for (let i = 0; i < len; i++) {
+                let data = this.jobs[i];
+
+                let url = `${this.jobapi}/${encodeURIComponent(data)}`;
+                let result = await this.getResult(url, data);
+
+                if (result.active) {
+                  this.countActive++;
+                } else {
+                  this.countInactive++;
+                }
+              };
+            }
+          }
+        } else {
+          // console.log("error call api");
+        }
+      }
+
+      async getResult(url, jobID) {
+        return new Promise((res, rej) => {
+          $.ajaxSetup({ "headers": this.headers })
+          $.getJSON(url, function (data) {
+            res({
+              "job_id": jobID,
+              "active": (data.active === 'true' || data.active == true)
+            });
+          });
+        });
+      }
+    }
 
 
 
 
-        window.customElements.define(PageHome.is, PageHome);
-    </script>
+    window.customElements.define(PageHome.is, PageHome);
+  </script>
 </dom-module>

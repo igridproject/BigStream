@@ -119,7 +119,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
     <app-toolbar>
       <div main-title>
-        <iron-icon icon="device:storage"></iron-icon> [[titlePage]]</div>
+        <iron-icon icon="device:storage"></iron-icon> [[titlePage]] : [[profilename]]</div>
       <paper-input label="Search" value="{{_filterJobName::input}}">
         <iron-icon icon="icons:search" slot="prefix"></iron-icon>
       </paper-input>
@@ -127,7 +127,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </app-toolbar>
     <!-- Fetch an array of users to be shown in the grid -->
     <!--<iron-ajax url="[[storagesapi]]" handle-as="json" last-response="{{storages}}" id="updateStorageLists" on-response="_loadStoragesComplete"></iron-ajax>-->
-    <iron-ajax url="[[storagesapi]]" loading="{{loading}}" handle-as="json" last-response="{{storages}}" id="updateStorageLists"
+    <iron-ajax url="[[storagesapi]]" loading="{{loading}}" headers="[[headers]]" handle-as="json" last-response="{{storages}}" id="updateStorageLists"
       on-response="_loadStoragesComplete" on-error="_ajexerror" auto></iron-ajax>
 
     <!-- The array is set as the <vaadin-grid>'s "items" property -->
@@ -148,10 +148,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           <vaadin-grid-column width="100px" flex="0">
             <template class="header">
-              <vaadin-grid-filter aria-label="Job Name" path="_jid" value="[[_filterJobName]]">
+              <vaadin-grid-filter aria-label="Job Name" path="_sid" value="[[_filterJobName]]">
                 <input slot="filter" type="text" hidden>
               </vaadin-grid-filter>
-              <vaadin-grid-sorter path="_jid">
+              <vaadin-grid-sorter path="_sid">
                 <div class="cell">
                   <span>Name</span>
                   <iron-icon icon="icons:arrow-upward"></iron-icon>
@@ -160,8 +160,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </template>
             <template>
               <!--  -->
-              <a href="/storages/detail/[[item._jid]]">
-                <div class="cell">[[item._jid]]</div>
+              <a href="/storages/detail/[[item._sid]]">
+                <div class="cell">[[item._sid]]</div>
               </a>
             </template>
           </vaadin-grid-column>
@@ -215,7 +215,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <ul>
           <dom-repeat is="dom-repeat" items="[[selectdItems]]" as="item">
             <template>
-              <li style="font-size: 1.1em">- [[item._jid]]</li>
+              <li style="font-size: 1.1em">- [[item.sid]]</li>
             </template>
           </dom-repeat>
         </ul>
@@ -293,12 +293,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       static get observers() {
         return [
-          '_jobListsChanged(storageSelected)'
+          '_storageListsChanged(storageSelected)'
         ];
       }
 
       
-      _jobListsChanged() {
+      _storageListsChanged() {
         this.selectdItems = [];
         if (this.$.material.selectedItems.length >= 1)
           this.haveSelect = true;
@@ -346,8 +346,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           // console.log("selectdItems = ", this.selectdItems);
           var gridItems = this.$.material.selectedItems;
           for (let item of this.selectdItems) {
-            let pos = await this.findPositionOfItems(item._jid);
-            let isDelete = await this.ajaxDeleteByID(item._jid);
+            let pos = await this.findPositionOfItems(item._sid);
+            let isDelete = await this.ajaxDeleteByID(item._sid);
             if (isDelete) {
               this.splice("storageLists", pos, 1);
               // console.log("delete success " + pos);
@@ -380,7 +380,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       async findPositionOfItems(id) {
         // console.log("id = " + id);
         return new Promise((res) => {
-          let pos = this.storageLists.map(obj => obj._jid).indexOf(id);
+          let pos = this.storageLists.map(obj => obj._sid).indexOf(id);
           res(pos);
           // let i=0;
           // let pos = -1;
@@ -399,6 +399,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return new Promise((resolve) => {
           // let urlDelete = "http://phayao.bs.igridproject.info/api/storage/" + jid;
           let urlDelete = this.storagesapi + "/"+ jid;
+          $.ajaxSetup({ "headers":this.headers } )
           $.ajax({
             url: urlDelete,
             type: 'DELETE',
@@ -426,9 +427,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       async _loadStoragesComplete(event) {
         let res = event.detail.response;;
-        // console.log("_loadStoragesComplete = ", res);
+       
         if (res) {
-          console.log("_loadStoragesComplete complete = ", res);
+          console.log("_loadStoragesComplete complete = ", res.length);
         }
         else {
           console.log("_loadStoragesComplete error = ", event);
@@ -438,7 +439,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.storageLists = [];
 
         if (this.storages && this.storages.length)
-          this.storageLists = await this.getListJobID();
+          this.storageLists = await this.getListStorageID();
         else {
           this.storageLists = [];
         }
@@ -456,21 +457,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.haveSelect = false;
         this.$.material.clearCache();
         this.$.material.selectedItems = [];
-        console.log("clear data clearStateDelete : data = ",this.$.material.selectedItems);
+        //console.log("clear data clearStateDelete : data = ",this.$.material.selectedItems);
       }
 
-      async getListJobID() {
-        // this.storages.forEach(function (element) {
-        //     this.storageLists.push({
-        //       "_jid": element,
-        //     });
-        //   }, this);
+      async getListStorageID() {
         return new Promise((res) => {
           let items = [];
           if (this.storages) {
-            for (let _jid of this.storages) {
+            for (let _sid of this.storages) {
               items.push({
-                "_jid": _jid,
+                "_sid": _sid,
               });
             }
           }

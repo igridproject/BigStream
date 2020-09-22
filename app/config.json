@@ -1,11 +1,21 @@
 {
     "app_name": "Bigstream console",
     "api": {
+        "name":"localhost",
         "job":"http://localhost:19980/v1",
         "job_api": "http://localhost:19980/v1/jobs",
-        "storages":"http://localhost.igridproject.info:19080/v1",
-        "storages_api": "http://localhost.igridproject.info:19080/v1/storage",
-        "storages_obj_api": "http://localhost.igridproject.info:19080/v1/object"
+        "storages":"http://localhost:19080/v1",
+        "storages_api": "http://localhost:19080/v1/storage",
+        "token": "",
+        "storages_obj_api": "http://localhost:19080/v1/object"
     },
+    "APIList": [{
+        "name":"localhost",
+        "job":"http://localhost:19980/v1",
+        "job_api": "http://localhost:19980/v1/jobs",
+        "storages":"http://localhost:19080/v1",
+        "storages_api": "http://localhost:19080/v1/storage",
+        "storages_obj_api": "http://localhost:19080/v1/object"
+    }],
     "platform":"web client"
 }

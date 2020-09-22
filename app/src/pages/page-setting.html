@@ -1,6 +1,7 @@
 <link rel="import" href="/bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="/bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="/bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../shared-styles.html">
 <!--
 `<setting>` is Description
@@ -75,27 +76,43 @@
                             <div class="d-flex">
                                 <div style="width: 70%;padding-right:15px;">
                                     <div class="form-group row">
-                                        <label for="example-text-input" class="col-12 col-form-label">Control API</label>
+                                        <label for="example-text-input" class="col-12 col-form-label">Profile
+                                            name</label>
                                         <div class="col-12">
-                                            <input class="form-control" type="url" value="{{config.api.job::input}}" id="example-text-input" placeholder="Ex. http://localhost:19980/v1">
+                                            <input class="form-control" type="url" value="{{config.api.name::input}}"
+                                                id="example-text-input" placeholder="Ex. Profile name">
                                         </div>
                                     </div>
                                     <hr>
                                     <div class="form-group row">
-                                        <label for="example-search-input" class="col-12 col-form-label">Storages API</label>
+                                        <label for="example-text-input" class="col-12 col-form-label">Control
+                                            API</label>
                                         <div class="col-12">
-                                            <input class="form-control" type="url" value="{{config.api.storages::input}}" id="example-search-input" placeholder="Ex. http://localhost:19080/v1">
+                                            <input class="form-control" type="url" value="{{config.api.job::input}}"
+                                                id="example-text-input" placeholder="Ex. http://localhost:19980/v1">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="example-search-input" class="col-12 col-form-label">Storages
+                                            API</label>
+                                        <div class="col-12">
+                                            <input class="form-control" type="url"
+                                                value="{{config.api.storages::input}}" id="example-search-input"
+                                                placeholder="Ex. http://localhost:19080/v1">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label for="example-search-input" class="col-12 col-form-label">Token</label>
                                         <div class="col-12">
-                                            <!-- <input class="form-control" type="text" value="{{config.OAuth.token::input}}" id="example-search-input" placeholder="User Token"> -->
-                                            <textarea rows="2" class="form-control" type="text" value="{{config.OAuth.token::input}}" id="example-search-input" placeholder="User Token"></textarea>
+                                            <textarea rows="2" class="form-control" type="text"
+                                                value="{{config.api.token::input}}" id="example-search-input"
+                                                placeholder="User Token"></textarea>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="example-search-input" class="col-12 col-form-label">API Version</label>
+                                        <label for="example-search-input" class="col-12 col-form-label">API
+                                            Version</label>
                                         <div class="col-12">
                                             <select class="form-control" value="{{config.api.version::input}}">
                                                 <option value="1">v1.2+</option>
@@ -105,9 +122,12 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="align-self-start detail" style="width: 30%;padding:15px 0 15px 20px;font-size: 14px;">
-                                    <p> Job API is used to authenticate please make sure your user was registered in that API.</p>
-                                    <p> Storages API is used to view data only, it doesn't matter used to authenticate.</p>
+                                <div class="align-self-start detail"
+                                    style="width: 30%;padding:15px 0 15px 20px;font-size: 14px;">
+                                    <p> Job API is used to authenticate please make sure your user was registered in
+                                        that API.</p>
+                                    <p> Storages API is used to view data only, it doesn't matter used to authenticate.
+                                    </p>
                                     <p> Both APIs do not need to be the same server.</p>
                                 </div>
                             </div>
@@ -119,8 +139,17 @@
                 </div>
             </div>
         </div>
+     
+        <paper-dialog modal id="dialogSettingNewWindow" style="width: auto; height: auto; padding: 20px;">
+            <h6 style="text-align: center;">
+                Current verion support only 10 maximum profiles.
+            </h6>
+            <div class="buttons">
+                <paper-button class="btn btn-danger" dialog-confirm>Close</paper-button>
+            </div>
 
-        </div>
+        </paper-dialog>
+
 
         <!-- <div notshow$="[[anyEmpty]]" class="any-empty"></div> -->
     </template>
@@ -146,6 +175,10 @@
                     },
                     anyEmpty: {
                         value: true
+                    },
+                    save_error: {
+                        type: Boolean,
+                        value: false
                     }
                 };
             }
@@ -170,6 +203,10 @@
                 });
             }
 
+            showDialogNewWindow() {
+                this.$.dialogSettingNewWindow.open();
+            }
+
             strAPI(ori, tail) {
                 let url = ori;;
                 let lastStr = ori.charAt(ori.length - 1);
@@ -188,30 +225,55 @@
                 if (!store.get('api'))
                     store.set({ 'api': {} });
 
+                let apilist = store.get('APIList')
 
+                if (!apilist) {
+                    apilist = [];
+                }
 
-                // let apiValue = {
-                //     'api.job': this.config.api.job,
-                //     'api.job_api': this.config.api.job + '/jobs',
-                //     'api.storages': this.config.api.storages,
-                //     'api.storages_api': this.config.api.storages + '/storage',
-                //     'api.storages_obj_api': this.config.api.storages + '/object',
-                //     'OAuth.token': this.config.OAuth.token,
-                //     'api.version':this.config.api.version
-                // };
+                
+
+                // Old config version
                 let apiValue = {
+                    'api.name': this.config.api.name,
                     'api.job': this.config.api.job,
                     'api.job_api': this.strAPI(this.config.api.job, "jobs"),
                     'api.storages': this.config.api.storages,
                     'api.storages_api': this.strAPI(this.config.api.storages, "storage"),
                     'api.storages_obj_api': this.strAPI(this.config.api.storages, "object"),
-                    'OAuth.token': this.config.OAuth.token,
+                    'api.token': this.config.api.token,
                     'api.version': this.config.api.version
                 };
 
-                // console.log("api value = ",apiValue);
+                // List config version
+                let newapiValue = {
+                    'name': this.config.api.name || "untitled",
+                    'job': this.config.api.job,
+                    'job_api': this.strAPI(this.config.api.job, "jobs"),
+                    'storages': this.config.api.storages,
+                    'storages_api': this.strAPI(this.config.api.storages, "storage"),
+                    'storages_obj_api': this.strAPI(this.config.api.storages, "object"),
+                    'token': this.config.api.token,
+                    'version': this.config.api.version
+                };
+
+                let found = apilist.findIndex(list => { return list.name == newapiValue.name })
+                //console.log("found value = ",found);
+                if (found == -1) {
+                    if (apilist.length > 9) {
+                        this.showDialogNewWindow()
+                    return
+                    }
+                    apilist.push(newapiValue)
+                } else {
+                    apilist[found] = newapiValue
+                }
+
+
+                //console.log("apilist value = ",apilist);
 
                 store.set(apiValue);
+                store.set({ "APIList": apilist });
 
                 this.dispatchEvent(new CustomEvent('config-update'));
 
@@ -223,6 +285,7 @@
                 //     this.anyEmpty = false;
                 // else
                 //     this.anyEmpty = true;
+                return;
             }
 
         }

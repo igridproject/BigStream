@@ -1,5 +1,7 @@
 <link rel="import" href="/bower_components/polymer/polymer-element.html">
 <link rel="import" href="/bower_components/iron-menu-behavior/iron-menu-behavior.html">
+<!-- import array selector -->
+<link rel="import" href="/bower_components/polymer/lib/elements/array-selector.html">
 
 <!--route-->
 <link rel="import" href="/bower_components/app-route/app-location.html">
@@ -13,6 +15,7 @@
 
 <link rel="import" href="./simple-menu.html">
 <link rel="import" href="./simple-expand-collapse.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
 <!--
 `<Name>` is Description
 
@@ -221,6 +224,19 @@
                 width: 50px;
                 /* margin-top: -20px; */
             }
+
+            table {
+                border-width: 3px;
+                border-style:solid;
+            }
+
+            tr,
+            td {
+                padding: 2px;
+            }
+
+
+
         </style>
         <!--<style>
              :host {
@@ -249,27 +265,53 @@
             }
         </style>-->
 
-        <paper-dialog modal id="dialogSettingNewWindow" style="width: 490px;padding: 20px;">
-            <h6 style="text-align: center;margin:10px 5px;">
+        <paper-dialog modal id="dialogSettingNewWindow" style="width: auto; height: auto;padding: 10px;">
+            <h6 style="text-align: center;">
                 Setup API
             </h6>
-            <!-- <div style="border: 1px solid rgba(114, 114, 114,0.3);padding: 15px;border-radius: 10px;margin:10px 0px;"> -->
+            <table>
+                <tr>
+                    <th style="text-align: center;" >Profile Name</th>
+                    <th colspan="3" style="text-align: center;" >Job and Storage API configuration</th>
+                   
+                </tr>
+                <template is="dom-repeat" id="configList" items={{config.APIList}}>
+                    <tr>
+                        <td><button style="width:100%" on-click="_openSelect">[[item.name]]</button></td>
+                        <td>
+                            [[item.job]]
+                        </td>
+                        <td>
+                            [[item.storages]]
+                        </td> 
+                        <td><button on-click="_deleteSelect">Delete</button></button></td>
+                    </tr>
+                </template>
+                <array-selector id="selector" items="{{config.APIList}}" selected="{{selected}}" toggle>
+                </array-selector>
+            </table>
 
+
+
+            <!-- 
+                <div class="form-group">
+                <h6>Name</h6>
+                <input type="text" class="form-control" value="{{config.api.name::input}}" placeholder="Ex. Name">
+                
+            </div>
             <div class="form-group">
                 <h6>Control API</h6>
                 <input type="text" class="form-control" value="{{config.api.job::input}}" placeholder="Ex. http://localhost:19980/v1">
-                <!-- <div class="form-control-feedback" hidden>Can't use space in job name</div> -->
+                
             </div>
             <div class="form-group">
                 <h6>Storage API</h6>
                 <input type="text" class="form-control" value="{{config.api.storages::input}}" placeholder="Ex. http://localhost:19080/v1">
-                <!-- <div class="form-control-feedback" hidden>Can't use space in job name</div> -->
+                
             </div>
 
             <div class="form-group">
-                <h6>Token</h6>
-                <!-- <input class="form-control" type="text" value="{{config.OAuth.token::input}}" id="example-search-input" placeholder="User Token"> -->
-                <!-- <div class="form-control-feedback" hidden>Can't use space in job name</div> -->
+                <h6>Token</h6> 
                 <textarea rows="2" class="form-control" type="text" value="{{config.OAuth.token::input}}" id="example-search-input" placeholder="User Token"></textarea>
 
             </div>
@@ -280,12 +322,11 @@
                     <option value="1">v1.2+</option>
                     <option value="0">v1</option>
                 </select>
-            </div>
+            </div> -->
 
-            <!-- </div> -->
+
             <div class="buttons">
-                <paper-button class="btn btn-success submitbt" on-click="_onClickCreateNewWindow">&nbsp;&nbsp;OK&nbsp;&nbsp;</paper-button>
-                <paper-button class="btn btn-danger" dialog-confirm>cancel</paper-button>
+                <paper-button class="btn btn-danger" dialog-confirm>Close</paper-button>
             </div>
 
         </paper-dialog>
@@ -316,13 +357,15 @@
                     <template is="dom-repeat" items="[[menuList]]" as="item">
                         <template is="dom-if" if="{{!item.categoryTitle}}">
                             <a href="[[item.url]]" name="[[item.name]]">
-                                <iron-icon icon="[[item.icon]]"></iron-icon> [[item.title]] </a>
+                                <iron-icon icon="[[item.icon]]"></iron-icon> [[item.title]]
+                            </a>
                         </template>
                         <template is="dom-if" if="{{item.categoryTitle}}">
                             <!-- <div class="cat-title"><span>[[item.categoryTitle]]</span></div> -->
                             <template is="dom-repeat" items="[[item.sublist]]" as="sub">
                                 <a href="[[sub.url]]" name="[[sub.name]]">
-                                    <iron-icon icon="[[sub.icon]]"></iron-icon> [[sub.title]]</a>
+                                    <iron-icon icon="[[sub.icon]]"></iron-icon> [[sub.title]]
+                                </a>
                             </template>
 
                         </template>
@@ -455,7 +498,54 @@
                     }
                 };
             }
+            _deleteSelect(e) {
+                var item = this.$.configList.itemForElement(e.target);
+                let apilist = store.get("APIList")
+                let found = apilist.findIndex(list => { return list.name == item.name })
+                if (found == -1) {
+                    // Nothing to do
+                } else {
+                    apilist.splice(found, 1);
+                    //console.log("remove: ", item)
+                    store.set({ "APIList": apilist })
+                    this.$.dialogSettingNewWindow.close();
+                }
+            }
 
+            _openSelect(e) {
+                this.$.dialogSettingNewWindow.close();
+                var item = this.$.configList.itemForElement(e.target);
+
+
+                if (typeof require !== 'undefined') {
+                    console.log("this is electron");
+
+
+                    store.set({ 'api': {} })
+                    let api = {
+                        'api.name': item.name,
+                        'api.job': item.job,
+                        'api.job_api': this.strAPI(item.job, "jobs"),
+                        'api.storages': item.storages,
+                        'api.storages_api': this.strAPI(item.storages, "storage"),
+                        'api.storages_obj_api': this.strAPI(item.storages, "object"),
+                        'api.token': item.token,
+                        'api.version': item.version
+                    };
+                    store.set(api);
+
+
+
+                    this._newWindow();
+                    // this.$.toast.text = "Config saved";
+                    // this.$.toast.horizontalAlign = "right";
+                    // this.$.toast.verticalAlign = "top";
+                    // this.$.toast.open();
+                } else {
+                    console.log("this is not electron");
+                }
+
+            }
             // observIsCollapse(e){
             //     console.log("isCollapse der = ",e);
             // }
@@ -528,7 +618,10 @@
                     var win = new BrowserWindow({
                         width: 1024,
                         height: 600,
-                        show: false
+                        show: false,
+                        webPreferences: {
+                            webSecurity: false
+                        },
                     });
                     win.on('closed', function () {
                         win = null;
@@ -576,13 +669,12 @@
                         'api.storages': this.config.api.storages,
                         'api.storages_api': this.strAPI(this.config.api.storages, "storage"),
                         'api.storages_obj_api': this.strAPI(this.config.api.storages, "object"),
-                        'OAuth.token': this.config.OAuth.token,
+                        'api.token': this.config.api.token,
                         'api.version': this.config.api.version
                     };
                     store.set(api);
 
-                    // console.log("save api = ", api);
-                    // this.dispatchEvent(new CustomEvent('config-update'));
+
 
                     this._newWindow();
                     // this.$.toast.text = "Config saved";

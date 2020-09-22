@@ -26,7 +26,7 @@
 <link rel="import" href="/bower_components/iron-meta/iron-meta.html">
 <link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="/bower_components/iron-collapse/iron-collapse.html">
-
+<link rel="import" href="./common/utils/custom-auth-headers-mixin.html">
 <link rel="import" href="./common/dashboard-sidemenu.html">
 
 
@@ -171,14 +171,14 @@
           <dashboard-sidemenu page="{{page}}" id="sidemenu" iscollapse$="[[iscollapse]]"></dashboard-sidemenu>
         </div>
         <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
-          <page-home id="home" name="home" config="{{config}}"></page-home>
-          <page-jobs id="jobs" name="jobs" jobapi="{{jobapi}}"></page-jobs>
-          <page-createjob id="jobs-create" name="jobs-create" jobapi="{{jobapi}}"></page-createjob>
-          <page-jobs-editor id="jobEditor" name="jobs-editor" config="{{config}}"></page-jobs-editor>
-          <page-jobs-detail name="jobs-detail" route="{{pageid}}" id="jobs-detail" jobapi="{{jobapi}}"></page-jobs-detail>
-          <page-storages id="storages" name="storages" storagesapi="{{storagesapi}}"></page-storages>
-          <page-storages-detail id="storages-detail" name="storages-detail" route="{{pageid}}" storagesapi="{{storagesapi}}" storagesobjapi="{{storagesobjapi}}"></page-storages-detail>
-          <page-setting name="setting" id="setting"></page-setting>
+          <page-home      id="home" name="home" profilename="[[profilename]]" jobapi="{{jobapi}}" storagesapi="{{storagesapi}}" headers="[[headers]]" apiversion="[[apiversion]]"></page-home>
+          <page-jobs      id="jobs" name="jobs" jobapi="{{jobapi}}" headers="[[headers]]" apiversion="[[apiversion]]"></page-jobs>
+          <page-createjob id="jobs-create" name="jobs-create" jobapi="{{jobapi}}" headers="[[headers]]" apiversion="[[apiversion]]"></page-createjob>
+          <page-jobs-editor id="jobEditor" name="jobs-editor" profilename="[[profilename]]" jobapi="{{jobapi}}" headers="[[headers]]" apiversion="[[apiversion]]"></page-jobs-editor>
+          <page-jobs-detail id="jobs-detail" name="jobs-detail" route="{{pageid}}"  jobapi="{{jobapi}}" headers="[[headers]]" apiversion="[[apiversion]]"></page-jobs-detail>
+          <page-storages  id="storages" name="storages" profilename="[[profilename]]" storagesapi="{{storagesapi}}" headers="[[headers]]" apiversion="[[apiversion]]"> </page-storages>
+          <page-storages-detail id="storages-detail" name="storages-detail" route="{{pageid}}" storagesapi="{{storagesapi}}" storagesobjapi="{{storagesobjapi}}" headers="[[headers]]" apiversion="[[apiversion]]"></page-storages>></page-storages-detail>
+          <page-setting id="setting" name="setting" ></page-setting>
           <page-view404 id="view404" name="view404"></page-view404>
         </iron-pages>
       </div>
@@ -193,7 +193,7 @@
      * @customElement
      * @polymer
      */
-    class DashboardApp extends Polymer.Element {
+    class DashboardApp extends CustomMixin(Polymer.Element) {
       static get is() {
         return 'dashboard-app';
       }
@@ -212,9 +212,15 @@
           routeData: Object,
           subroute: String,
           routeSubData: Object,
+          profilename: String,
           jobapi: String,
           storagesapi: String,
           storagesobjapi: String,
+          apiversion: String,
+          headers: {
+            computed: 'addAuthHeaders(headers,token)'
+          },
+          token: String,
           config: Object
         };
       }
@@ -226,7 +232,7 @@
       }
       constructor() {
         super();
-
+        
         // Get root pattern for app-route, for more info about `rootPath` see:
         // https://www.polymer-project.org/2.0/docs/upgrade#urls-in-templates
         this.rootPattern = (new URL(this.rootPath)).pathname;
@@ -280,10 +286,13 @@
 
       _updateConfig() {
 
-
+        console.log("update config");
+        this.profilename = store.get('api.name');
         this.jobapi = store.get('api.job_api');
         this.storagesapi = store.get('api.storages_api')
         this.storagesobjapi = store.get('api.storages_obj_api');
+        this.token = store.get('api.token');
+        this.apiversion = store.get('api.version');
         this.config = store.get();
 
       }
@@ -316,7 +325,7 @@
       _pageChanged(page) {
         // Load page import on demand. Show 404 page if fails
         var resolvedPageUrl = this.resolveUrl('pages/' + 'page-' + page + '.html');
-
+        
         // console.log(resolvedPageUrl);
         Polymer.importHref(
           resolvedPageUrl,
@@ -324,6 +333,7 @@
           this._showPage404.bind(this),
           true);
         if (page === "jobs" && this.$.jobs._updateJobLists) {
+          console.log("update job");
           this.$.jobs._updateJobLists();
         } else if (page === "jobs-detail" && this.$['jobs-detail']._reloadJobDetail) {
           this.$['jobs-detail']._reloadJobDetail();

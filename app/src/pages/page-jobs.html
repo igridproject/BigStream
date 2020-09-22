@@ -76,7 +76,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </app-toolbar>
     <!-- Fetch an array of users to be shown in the grid -->
     <!-- auto -->
-    <iron-ajax  loading="{{loading}}" url="[[jobapi]]" handle-as="json" last-response="{{jobs}}" on-error="_ajexerror" id="updateJobsList"
+    <iron-ajax  loading="{{loading}}" url="[[jobapi]]" header="[[headers]]" handle-as="json" last-response="{{jobs}}" on-error="_ajexerror" id="updateJobsList"
       on-response="_loadJobsComplete"></iron-ajax>
 
     <!-- The array is set as the <vaadin-grid>'s "items" property -->
@@ -130,7 +130,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <paper-button class="btn btn-danger red" on-click="_deleteJob">Delete [[material.selectedItems.length]]</paper-button>
     </app-toolbar>
 
-    <iron-ajax id="deleteJobAjax" method="DELETE" handle-as="json" on-response="_deleteComplete" on-error="_deleteError"></iron-ajax>
+    <iron-ajax id="deleteJobAjax" method="DELETE" header="[[headers]]" handle-as="json" on-response="_deleteComplete" on-error="_deleteError"></iron-ajax>
 
     <paper-toast autoFitOnAttach id="toast"></paper-toast>
   </template>
@@ -155,27 +155,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: Boolean,
             notify: true,
             value: false
-          },
+          }
         };
       }
+
       ready() {
         super.ready();
 
         Polymer.RenderStatus.afterNextRender(this, function () {
           this._updateJobLists();
-
-          // let headers = {
-          //   // "Content-Type": "application/json; charset=utf-8",
-          //   "token": store.get('OAuth.token')
-          // }
-          
-          // this.$.updateJobsList.headers = headers;
-          this.$.updateJobsList.generateRequest();
-          // console.log("jobapi = ",this.jobapi);
-          // console.log("headers = ", headers);
-
-          // this.$.updateStorageLists.headers = '{"Content-Type": "application/json; charset=utf-8"}'
-
         });
 
       }

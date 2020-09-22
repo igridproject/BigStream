@@ -50,13 +50,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 height: 100%;
                 padding-bottom: 130px;
                 border-top: 0;
+
                 --vaadin-grid-header-cell: {
                     font-size: 14px !important;
                     padding-left: 20px;
                     height: initial;
                     background: #fbfbfb;
                 }
+
                 ;
+
                 --vaadin-grid-body-cell: {
                     padding: 8px;
                     padding-left: 8px;
@@ -65,11 +68,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     color: rgba(0, 0, 0, var(--dark-primary-opacity));
                     font-size: 11px;
                 }
+
                 ;
+
                 --vaadin-grid-body-row-hover-cell: {
                     cursor: pointer;
                     background-color: var(--paper-grey-200);
                 }
+
                 ;
             }
 
@@ -176,30 +182,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             .datalist .filter {
                 background: #edeff5;
                 --paper-tabs-selection-bar-color: #5194e1;
+
                 --paper-tabs: {
                     font-weight: normal;
                     display: inline-flex;
                 }
+
                 ;
+
                 --paper-tab: {
                     margin: 0;
                     padding: 0;
                     -webkit-box-shadow: 15px 0 15px -10px #A6A6A6;
                     box-shadow: 15px 0 15px -10px #A6A6A6;
                 }
+
                 ;
+
                 --paper-tab-content: {
                     background: #fff;
                     padding: 0 20px;
                 }
+
                 ;
+
                 --paper-tab-content-unselected: {
                     background: #edeff5;
                 }
+
                 ;
+
                 --paper-input-container-underline-focus: {
                     display: none;
                 }
+
                 ;
             }
 
@@ -326,8 +342,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <!-- Fetch an array of users to be shown in the grid -->
         <app-route route="[[route]]" pattern="/:storageid" data="{{routeData}}"></app-route>
         <!-- auto -->
-        <iron-ajax loading="{{loading}}" url="[[urlquery]]" handle-as="json" on-error="_loadStorageComplete" on-response="_loadStorageComplete"
-            last-response="{{items}}" id="updateStorageLists"></iron-ajax>
+        <iron-ajax loading="{{loading}}" url="[[urlquery]]" headers="[[headers]]" handle-as="json"
+            on-error="_loadStorageComplete" on-response="_loadStorageComplete" last-response="{{items}}"
+            id="updateStorageLists"></iron-ajax>
 
         <app-toolbar>
             <div main-title>
@@ -339,9 +356,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="app-grid stats" style="position: absolute;width: 100%;">
             <div class="item">
                 <span>
-                    <iron-icon icon="editor:insert-drive-file"></iron-icon> file name : [[stats.filename]]</span>
+                    <iron-icon icon="editor:insert-drive-file"></iron-icon> file name : [[stats.filename]]
+                </span>
                 <span>
-                    <iron-icon icon="editor:attach-file"></iron-icon> file size : [[stats.filesize]]</span>
+                    <iron-icon icon="editor:attach-file"></iron-icon> file size : [[stats.filesize]]
+                </span>
                 <span>[[stats.count]] rows</span>
             </div>
         </div>
@@ -359,32 +378,39 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <iron-pages selected="{{filterselected}}">
                         <div class="d-flex">
                             <div style="width: 100%;">
-                                <paper-input always-float-label label="Number of last index" value="{{lastfilter::input}}"></paper-input>
+                                <paper-input always-float-label label="Number of last index"
+                                    value="{{lastfilter::input}}"></paper-input>
                             </div>
                             <div class="align-self-center">
                                 <paper-button class="submitfilter" on-click="_lastfilterSubmit">
-                                    <iron-icon icon="icons:search"></iron-icon>search</paper-button>
+                                    <iron-icon icon="icons:search"></iron-icon>search
+                                </paper-button>
                             </div>
                         </div>
                         <div class="d-flex">
                             <div style="width: 100%;">
-                                <paper-input always-float-label label="From" value="{{fromfilter::input}}"></paper-input>
+                                <paper-input always-float-label label="From" value="{{fromfilter::input}}">
+                                </paper-input>
                             </div>
                             <div style="width: 100%;margin-left: 25px;">
-                                <paper-input always-float-label label="Limit" value="{{limitfilter::input}}"></paper-input>
+                                <paper-input always-float-label label="Limit" value="{{limitfilter::input}}">
+                                </paper-input>
                             </div>
                             <div class="align-self-center">
                                 <paper-button class="submitfilter" on-click="_fromlimitSubmit">
-                                    <iron-icon icon="icons:search"></iron-icon>search</paper-button>
+                                    <iron-icon icon="icons:search"></iron-icon>search
+                                </paper-button>
                             </div>
                         </div>
                         <div class="d-flex">
                             <div style="width: 100%;">
-                                <paper-input always-float-label label="Object ID" value="{{objidfilter::input}}"></paper-input>
+                                <paper-input always-float-label label="Object ID" value="{{objidfilter::input}}">
+                                </paper-input>
                             </div>
                             <div class="align-self-center">
                                 <paper-button class="submitfilter" on-click="_objidfilterSubmit">
-                                    <iron-icon icon="icons:search"></iron-icon>search</paper-button>
+                                    <iron-icon icon="icons:search"></iron-icon>search
+                                </paper-button>
                             </div>
                         </div>
                         <div class="d-flex">
@@ -397,11 +423,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 </vaadin-date-picker>
                             </div> -->
                             <div style="width: 100%;">
-                                <paper-input always-float-label label="Object Key" value="{{objidfilter::input}}"></paper-input>
+                                <paper-input always-float-label label="Object Key" value="{{objidfilter::input}}">
+                                </paper-input>
                             </div>
                             <div class="align-self-center">
                                 <paper-button class="submitfilter" on-click="_objKeyfilterSubmit">
-                                    <iron-icon icon="icons:search"></iron-icon>search</paper-button>
+                                    <iron-icon icon="icons:search"></iron-icon>search
+                                </paper-button>
                             </div>
                         </div>
 
@@ -413,10 +441,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <!-- START OBJECT LISTS -->
                     <div id="objLists">
                         <template is="dom-if" if="[[loading]]">
-                            <paper-progress value="10" indeterminate="true" style="width:100%;position: absolute;z-index: 1;"></paper-progress>
+                            <paper-progress value="10" indeterminate="true"
+                                style="width:100%;position: absolute;z-index: 1;"></paper-progress>
                         </template>
-                        <vaadin-grid class="material" items="{{items}}" on-active-item-changed="_onActiveItemChanged" id="grid" page-size="[[pageSize]]"
-                            active-item="{{activeItem}}">
+                        <vaadin-grid class="material" items="{{items}}" on-active-item-changed="_onActiveItemChanged"
+                            id="grid" page-size="[[pageSize]]" active-item="{{activeItem}}">
 
                             <vaadin-grid-column width="50px" flex-grow="0">
                                 <template class="header">#</template>
@@ -446,7 +475,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                     <!-- START OBJECT DETAIL -->
                     <div id="objDetail">
-                        <paper-button style="border-radius: 30px;min-width: 50px;position: absolute;right: 0 ;top: 0;z-index: 2;" on-click="_closeObjDetail">
+                        <paper-button
+                            style="border-radius: 30px;min-width: 50px;position: absolute;right: 0 ;top: 0;z-index: 2;"
+                            on-click="_closeObjDetail">
                             <iron-icon icon="icons:close" style="color: var(--google-grey-500);    "></iron-icon>
                         </paper-button>
                         <div class="obj-title">
@@ -456,14 +487,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         </div>
                         <div class="details">
 
-                            <paper-button on-click="_saveFile" style="border: none;border-bottom: 1px solid var(--google-grey-300);border-radius: 0;margin: 0;width: 100%;background: var(--google-grey-100);text-transform: none;">Download this object</paper-button>
+                            <paper-button on-click="_saveFile"
+                                style="border: none;border-bottom: 1px solid var(--google-grey-300);border-radius: 0;margin: 0;width: 100%;background: var(--google-grey-100);text-transform: none;">
+                                Download this object</paper-button>
                             <template is="dom-if" if="[[_isBinary(dataType)]]">
-                                <paper-button on-click="_viewImg" style="border: none;border-bottom: 1px solid var(--google-grey-300);border-radius: 0;margin: 0;width: 100%;background: var(--google-grey-100);text-transform: none;border-top: 1px solid #fff;">view</paper-button>
+                                <paper-button on-click="_viewImg"
+                                    style="border: none;border-bottom: 1px solid var(--google-grey-300);border-radius: 0;margin: 0;width: 100%;background: var(--google-grey-100);text-transform: none;border-top: 1px solid #fff;">
+                                    view</paper-button>
                             </template>
                             <jsonviewer-element id="jsonviewer"></jsonviewer-element>
                         </div>
                         <template is="dom-if" if="[[detailLoading]]">
-                            <paper-progress value="10" indeterminate="true" style="width:100%;position: absolute;z-index: 1;    top: 0;"></paper-progress>
+                            <paper-progress value="10" indeterminate="true"
+                                style="width:100%;position: absolute;z-index: 1;    top: 0;"></paper-progress>
                         </template>
                     </div>
                     <!-- END OBJECT DETAIL -->
@@ -472,7 +508,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
                 <template is="dom-if" if="[[job_error]]">
-                    <div style="padding: 85px 15px 0;position: absolute;top: 0;width:100%;height: 100%;background: rgba(239, 239, 239, 0.6);z-index: 112;">
+                    <div
+                        style="padding: 85px 15px 0;position: absolute;top: 0;width:100%;height: 100%;background: rgba(239, 239, 239, 0.6);z-index: 112;">
                         <div class="alert alert-danger" role="alert" style="width:100%">
                             <template is="dom-if" if="[[isJobError404]]">
                                 <strong>Error !</strong> Can't GET [[storagesapi]], 404 (Not Found), Please go to
@@ -572,8 +609,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     errorMessage: {
                         type: String
                     },
-                    userToken:{
-                        type:String
+                    userToken: {
+                        type: String
+                    },
+                    base64img: {
+                        type: String
                     }
 
                 };
@@ -592,16 +632,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                 Polymer.RenderStatus.afterNextRender(this, function () {
                     this.$.imgview.addEventListener('keydown', (ev) => {
+                        console.log(ev.code)
                         if (ev.code === 'ArrowRight')
                             this._nextView();
-                        if (ev.code === 'ArrowLeft')
+                        else if (ev.code === 'ArrowLeft')
                             this._preView()
-                        if (ev.code === 'Escape')
+                        else if (ev.code === 'Escape')
                             this.$.imgview.close();
                     });
-
-                    let config = store.get();
-                    this.userToken = "&token="+config.OAuth.token;
 
                     // var start = this.$.start
                     // var end = this.$.end
@@ -667,6 +705,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.job_error = false;
 
                     // fetch stats of storageid
+                    $.ajaxSetup({ "headers": this.headers })
                     $.getJSON(this.storagesapi + '/' + this.routeData.storageid + '/stats', function (data) {
                         this.stats = data;
                         // console.log(data);
@@ -674,10 +713,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this._closeObjDetail();
                     this.lastfilter = 100;
                     this.fromfilter = this.objidfilter = this.limitfilter = "";
-
-                    let config = store.get();
-                    this.strAPI = config.api.version == 1 ? "$" : ".";
-                    // console.log("config storage details = ", config.api.version, " so use ", this.strAPI + " | storageid = ", storageid);
+                    this.strAPI = (this.apiversion == 1) ? "$" : ".";
 
                 }
             }
@@ -688,12 +724,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.detailLoading = true;
 
                 if (item && this.$.grid.selectedItems.length > 0) {
-                    // console.log("_activeItemChanged 1");
+                    console.log("_activeItemChanged 1");
                     this.$.jsonviewer.json = {};
+                    $.ajaxSetup({ "headers": this.headers })
                     $.getJSON(this.storagesobjapi + '/' + this.routeData.storageid + this.strAPI + item._id,
                         (res) => {
                             this.objectType = res.data.object_type;
                             this.dataType = res.data.data_type;
+                            this.imgCurrent = this._isBinary(this.dataType)? 'data:image/jpg;base64, '+res.data.data : ""
                             this.detailLoading = false;
                             item.data = res.data;
                             this.$.jsonviewer.json = item;
@@ -744,6 +782,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _lastfilterSubmit() {
                 this.loading = true;
+                $.ajaxSetup({ "headers": this.headers })
                 $.getJSON(this.mainurl + 'field=meta&last=' + this.lastfilter, (data) => {
                     this.items = data;
                     this.loading = false;
@@ -754,6 +793,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                 let url = this.mainurl + 'field=meta&from=' + this.fromfilter + '&limit=' + this.limitfilter;
                 this.loading = true;
+                $.ajaxSetup({ "headers": this.headers })
                 $.getJSON(url, (data) => {
                     this.items = data;
                     this.loading = false;
@@ -763,9 +803,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _objKeyfilterSubmit() {
                 let url = this.storagesobjapi + '/' + this.routeData.storageid + this.strAPI + "{" + this.objidfilter + "}";
-                console.log("url = ",url );
+                console.log("url = ", url);
 
                 this.loading = true;
+                $.ajaxSetup({ "headers": this.headers })
                 $.getJSON(url, (data) => {
                     this.items = [data];
                     this.loading = false;
@@ -778,6 +819,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _objidfilterSubmit() {
                 this.loading = true;
+                $.ajaxSetup({ "headers": this.headers })
                 $.getJSON(this.storagesobjapi + '/' + this.routeData.storageid + this.strAPI + this.objidfilter, (data) => {
                     this.items = [data];
                     this.loading = false;
@@ -799,7 +841,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 return (item === 'binary')
             }
 
-             _viewImg() {
+            _viewImg() {
                 $(this.$.imgview).children('img').css('height', window.innerHeight - 100 + 'px');
                 this.$.imgview.open();
 
@@ -821,6 +863,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                 ipc.on('saved-file', (event, path) => {
                     let url = this.storagesobjapi + '/' + this.routeData.storageid + this.strAPI + this.activeItem._id + '/data';
+                    $.ajaxSetup({ "headers": this.headers })
                     $.ajax({
                         type: 'GET',
                         url: url,
@@ -851,7 +894,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 })
             }
 
-           
+
             _findIdToIndex(idObj) {
                 var i = 0;
                 this.items.forEach(function (element, index) {
@@ -860,37 +903,59 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }, this);
                 return i;
             }
-            _nextView() {
 
+            async _nextView() {
                 var nextimg = this._findIdToIndex(this.activeItem._id) + 1
                 if (nextimg < this.items.length) {
                     this.activeItem = this.items[nextimg]
-                    let url = `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.items[nextimg]._id}/data?datatype=jpg${this.userToken}`;
-                    console.log("_nextView = ", url);
-                    $(this.$.imgview).children('img').attr('src', url);
+                //     let url = `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.items[nextimg]._id}`;
+                //     let imageData = await this.getImageFromURLasBase64(url,"_nextView")
+                //     //console.log("_nextView call");
+                //     $(this.$.imgview).children('img').attr('src', 'data:image/jpg;base64, ' + imageData);
+
                 }
             }
-            _preView() {
+
+            
+
+            async _preView() {
 
                 var preimg = this._findIdToIndex(this.activeItem._id) - 1
                 if (preimg >= 0) {
                     this.activeItem = this.items[preimg]
-                    let url = `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.items[preimg]._id}/data?datatype=jpg${this.userToken}`;
-                    // console.log("_preView = ", url);
-                    $(this.$.imgview).children('img').attr('src', url);
+                    // let url = `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.items[preimg]._id}`;
+                    // let imageData = await this.getImageFromURLasBase64(url,"_preView")
+                    // //console.log("_preView call");
+                    // $(this.$.imgview).children('img').attr('src', 'data:image/jpg;base64, ' + imageData);
                 }
             }
 
-            isValidActiveItemID(id) {
+            
+
+            async isValidActiveItemID(id) {
 
                 // this.imgCurrent = this.storagesobjapi + "/" + this.routeData.storageid + this.strAPI + this.activeItem._id + "/data?datatype=jpg";
                 this.imgCurrent = "";
                 if (id) {
-                    this.imgCurrent = `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.activeItem._id}/data?datatype=jpg${this.userToken}`;
-                    console.log("isValidActiveItemID amd imgCurrentURL = ", this.imgCurrent);
+                    // let url = `${this.storagesobjapi}/${this.routeData.storageid}${this.strAPI}${this.activeItem._id}`;
+                    // let imageData = await this.getImageFromURLasBase64(url,"_isValidActiveItemID")
+                    //console.log("_isValidActiveItemID call");
+                    // this.imgCurrent = 'data:image/jpg;base64, ' + this.base64img
                     return true;
                 }
                 return false;
+            }
+
+            async getImageFromURLasBase64(url,caller) {
+                return new Promise((res, rej) => {
+                    $.ajaxSetup({ headers: this.headers });
+                    $.getJSON(url, (json) => {
+                        console.log("getImageFromURLasBase64 ",caller)
+                        res(json.data.data)
+                    }).fail(function (request, errorThrown) {
+                        rej(errorThrown);
+                    })
+                })
             }
         }
 

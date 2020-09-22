@@ -213,7 +213,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </div>
     <app-toolbar class="footer">
-      <iron-ajax id="addDataAjax" url="[[jobapi]]" handle-as="json" method="POST" on-response="_addComplete" on-error="_addError"
+      <iron-ajax id="addDataAjax" url="[[jobapi]]" headers="[[headers]]" handle-as="json" method="POST" on-response="_addComplete" on-error="_addError"
         content-type="application/json"></iron-ajax>
       <paper-button class="btn btn-success green" on-click="_addJob">Add</paper-button>
     </app-toolbar>

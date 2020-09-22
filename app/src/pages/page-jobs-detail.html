@@ -152,7 +152,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </style>
 
         <app-route route="[[route]]" pattern="/:jobid" data="{{routeData}}"></app-route>
-        <iron-ajax auto url="[[jobapi]]/[[routeData.jobid]]" handle-as="json" on-response="_loadJobComplete" last-response="{{jobDetail}}"
+        <iron-ajax auto url="[[jobapi]]/[[routeData.jobid]]" headers="[[headers]]" handle-as="json" on-response="_loadJobComplete" last-response="{{jobDetail}}"
             id="updateJobsDetail"></iron-ajax>
 
         <app-toolbar>
@@ -242,7 +242,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         </div>
         <app-toolbar class="footer">
-            <iron-ajax id="addDataAjax" url="[[jobapi]]" handle-as="json" method="POST" on-response="_addComplete" on-error="_addError"
+            <iron-ajax id="addDataAjax" url="[[jobapi]]" headers="[[headers]]" handle-as="json" method="POST" on-response="_addComplete" on-error="_addError"
                 content-type="application/json"></iron-ajax>
             <paper-button raised class="green none-shadow" on-click="_addJob">Edit</paper-button>
         </app-toolbar>
@@ -288,7 +288,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     var repeater = Polymer.dom(this.root).querySelectorAll('dom-repeat.pulginsList');
 
                     $.getJSON("/src/config/jobPlugins.json", function (data) {
-                        updatePulngins(data, jsoneditor);
+                        updatePlugins(data, jsoneditor);
                         repeater[0].items = data.trigger;
                         repeater[1].items = data.data_in;
                         repeater[2].items = data.data_transform;
@@ -358,7 +358,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         },
                         onChange: _codeJSONchange
                     };
-                    var updatePulngins = function (data, jsoneditor) {
+                    var updatePlugins = function (data, jsoneditor) {
                         jsoneditor.jobPlugins = data;
                     }
 
