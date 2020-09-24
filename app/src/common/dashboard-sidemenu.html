@@ -227,7 +227,6 @@
 
             table {
                 border-width: 3px;
-                border-style:solid;
             }
 
             tr,
@@ -277,52 +276,22 @@
                 </tr>
                 <template is="dom-repeat" id="configList" items={{config.APIList}}>
                     <tr>
-                        <td><button style="width:100%" on-click="_openSelect">[[item.name]]</button></td>
+                        <td>
+                            <paper-button class="btn btn-success submitbt" style="width:80%" on-click="_openSelect" dialog-confirm>[[item.name]]</paper-button>
+                        </td>
                         <td>
                             [[item.job]]
                         </td>
                         <td>
                             [[item.storages]]
                         </td> 
-                        <td><button on-click="_deleteSelect">Delete</button></button></td>
+                        <td><paper-button class="btn btn-danger"  on-click="_deleteSelect" dialog-confirm>Delete</paper-button>
+                            </td>
                     </tr>
                 </template>
                 <array-selector id="selector" items="{{config.APIList}}" selected="{{selected}}" toggle>
                 </array-selector>
             </table>
-
-
-
-            <!-- 
-                <div class="form-group">
-                <h6>Name</h6>
-                <input type="text" class="form-control" value="{{config.api.name::input}}" placeholder="Ex. Name">
-                
-            </div>
-            <div class="form-group">
-                <h6>Control API</h6>
-                <input type="text" class="form-control" value="{{config.api.job::input}}" placeholder="Ex. http://localhost:19980/v1">
-                
-            </div>
-            <div class="form-group">
-                <h6>Storage API</h6>
-                <input type="text" class="form-control" value="{{config.api.storages::input}}" placeholder="Ex. http://localhost:19080/v1">
-                
-            </div>
-
-            <div class="form-group">
-                <h6>Token</h6> 
-                <textarea rows="2" class="form-control" type="text" value="{{config.OAuth.token::input}}" id="example-search-input" placeholder="User Token"></textarea>
-
-            </div>
-
-            <div class="form-group">
-                <h6>API Version</h6>
-                <select class="form-control" value="{{config.api.version::input}}">
-                    <option value="1">v1.2+</option>
-                    <option value="0">v1</option>
-                </select>
-            </div> -->
 
 
             <div class="buttons">

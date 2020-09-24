@@ -11,10 +11,12 @@
       let authHeaders = {
         "Authorization": ""
       }
-      if(token && token !== ""){
-        authHeaders.Authorization = "Bearer "+token
-        Object.assign(headers, authHeaders);
-        console.log("Computed Headers: ",headers);
+      if(token){
+        if(token !== "") {
+          authHeaders.Authorization = "Bearer "+token
+          Object.assign(headers, authHeaders);
+          console.log("Computed Headers: ",headers);
+        }
       }
       return headers;
     }
